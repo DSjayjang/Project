@@ -27,12 +27,14 @@ class NaverMapCrawler:
 
         return elem.text
 
-    def get_transit_time(self, fx, fy, tx, ty):
+    def get_transit_time(self, fx: list, fy: list, tx: list, ty: list) -> str:
         url = f'https://map.naver.com/p/directions/{fx},{fy}/{tx},{ty}/-/transit?c=14.00,0,0,0,dh'
+
         return self._fetch(url, config.SELECTOR_TRANSIT)
 
-    def get_car_time(self, fx, fy, tx, ty):
+    def get_car_time(self, fx: list, fy: list, tx: list, ty: list) -> str:
         url = f'https://map.naver.com/p/directions/{fx},{fy}/{tx},{ty}/-/car?c=14.00,0,0,0,dh'
+
         return self._fetch(url, config.SELECTOR_CAR)
     
     def close(self):

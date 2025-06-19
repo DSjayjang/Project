@@ -6,10 +6,10 @@
 from pyproj import Transformer
 
 class CoordinateTransformer:
-    def __init__(self, from_crs="EPSG:4326", to_crs="EPSG:3857"):
+    def __init__(self, from_crs = "EPSG:4326", to_crs = "EPSG:3857"):
         self._tf = Transformer.from_crs(from_crs, to_crs, always_xy = True)
-    
-    def transform(self, longitude, latitude):
+        
+    def transform(self, longitude: float, latitude: float):
         """
         longitude: 1D numpy ndarray
         latitude: 1D numpy ndarray
