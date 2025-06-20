@@ -5,7 +5,7 @@ import pandas as pd
 
 from config import CHROM_DRIVER_PATH, WAIT_TIMEOUT, DELAY_RANGE
 from transformer import CoordinateTransformer
-from crawler import NaverMapCrawler
+from crawler2 import NaverMapCrawler
 
 os.chdir(r'C:\Users\user\Desktop\연구\5. 국방부 용역과제')
 df = pd.read_csv('DB.csv')
@@ -17,8 +17,8 @@ df = pd.read_csv('DB.csv')
 from_lat, from_lon: 출발지 위도, 경도
 to_lat, to_lon: 목적지 위도, 경도 >> ndarray로 변경필요
 """
-from_lat = df['Latitude'][:3].to_numpy()
-from_lon = df['Longitude'][:3].to_numpy()
+from_lat = df['Latitude'][:1].to_numpy()
+from_lon = df['Longitude'][:1].to_numpy()
 to_lat = 37.450141
 to_lon = 126.653467
 
@@ -36,13 +36,17 @@ records = []
 
 for fx, fy in zip(from_x, from_y):
     try:
-        # 1. 대중교통
+        # 1. 실시간 대중교통
         time_transit = crawler.get_transit_time(fx, fy, to_x, to_y)
         
         time.sleep(random.uniform(*DELAY_RANGE))
         
-        # 2. 자동차
+        # 2. 실시간 자동차
         time_car = crawler.get_car_time(fx, fy, to_x, to_y)
+
+        # 3. 특정 시간대 대중교통 소요시간
+        # 작성필요
+        crawler.open_calendar(fx, fy, to_x, to_y, target_year=2025, target_month=4, target_day = 2)
 
     except Exception as e:
         time_transit = None
