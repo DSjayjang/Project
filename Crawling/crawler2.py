@@ -8,7 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 import config
-from config import TIME_OPTION_BTN, CALENDAR_BTN, PRV_BTN, NXT_BTN, CUR_TXT, XPATH_DAY
+from config import TIME_OPTION_BTN, CALENDAR_BTN, PRV_BTN, NXT_BTN, CUR_TXT, XPATH_DAY, HOUR_BTN, XPATH_HOUR, MIN_BTN, XPATH_MIN
 
 class NaverMapCrawler:
     def __init__(self, driver_path, wait_timeout, delay_range):
@@ -43,7 +43,7 @@ class NaverMapCrawler:
         return self._fetch(url, config.SELECTOR_CAR)
     
     # 3. 캘린더 열기
-    def open_calendar(self, fx, fy, tx, ty, target_year, target_month, target_day):
+    def open_calendar(self, fx, fy, tx, ty, target_year, target_month, target_day, target_hour, target_min):
         # 1. 길찾기 페이지 열기
         url = f'https://map.naver.com/p/directions/{fx},{fy}/{tx},{ty}/-/transit?c=14.00,0,0,0,dh'
         self.driver.get(url)
@@ -55,14 +55,14 @@ class NaverMapCrawler:
         time_btn.click()
         time.sleep(random.uniform(*self.delay_range))
 
-        # 3. 캘린더 버튼 클릭
-        btn = self.wait.until(
+        # 3-1. 캘린더 버튼 클릭
+        cal_btn = self.wait.until(
             EC.element_to_be_clickable((
                 By.CSS_SELECTOR, CALENDAR_BTN)))
-        btn.click()
+        cal_btn.click()
         time.sleep(random.uniform(*self.delay_range))
 
-        # 4. 년/월 선택
+        # 3-2. 년/월 선택
         if target_year and target_month:
             while True:
                 cur = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, CUR_TXT))).text.strip()
@@ -79,21 +79,60 @@ class NaverMapCrawler:
                     break
                 time.sleep(random.uniform(*self.delay_range))
         
-        # 5. 날짜 선택
-        xpath = XPATH_DAY.format(day = target_day)
-        day_buttons = self.driver.find_elements(By.XPATH, xpath)
+        # 3-3. 날짜 선택
+        xpath_day = XPATH_DAY.format(day = target_day)
+        day_buttons = self.driver.find_elements(By.XPATH, xpath_day)
         if day_buttons:
             btn = day_buttons[0]
-            self.wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
+            self.wait.until(EC.element_to_be_clickable((By.XPATH, xpath_day)))
             btn.click()
         else:
             raise Exception('에러: 날짜를 찾을 수 없음')
 
         time.sleep(random.uniform(*self.delay_range))
 
-        # 6. 시간 선택
 
+        # 4-1. 시간 버튼 클릭
+        hour_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, HOUR_BTN)))
+        hour_btn.click()
+        time.sleep(random.uniform(*self.delay_range))
 
+        # 4-2 XPATH로 target_hour 버튼 찾기
+        xpath_hour = XPATH_HOUR.format(hour = target_hour)
+        hour_bottns = self.driver.find_element(By.XPATH, xpath_hour)
+
+        # 4-3 스크롤하여 화면 중앙에 보이게 한 뒤 클릭
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block: 'center'});",
+            hour_bottns
+        )
+        self.wait.until(
+            EC.element_to_be_clickable((By.XPATH, xpath_hour))
+        ).click()
+
+        time.sleep(random.uniform(*self.delay_range))
+
+        # 5-1. 분 버튼 클릭
+        min_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, MIN_BTN)))
+        min_btn.click()
+        time.sleep(random.uniform(*self.delay_range))
+
+        # 5-2 XPATH로 target_min 버튼 찾기
+        xpath_min = XPATH_MIN.format(min = target_min)
+        min_bottns = self.driver.find_element(By.XPATH, xpath_min)
+
+        # 5-3 스크롤하여 화면 중앙에 보이게 한 뒤 클릭
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block: 'center'});",
+            min_bottns
+        )
+        self.wait.until(
+            EC.element_to_be_clickable((By.XPATH, xpath_min))
+        ).click()
+
+        time.sleep(random.uniform(*self.delay_range))
+
+    
     # Selenium 종료
     def close(self):
         self.driver.quit()

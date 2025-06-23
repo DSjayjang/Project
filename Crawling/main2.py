@@ -7,7 +7,8 @@ from config import CHROM_DRIVER_PATH, WAIT_TIMEOUT, DELAY_RANGE
 from transformer import CoordinateTransformer
 from crawler2 import NaverMapCrawler
 
-os.chdir(r'C:\Users\user\Desktop\연구\5. 국방부 용역과제')
+# os.chdir(r'C:\Users\user\Desktop\연구\5. 국방부 용역과제') # pcrl
+os.chdir(r'C:\Users\linde\Desktop\연구\5. 국방부 용역') # laptop
 df = pd.read_csv('DB.csv')
 
 # Data Load
@@ -45,8 +46,7 @@ for fx, fy in zip(from_x, from_y):
         time_car = crawler.get_car_time(fx, fy, to_x, to_y)
 
         # 3. 특정 시간대 대중교통 소요시간
-        # 작성필요
-        crawler.open_calendar(fx, fy, to_x, to_y, target_year=2025, target_month=4, target_day = 2)
+        crawler.open_calendar(fx, fy, to_x, to_y, target_year = 2025, target_month=6, target_day = 5, target_hour = 0, target_min = 0)
 
     except Exception as e:
         time_transit = None

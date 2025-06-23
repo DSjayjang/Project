@@ -3,7 +3,8 @@ CHROM_DRIVER_PATH: 크롬 드라이버가 설치된 내 PC 경로
 WAIT_TIMEOUT: 최대 몇 초까지 로딩을 기다릴 것인지
 DELAY_RANGE: 딜레이 시간 (min, max)
 """
-CHROM_DRIVER_PATH = r'C:\Users\user\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe'
+# CHROM_DRIVER_PATH = r'C:\Users\user\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe' # pcrl
+CHROM_DRIVER_PATH = r'C:\Users\linde\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe' # laptop
 WAIT_TIMEOUT = 10
 DELAY_RANGE = (1.0, 2.0)
 
@@ -27,8 +28,16 @@ SELECTOR_CAR = '#section_content > div > div.sc-hz6zmc.eOGmI > div.sc-1nqk12w.kH
 TIME_OPTION_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div > button.btn_time_option.btn_option'
 CALENDAR_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_day > div > button'
 
+# 년/월 선택
 PRV_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_day > div > div > div.nav_calendar > button.btn_prv_month'
 NXT_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_day > div > div > div.nav_calendar > button.btn_nxt_month'
 CUR_TXT = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_day > div > div > div.nav_calendar > span'
-
 XPATH_DAY = "//*[@id='section_content']//div[contains(@class,'table_calendar')]//button[normalize-space(text())='{day}']"
+
+# 시간 선택
+HOUR_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_hour > div > button'
+XPATH_HOUR = ".//li/button[normalize-space(text())='{hour:02d}']"
+
+# 분 선택
+MIN_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_minute > div > button'
+XPATH_MIN = ".//li/button[normalize-space(text())='{min:02d}']"
