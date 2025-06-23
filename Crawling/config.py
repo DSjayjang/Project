@@ -1,10 +1,11 @@
 """
-CHROM_DRIVER_PATH: 크롬 드라이버가 설치된 내 PC 경로
-WAIT_TIMEOUT: 최대 기다릴 로딩 시간(초)
-DELAY_RANGE: 클릭 딜레이 시간 (min, max)
+CHROM_DRIVER_PATH: 크롬 드라이버가 설치된 경로
+WAIT_TIMEOUT: 기다릴 최대 로딩시간(초)
+DELAY_RANGE: 클릭 딜레이 시간(초) (min, max)
 """
 # CHROM_DRIVER_PATH = r'C:\Users\user\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe' # pcrl
-CHROM_DRIVER_PATH = r'C:\Users\linde\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe' # laptop
+CHROM_DRIVER_PATH = r'C:\Users\linde\OneDrive\Desktop\3. 연구\5. 국방부 용역과제\chromedriver-win64\chromedriver-win64\chromedriver.exe' # my pc
+# CHROM_DRIVER_PATH = r'C:\Users\linde\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe' # laptop
 WAIT_TIMEOUT = 10
 DELAY_RANGE = (1.0, 2.0)
 
@@ -12,7 +13,7 @@ DELAY_RANGE = (1.0, 2.0)
 ■ CSS Selector
 SELECTOR_TRANSIT: 대중교통 최적시간
 SELECTOR_TRANSIT_SPECIFIC: 대중교통 특정시간
-SELECTOR_CAR: 자동차 실시간시간
+SELECTOR_CAR: 자동차 실시간
 TIME_OPTION_BTN: 시간 옵션 열기
 
 CALENDAR_BTN: 캘린더 열기

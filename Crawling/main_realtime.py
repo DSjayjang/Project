@@ -4,12 +4,13 @@ import random
 import pandas as pd
 
 from config import CHROM_DRIVER_PATH, WAIT_TIMEOUT, DELAY_RANGE
-from transformer import CoordinateTransformer
-from crawler2 import NaverMapCrawler
+from utils import CoordinateTransformer
+from crawler import NaverMapCrawler
 
 # Data Load
 # os.chdir(r'C:\Users\user\Desktop\연구\5. 국방부 용역과제') # pcrl
-os.chdir(r'C:\Users\linde\Desktop\연구\5. 국방부 용역') # laptop
+os.chdir(r'C:\Users\linde\OneDrive\Desktop\3. 연구\5. 국방부 용역과제') # my pc
+# os.chdir(r'C:\Users\linde\Desktop\연구\5. 국방부 용역') # laptop
 df = pd.read_csv('DB.csv')
 
 # 출발지/목적지 위/경도
