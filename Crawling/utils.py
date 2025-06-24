@@ -1,7 +1,5 @@
 from pyproj import Transformer
-
 import calendar
-from datetime import datetime
 from typing import ClassVar, Set
 
 class CoordinateTransformer:

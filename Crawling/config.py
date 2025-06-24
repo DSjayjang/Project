@@ -3,8 +3,8 @@ CHROM_DRIVER_PATH: 크롬 드라이버가 설치된 경로
 WAIT_TIMEOUT: 기다릴 최대 로딩시간(초)
 DELAY_RANGE: 클릭 딜레이 시간(초) (min, max)
 """
-# CHROM_DRIVER_PATH = r'C:\Users\user\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe' # pcrl
-CHROM_DRIVER_PATH = r'C:\Users\linde\OneDrive\Desktop\3. 연구\5. 국방부 용역과제\chromedriver-win64\chromedriver-win64\chromedriver.exe' # my pc
+CHROM_DRIVER_PATH = r'C:\Users\user\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe' # pcrl
+# CHROM_DRIVER_PATH = r'C:\Users\linde\OneDrive\Desktop\3. 연구\5. 국방부 용역과제\chromedriver-win64\chromedriver-win64\chromedriver.exe' # my pc
 # CHROM_DRIVER_PATH = r'C:\Users\linde\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe' # laptop
 WAIT_TIMEOUT = 10
 DELAY_RANGE = (1.0, 2.0)

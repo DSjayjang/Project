@@ -5,11 +5,11 @@ import pandas as pd
 
 from config import CHROM_DRIVER_PATH, WAIT_TIMEOUT, DELAY_RANGE
 from utils import CoordinateTransformer
-from crawler import NaverMapCrawler
+from crawler import RealtimeCrawling
 
 # Data Load
-# os.chdir(r'C:\Users\user\Desktop\연구\5. 국방부 용역과제') # pcrl
-os.chdir(r'C:\Users\linde\OneDrive\Desktop\3. 연구\5. 국방부 용역과제') # my pc
+os.chdir(r'C:\Users\user\Desktop\연구\5. 국방부 용역과제') # pcrl
+# os.chdir(r'C:\Users\linde\OneDrive\Desktop\3. 연구\5. 국방부 용역과제') # my pc
 # os.chdir(r'C:\Users\linde\Desktop\연구\5. 국방부 용역') # laptop
 df = pd.read_csv('DB.csv')
 
@@ -31,10 +31,11 @@ from_x, from_y = ct.transform(from_lon, from_lat)
 to_x, to_y = ct.transform(to_lon, to_lat)
 
 # 2. Initializing Crawler
-crawler = NaverMapCrawler(CHROM_DRIVER_PATH, WAIT_TIMEOUT, DELAY_RANGE)
+crawler = RealtimeCrawling(CHROM_DRIVER_PATH, WAIT_TIMEOUT, DELAY_RANGE)
 
 # 3. 크롤링
 records = [] # 소요시간 리스트
+
 for fx, fy, tx, ty in zip(from_x, from_y, to_x, to_y):
 
     # 실시간(최적) 대중교통
