@@ -1,0 +1,6 @@
+SEED: 100
+DATASET: 'datasets\esol'
+
+BATCH_SIZE: 32
+MAX_EPOCHS: 1
+K: 2
