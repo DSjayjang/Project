@@ -5,6 +5,7 @@ from utils.utils import Z_Score
 
 props_name = ['atomic_weight', 'atomic_radius', 'atomic_volume', 'dipole_polarizability',
               'fusion_heat', 'thermal_conductivity', 'vdw_radius', 'en_pauling']
+dim_atomic_feat = len(props_name)
 
 def load_atomic_props():
     tb = fetch_table('elements')

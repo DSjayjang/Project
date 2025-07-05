@@ -14,7 +14,7 @@ class MoleculeDataset:
     """
     def __init__(self, file_name):
         self.file_name = file_name
-        self.samples = []
+        self.data = []
         self.graphs = []
         self._load_and_process()
     
@@ -39,33 +39,12 @@ class MoleculeDataset:
             graph_obj.num_rad_elc = dsc.NumValenceElectrons(graph_obj.mol)
             graph_obj.num_val_elc = dsc.NumValenceElectrons(graph_obj.mol)
             
-            self.samples.append((graph_obj, tgt))
+            self.data.append((graph_obj, tgt))
             self.graphs.append(graph_obj)
 
         for feat in ['num_atoms', 'weight', 'num_rings', 'max_abs_charge', 'min_abs_charge', 'num_rad_elc', 'num_val_elc']:
             FeatureNormalization(self.graphs, feat)
 
-        # for idx, smile in enumerate(smiles):
-        #     mol, mol_graph = smiles_to_mol_graph(smile)
-
-        #     # Add molecular descriptors as features
-        #     if mol is not None and mol_graph is not None:
-        #         mol_graph.num_atoms = mol.GetNumAtoms()
-        #         mol_graph.num_atoms = mol.GetNumAtoms()
-        #         mol_graph.weight = dsc.ExactMolWt(mol)
-        #         mol_graph.num_rings = mol.GetRingInfo().NumRings()
-        #         mol_graph.max_abs_charge = dsc.MaxAbsPartialCharge(mol)
-        #         mol_graph.min_abs_charge = dsc.MinAbsPartialCharge(mol)
-        #         mol_graph.num_rad_elc = dsc.NumValenceElectrons(mol) # (원본) 잘못된 것
-        #         mol_graph.num_val_elc = dsc.NumValenceElectrons(mol)
-
-        #         # Collect samples and graph list
-        #         self.samples.append((mol_graph, targets[idx]))
-        #         self.mol_graphs.append(mol_graph)
-            
-            # Normalize each features across all graphs
-            # for feat_name in ['num_atoms', 'weight', 'num_rings', 'max_abs_charge', 'min_abs_charge', 'num_rad_elc', 'num_val_elc']:
-            #     utils.FeatureNormalization(self.mol_graphs, feat_name)
     
     def __len__(self):
-        return (len(self.samples))
+        return (len(self.data))

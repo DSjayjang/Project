@@ -1,18 +1,9 @@
-import dgl.function as fn
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 import dgl
-
-
-#msg = fn.copy_src(src='h', out='m')
-msg = fn.copy_u('h', 'm')
-
-def reduce(nodes):
-    accum = torch.mean(nodes.mailbox['m'], 1)
-
-    return {'h': accum}
-
+import dgl.function as fn
 
 class NodeApplyModule(nn.Module):
     def __init__(self, dim_in, dim_out):
@@ -24,19 +15,24 @@ class NodeApplyModule(nn.Module):
 
         return {'h': h}
 
-
 class GCNLayer(nn.Module):
     def __init__(self, dim_in, dim_out):
         super(GCNLayer, self).__init__()
+        self.msg = fn.copy_u('h', 'm')
         self.apply_mod = NodeApplyModule(dim_in, dim_out)
+
+    def reduce(self, nodes):
+        mbox = nodes.mailbox['m']
+        accum = torch.mean(mbox, dim = 1)
+
+        return {'h': accum}     
 
     def forward(self, g, feature):
         g.ndata['h'] = feature
-        g.update_all(msg, reduce)
-        g.apply_nodes(func=self.apply_mod)
+        g.update_all(self.msg, self.reduce)
+        g.apply_nodes(func = self.apply_mod)
 
         return g.ndata.pop('h')
-
 
 class Net(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
