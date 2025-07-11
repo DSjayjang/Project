@@ -25,8 +25,8 @@ class GCNLayer(nn.Module):
         mbox = nodes.mailbox['m']
         accum = torch.mean(mbox, dim = 1)
 
-        return {'h': accum}     
-
+        return {'h': accum}
+    
     def forward(self, g, feature):
         g.ndata['h'] = feature
         g.update_all(self.msg, self.reduce)
@@ -35,22 +35,34 @@ class GCNLayer(nn.Module):
         return g.ndata.pop('h')
 
 class Net(nn.Module):
-    def __init__(self, dim_in, dim_out):
+    def __init__(self, dim_in, dim_out, dim_self_feat):
         super(Net, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
-        self.fc1 = nn.Linear(20, 10)
-        self.fc2 = nn.Linear(10, dim_out)
 
-    def forward(self, g):
+        self.fc1 = nn.Linear(20 * dim_self_feat, 256) 
+        self.fc2 = nn.Linear(256, 32)
+        self.fc3 = nn.Linear(32, dim_out)
+
+        self.bn1 = nn.BatchNorm1d(256)
+        self.bn2 = nn.BatchNorm1d(32)
+        self.dropout = nn.Dropout(0.3)
+
+    def forward(self, g, self_feat):
         h = F.relu(self.gc1(g, g.ndata['feat']))
         h = F.relu(self.gc2(g, h))
         g.ndata['h'] = h
 
         hg = dgl.mean_nodes(g, 'h')
+        hg = hg.unsqueeze(2)
+        self_feat = self_feat.unsqueeze(1)
+        hg = torch.bmm(hg, self_feat)
+        hg = hg.view(hg.size(0), -1)
 
-        out = F.relu(self.fc1(hg))
-        out = self.fc2(out)
+        out = F.relu(self.bn1(self.fc1(hg)))
+        out = self.dropout(out)
+        out = F.relu(self.bn2(self.fc2(out)))
+        out = self.fc3(out)
 
         return out

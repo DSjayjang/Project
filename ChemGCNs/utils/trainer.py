@@ -12,6 +12,11 @@ def train(model, criterion, optimizer, train_data_loader, max_epochs):
         train_loss = 0
 
         for bg, target in train_data_loader:
+            # device     = next(model.parameters()).device
+            # bg         = bg.to(device)
+            # self_feat  = self_feat.to(device)
+            # target     = target.to(device)
+
             pred = model(bg)
             loss = criterion(pred, target)
             optimizer.zero_grad()
@@ -31,6 +36,11 @@ def train_emodel(model, criterion, optimizer, train_data_loader, max_epochs):
         train_loss = 0
 
         for bg, self_feat, target in train_data_loader:
+            # device     = next(model.parameters()).device
+            # bg         = bg.to(device)
+            # self_feat  = self_feat.to(device)
+            # target     = target.to(device)
+
             pred = model(bg, self_feat)
             loss = criterion(pred, target)
             optimizer.zero_grad()
@@ -52,6 +62,11 @@ def test(model, criterion, test_data_loader, accs=None):
         correct = 0
 
         for bg, target in test_data_loader:
+            # device     = next(model.parameters()).device
+            # bg         = bg.to(device)
+            # self_feat  = self_feat.to(device)
+            # target     = target.to(device)
+
             pred = model(bg)
             loss = criterion(pred, target)
             test_loss += loss.detach().item()
@@ -87,6 +102,11 @@ def test_emodel(model, criterion, test_data_loader, accs=None):
         correct = 0
 
         for bg, self_feat, target in test_data_loader:
+            # device     = next(model.parameters()).device
+            # bg         = bg.to(device)
+            # self_feat  = self_feat.to(device)
+            # target     = target.to(device)
+
             pred = model(bg, self_feat)
             loss = criterion(pred, target)
             test_loss += loss.detach().item()
@@ -114,7 +134,7 @@ def test_emodel(model, criterion, test_data_loader, accs=None):
     preds = preds.cpu().numpy()
     targets = targets.cpu().numpy()
     self_feats = self_feats.cpu().numpy()
-    np.savetxt('result.csv', np.concatenate((targets, preds, self_feats), axis=1), delimiter=',')
+    # np.savetxt('result.csv', np.concatenate((targets, preds, self_feats), axis=1), delimiter=',')
 
     return test_loss, preds
 

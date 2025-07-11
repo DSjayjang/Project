@@ -15,14 +15,12 @@ class MolGraph(dgl.DGLGraph):
     SMILES -> RDKit Mol -> DGLGraph 빌드 클래스
     노드 속성으로는 atomic_props 에서 가져온 z-score 표준화된 벡터를 사용.
     """
-    # def __init__(self, smiles, graph_device = None):
     def __init__(self, smiles):
         super(MolGraph, self).__init__()
         self.smiles = smiles
         self.mol = None
         self.adj_mat = None
         self.feat_mat = None
-        # self.graph_device = graph_device or torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self._build_graph()
 
     def _build_graph(self):

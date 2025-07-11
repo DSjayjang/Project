@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 from configs.config import SET_SEED, DATASET, BATCH_SIZE, MAX_EPOCHS, K
-from utils.mol_dataset import MoleculeDataset
+from utils.test_mol.mol_dataset_gcn import MoleculeDataset
 
 # 시드 고정
 SET_SEED()
@@ -17,8 +17,8 @@ random.shuffle(dataset)
 import torch
 import torch.nn as nn
 import dgl
-from model import GCN
-from model import EGCN
+from model.test_model import GCN
+from model.test_model import EGCN
 from utils import trainer
 
 # check GPU availability

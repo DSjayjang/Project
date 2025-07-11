@@ -25,8 +25,8 @@ class GCNLayer(nn.Module):
         mbox = nodes.mailbox['m']
         accum = torch.mean(mbox, dim = 1)
 
-        return {'h': accum}     
-
+        return {'h': accum}
+    
     def forward(self, g, feature):
         g.ndata['h'] = feature
         g.update_all(self.msg, self.reduce)
@@ -40,11 +40,12 @@ class Net(nn.Module):
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
-        self.fc1 = nn.Linear(20 + dim_self_feat, 10)
+
+        self.fc1 = nn.Linear(20 + 20, 10)
         self.fc2 = nn.Linear(10, dim_out)
 
-    def forward(self, g, self_feat):
 
+    def forward(self, g, self_feat):
         h = F.relu(self.gc1(g, g.ndata['feat']))
         h = F.relu(self.gc2(g, h))
         g.ndata['h'] = h
