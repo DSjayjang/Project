@@ -27,22 +27,43 @@ XPATH_HOUR: 시간(hour) 선택
 MIN_BTN: 분(minutes) 열기
 XPATH_MIN: 분(minutes) 선택
 """
-SELECTOR_TRANSIT = '#tab_pubtrans_directions > ul > li.sc-1it5x3x.ckQsSP.is_selected > div > div > div > em'
-SELECTOR_TRANSIT_SPECIFIC = '#tab_pubtrans_directions > ul > li > div > div > div > em'
-SELECTOR_CAR = '#section_content > div > div.sc-hz6zmc.eOGmI > div.sc-1nqk12w.kHPMtO > div.direction_summary_list_wrap > ul > li:nth-child(1) > div > div > div.route_summary_info_duration > strong'
-TIME_OPTION_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div > button.btn_time_option.btn_option'
+SELECTOR_TRANSIT = '#tab_pubtrans_directions li.is_selected div div div em'
+SELECTOR_TRANSIT_SPECIFIC = '#tab_pubtrans_directions ul li div div div em'
+SELECTOR_CAR = '#section_content div div div div.direction_summary_list_wrap ul li div div div strong'
+TIME_OPTION_BTN = '#section_content > div > div > div > div > div > button.btn_time_option.btn_option'
 
 # 년/월 CSS Selector/Xpath
-CALENDAR_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_day > div > button'
-PRV_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_day > div > div > div.nav_calendar > button.btn_prv_month'
-NXT_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_day > div > div > div.nav_calendar > button.btn_nxt_month'
-CUR_TXT = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_day > div > div > div.nav_calendar > span'
+CALENDAR_BTN = '#section_content div > div > div > div > div > div.timeset_option.timeset_option_day > div > button'
+# CALENDAR_BTN = '#section_content .timeset_option.timeset_option_day button'
+PRV_BTN = '#section_content > div > div > div > div > div > div.timeset_option.timeset_option_day > div > div > div.nav_calendar button.btn_prv_month > span'
+# PRV_BTN = '#section_content .timeset_option_day .nav_calendar button.btn_prv_month > span'
+NXT_BTN = '#section_content > div > div > div > div > div > div.timeset_option.timeset_option_day > div > div > div.nav_calendar button.btn_nxt_month > span'
+# NXT_BTN = '#section_content .timeset_option_day .nav_calendar button.btn_nxt_month > span'
+CUR_TXT = '#section_content .timeset_option.timeset_option_day .nav_calendar > span'
 XPATH_DAY = "//*[@id='section_content']//div[contains(@class,'table_calendar')]//button[normalize-space(text())='{day}']"
 
 # 시간(hour) CSS Selector/Xpath
-HOUR_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_hour > div > button'
+HOUR_BTN = '#section_content > div > div > div > div > div > div.timeset_option.timeset_option_hour > div > button'
+# HOUR_BTN = '#section_content .timeset_option_hour button'
 XPATH_HOUR = ".//li/button[normalize-space(text())='{hour:02d}']"
 
 # 분(minute) CSS Selector/Xpath
-MIN_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_minute > div > button'
+MIN_BTN = '#section_content > div > div > div > div > div > div.timeset_option.timeset_option_minute > div > button'
+# MIN_BTN = '#section_content .timeset_option_minute > button'
 XPATH_MIN = ".//li/button[normalize-space(text())='{min:02d}']"
+
+
+"""
+기존
+"""
+# SELECTOR_TRANSIT = '#tab_pubtrans_directions > ul > li.sc-1it5x3x.ckQsSP.is_selected > div > div > div > em'
+# SELECTOR_CAR = '#section_content > div > div.sc-hz6zmc.eOGmI > div.sc-1nqk12w.kHPMtO > div.direction_summary_list_wrap > ul > li:nth-child(1) > div > div > div.route_summary_info_duration > strong'
+# TIME_OPTION_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div > button.btn_time_option.btn_option'
+
+# CALENDAR_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_day > div > button'
+# PRV_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_day > div > div > div.nav_calendar > button.btn_prv_month'
+# NXT_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_day > div > div > div.nav_calendar > button.btn_nxt_month'
+# XPATH_DAY = "//*[@id='section_content']//div[contains(@class,'table_calendar')]//button[normalize-space(text())='{day}']"
+
+# HOUR_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_hour > div > button'
+# MIN_BTN = '#section_content > div > div.sc-hz6zmc.eOGmI > div > div.sc-dzen53.hBBcri > div.sc-7nk3kt.bsQxOy > div.timeset_option.timeset_option_minute > div > button'

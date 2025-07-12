@@ -77,7 +77,6 @@ class SpecificCrawling(NaverMapCrawler):
             if dt_year and dt_month:
                 while True:
                     cur = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, CUR_TXT))).text.strip()
-                    # 예: '2025년 6월'
                     y_str, m_str = cur.replace('월', '').split('년')
                     cur_y = int(y_str)
                     cur_m = int(m_str)

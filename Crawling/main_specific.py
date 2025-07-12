@@ -67,6 +67,7 @@ for fx, fy, tx, ty in zip(from_x, from_y, to_x, to_y):
 
     except Exception as e:
         time_transit_specific = None
+        import traceback; traceback.print_exc()
         print(e)
     
     print(f'대중교통 {dt_year}/{dt_month}/{dt_day} {dt_hour:02d}:{dt_minute} 출발 시 소요시간:', time_transit_specific)
