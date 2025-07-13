@@ -16,7 +16,6 @@ def FeatureNormalization(mol_graphs, feat_name):
         else:
             setattr(g, feat_name, (val - features_mean) / features_std)
 
-# 똑같음
 def Z_Score(X):
     """
     z-score 표준화 함수
@@ -44,7 +43,6 @@ def Z_Score(X):
                     X[i, j] = (X[i, j] - means[j]) / stds[j]
     return X
 
-# 똑같음
 def adj_mat_to_edges(adj_mat):
     """
     인접 행렬(adjacency matrix) 을 받아서,
@@ -58,3 +56,12 @@ def adj_mat_to_edges(adj_mat):
                 edges.append((i, j))
 
     return edges
+
+def atoms_to_symbols(atoms):
+    # symbols = []
+
+    # for atom in atoms:
+    #     symbols.append(atom.GetSymbol())
+
+    # return symbols
+    return [atom.GetSymbol() for atom in atoms]

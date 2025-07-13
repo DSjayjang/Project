@@ -107,7 +107,7 @@ class MoleculeDataset_esol:
         # Data Load
         data_mat = np.array(pd.read_csv(self.file_name + '.csv'))
         smiles = data_mat[:, 0]
-        targets = np.array(data_mat[:, 1], dtype = float)
+        targets = np.array(data_mat[:, 1:3], dtype = float)
 
         # Convert each SMILES to DGL grgaph
         for smile, tgt in zip(smiles, targets):

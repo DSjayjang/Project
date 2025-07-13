@@ -12,10 +12,9 @@ def train(model, criterion, optimizer, train_data_loader, max_epochs):
         train_loss = 0
 
         for bg, target in train_data_loader:
-            # device     = next(model.parameters()).device
-            # bg         = bg.to(device)
-            # self_feat  = self_feat.to(device)
-            # target     = target.to(device)
+            device     = next(model.parameters()).device
+            bg         = bg.to(device)
+            target     = target.to(device)
 
             pred = model(bg)
             loss = criterion(pred, target)
@@ -36,10 +35,10 @@ def train_emodel(model, criterion, optimizer, train_data_loader, max_epochs):
         train_loss = 0
 
         for bg, self_feat, target in train_data_loader:
-            # device     = next(model.parameters()).device
-            # bg         = bg.to(device)
-            # self_feat  = self_feat.to(device)
-            # target     = target.to(device)
+            device     = next(model.parameters()).device
+            bg         = bg.to(device)
+            self_feat  = self_feat.to(device)
+            target     = target.to(device)
 
             pred = model(bg, self_feat)
             loss = criterion(pred, target)
@@ -62,10 +61,9 @@ def test(model, criterion, test_data_loader, accs=None):
         correct = 0
 
         for bg, target in test_data_loader:
-            # device     = next(model.parameters()).device
-            # bg         = bg.to(device)
-            # self_feat  = self_feat.to(device)
-            # target     = target.to(device)
+            device     = next(model.parameters()).device
+            bg         = bg.to(device)
+            target     = target.to(device)
 
             pred = model(bg)
             loss = criterion(pred, target)
@@ -102,10 +100,10 @@ def test_emodel(model, criterion, test_data_loader, accs=None):
         correct = 0
 
         for bg, self_feat, target in test_data_loader:
-            # device     = next(model.parameters()).device
-            # bg         = bg.to(device)
-            # self_feat  = self_feat.to(device)
-            # target     = target.to(device)
+            device     = next(model.parameters()).device
+            bg         = bg.to(device)
+            self_feat  = self_feat.to(device)
+            target     = target.to(device)
 
             pred = model(bg, self_feat)
             loss = criterion(pred, target)
