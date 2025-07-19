@@ -14,12 +14,13 @@ r('options(warn=-1)')
 
 nfolds = FloatVector([10])[0]
 nsis = FloatVector([100])[0]
-seed = FloatVector([9])[0]
+seed = FloatVector([100])[0]
 
 family: str = 'gaussian'
-tune: str = 'cv'
-varISIS: str = 'aggr'
-q: float = 0.95
+tune: str = 'aic' # bic / ebic / aic / cv
+penalty: str = 'lasso' # SCAD / MCP / lasso
+varISIS: str = 'vanilla' # vanilla / aggr / cons
+q: float = 1.0
 standardize: bool = False
 
 class ISIS:
@@ -50,7 +51,7 @@ class ISIS:
 
         self.model = self.SIS.SIS(
             X_r, y_r,
-            family = family, tune = tune,
+            family = family, tune = tune, penalty = penalty,
             nfolds = nfolds, nsis = nsis,
             varISIS = varISIS,
             seed = seed, q = q,

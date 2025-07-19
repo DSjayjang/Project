@@ -114,12 +114,12 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
 
-# X_ISIS = df_screening.drop(columns = ['target'])
-# y_ISIS = df_screening['target']
+X_ISIS = df_screening.drop(columns = ['target'])
+y_ISIS = df_screening['target']
 
-# isis
-X_ISIS = df_removed_features.drop(columns = ['target'])
-y_ISIS = df_removed_features['target']
+# # isis
+# X_ISIS = df_removed_features.drop(columns = ['target'])
+# y_ISIS = df_removed_features['target']
 
 
 # train / test split
@@ -134,17 +134,12 @@ scaler.fit(X_train)
 X_train_scaling = scaler.transform(X_train)
 X_test_scaling = scaler.transform(X_test)
 
-iter = 5000
+iter = 10000
 # ElasticNet 모델과 하이퍼파라미터 범위 설정
 en = ElasticNet(max_iter = iter)
-# param_grid = {
-#     'alpha': [0.001, 0.01, 0.1, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0],  # 정규화 강도
-#     'l1_ratio': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]  # L1과 L2 비율
-# }
-
 param_grid = {
-    'alpha': np.logspace(-4, 1, 30),         # 1e-4 ~ 10, 30개 지점
-    'l1_ratio': np.linspace(0.01, 0.9, 20)   # 1% ~ 90% L1 비중
+    'alpha': np.linspace(0.01, 1.0, 100),  # 정규화 강도
+    'l1_ratio': [0.9]  # L1과 L2 비율
 }
 
 kfold = KFold(n_splits = 5, shuffle = True, random_state = SEED)
@@ -198,19 +193,19 @@ print(f"Test   R² : {r2:.4f}")
 n_selected = np.sum(best_en.coef_ != 0)
 print(f"Selected features: {n_selected} / {X_train.shape[1]}")
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
-residuals = y_test - y_pred
+# residuals = y_test - y_pred
 
-plt.scatter(y_pred, residuals)
-plt.axhline(0, color='gray', linestyle='--')
-plt.xlabel("Predicted")
-plt.ylabel("Residuals")
-plt.title("Residual Plot")
-plt.show()
+# plt.scatter(y_pred, residuals)
+# plt.axhline(0, color='gray', linestyle='--')
+# plt.xlabel("Predicted")
+# plt.ylabel("Residuals")
+# plt.title("Residual Plot")
+# plt.show()
 
 # 출력용
-df_screening.describe()
+# df_screening.describe()
 
 
 # 계수가 0인 변수는 제거
