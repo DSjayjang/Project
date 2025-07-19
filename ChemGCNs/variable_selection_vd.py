@@ -138,7 +138,7 @@ iter = 10000
 # ElasticNet 모델과 하이퍼파라미터 범위 설정
 en = ElasticNet(max_iter = iter)
 param_grid = {
-    'alpha': np.linspace(0.01, 1.0, 100),  # 정규화 강도
+    'alpha': np.linspace(0.01, 1.0, 300),  # 정규화 강도
     'l1_ratio': [0.9]  # L1과 L2 비율
 }
 

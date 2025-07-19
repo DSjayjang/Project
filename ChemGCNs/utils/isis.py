@@ -15,11 +15,51 @@ r('options(warn=-1)')
 nfolds = FloatVector([10])[0]
 nsis = FloatVector([100])[0]
 seed = FloatVector([100])[0]
+"""
+family: str = 'gaussian'
+tune: str = 'aic' # bic / ebic / aic / cv
+penalty: str = 'MCP' # SCAD / MCP / lasso
+varISIS: str = 'vanilla' # vanilla / aggr / cons
+q: float = 1.0
+standardize: bool = False
+3개
 
 family: str = 'gaussian'
 tune: str = 'aic' # bic / ebic / aic / cv
 penalty: str = 'lasso' # SCAD / MCP / lasso
 varISIS: str = 'vanilla' # vanilla / aggr / cons
+q: float = 0.5
+standardize: bool = False
+5개
+
+family: str = 'gaussian'
+tune: str = 'cv' # bic / ebic / aic / cv
+penalty: str = 'lasso' # SCAD / MCP / lasso
+varISIS: str = 'vanilla' # vanilla / aggr / cons
+q: float = 1.0
+standardize: bool = False
+최종 2개
+
+family: str = 'gaussian' # gaussian / binomial / poisson / cox
+tune: str = 'bic' # bic / ebic / aic / cv
+penalty: str = 'lasso' # SCAD / MCP / lasso
+varISIS: str = 'aggr' # vanilla / aggr / cons
+q: float = 1.0
+standardize: bool = False
+최종 4개
+
+family: str = 'gaussian' # gaussian / binomial / poisson / cox
+tune: str = 'ebic' # bic / ebic / aic / cv
+penalty: str = 'lasso' # SCAD / MCP / lasso
+varISIS: str = 'aggr' # vanilla / aggr / cons
+q: float = 1.0
+standardize: bool = False
+최종 3개
+"""
+family: str = 'gaussian' # gaussian / binomial / poisson / cox
+tune: str = 'ebic' # bic / ebic / aic / cv
+penalty: str = 'lasso' # SCAD / MCP / lasso
+varISIS: str = 'aggr' # vanilla / aggr / cons
 q: float = 1.0
 standardize: bool = False
 
