@@ -55,7 +55,8 @@ class ISIS:
         self.model = self.SIS.SIS(
             X_r, y_r,
             family = family, tune = tune, penalty = penalty,
-            nfolds = nfolds, nsis = nsis,
+            nfolds = nfolds,
+            # nsis = nsis,
             varISIS = varISIS,
             seed = seed, q = q,
             standardize = standardize)
