@@ -1,6 +1,5 @@
 # ISIS
 import numpy as np
-import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 from rpy2.robjects import r
@@ -16,13 +15,13 @@ hyperparams
 """
 
 nfolds = FloatVector([10])[0]
-nsis = FloatVector([3])[0]
+nsis = FloatVector([100])[0]
 seed = FloatVector([SEED])[0]
 
 family: str = 'gaussian' # gaussian / binomial / poisson / cox
 tune: str = 'cv' # bic / ebic / aic / cv
 penalty: str = 'lasso' # SCAD / MCP / lasso
-varISIS: str = 'vanilla' # vanilla / aggr / cons
+varISIS: str = 'aggr' # vanilla / aggr / cons
 q: float = 1.0
 standardize: bool = False
 
@@ -54,9 +53,11 @@ class ISIS:
 
         self.model = self.SIS.SIS(
             X_r, y_r,
-            family = family, tune = tune, penalty = penalty,
+            family = family,
+            tune = tune,
+            penalty = penalty,
             nfolds = nfolds,
-            # nsis = nsis,
+            nsis = nsis,
             varISIS = varISIS,
             seed = seed, q = q,
             standardize = standardize)
