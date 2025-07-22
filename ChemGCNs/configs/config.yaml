@@ -1,5 +1,5 @@
 SEED: 100
-DATASET: 'datasets\molproperty_vd'
+DATASET: 'datasets\lipo'
 
 BATCH_SIZE: 32
 MAX_EPOCHS: 1

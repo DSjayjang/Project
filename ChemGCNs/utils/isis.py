@@ -21,7 +21,7 @@ seed = FloatVector([SEED])[0]
 family: str = 'gaussian' # gaussian / binomial / poisson / cox
 tune: str = 'cv' # bic / ebic / aic / cv
 penalty: str = 'lasso' # SCAD / MCP / lasso
-varISIS: str = 'aggr' # vanilla / aggr / cons
+varISIS: str = 'vanilla' # vanilla / aggr / cons
 q: float = 1.0
 standardize: bool = False
 
@@ -35,9 +35,6 @@ class ISIS:
 
         self.df = df.copy()
         self.SIS = importr('SIS')
-        self._folds = nfolds
-        self._nsis = nsis
-        self._seed = seed
 
         self._target = 'target'
         self.scaler = StandardScaler()
@@ -57,7 +54,7 @@ class ISIS:
             tune = tune,
             penalty = penalty,
             nfolds = nfolds,
-            nsis = nsis,
+            # nsis = nsis,
             varISIS = varISIS,
             seed = seed, q = q,
             standardize = standardize)
