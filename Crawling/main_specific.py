@@ -8,10 +8,7 @@ from utils import CoordinateTransformer, DatetimeValidator
 from crawler import SpecificCrawling
 
 # Data Load
-os.chdir(r'C:\Users\user\Desktop\연구\5. 국방부 용역과제') # pcrl
-# os.chdir(r'C:\Users\linde\OneDrive\Desktop\3. 연구\5. 국방부 용역과제') # my pc
-# os.chdir(r'C:\Users\linde\Desktop\연구\5. 국방부 용역') # laptop
-df = pd.read_csv('DB.csv')
+df = pd.read_csv('.\datasets\db_sample.csv')
 
 """
 # 조회할 시간대 선택
@@ -44,10 +41,10 @@ from_lat, from_lon: list
 to_lat, to_lon: list
 : 목적지 위도, 경도
 """
-from_lat = df['Latitude'][:3].to_numpy()
-from_lon = df['Longitude'][:3].to_numpy()
-to_lat = df['Latitude'][4:7].to_numpy()
-to_lon = df['Longitude'][4:7].to_numpy()
+from_lat = df['start_lat'][:2].to_numpy()
+from_lon = df['start_lng'][:2].to_numpy()
+to_lat = df['mid_lat'][:2].to_numpy()
+to_lon = df['mid_lng'][:2].to_numpy()
 
 # 1. 좌표 변환
 ct = CoordinateTransformer()
@@ -86,4 +83,4 @@ crawler.close() # 크롤링 종료
 df_result = pd.DataFrame(records)
 print(df_result)
 
-df_result.to_csv('df_specific.csv', index = False, na_rep = 'None', encoding = 'cp949')
+df_result.to_csv(r'.\results\df_specific.csv', index = False, na_rep = 'None', encoding = 'cp949')

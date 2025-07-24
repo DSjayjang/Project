@@ -1,6 +1,7 @@
 from pyproj import Transformer
 import calendar
 from typing import ClassVar, Set
+import requests
 
 class CoordinateTransformer:
     """
@@ -48,3 +49,27 @@ class DatetimeValidator:
         # 분(min) 검사
         if minute not in cls.ALLOWED_MINUTES:
             raise ValueError(f'잘못된 분 입력: minute={minute} ({cls.ALLOWED_MINUTES} 중 하나 입력)')
+
+def geocoding(address: list):
+    url = "https://maps.apigw.ntruss.com/map-geocode/v2/geocode"
+    
+    headers = {
+        "x-ncp-apigw-api-key-id": "oa77i9oz1h",
+        "x-ncp-apigw-api-key": "xvC9h8wAZLXjsokASCSKjLfNJ5uR63sKBGz705KA",
+        "Accept": "application/json"
+    }
+
+    params = {"query": address}
+    resp = requests.get(url, headers = headers, params = params)
+    resp.raise_for_status()
+    data = resp.json()
+
+    if data.get('addresses'):
+        lat = float(data['addresses'][0]['y']) # 위도
+        lng = float(data['addresses'][0]['x']) # 경도  
+        return lat, lng
+    
+    else:
+        lat = None
+        lng = None
+        return lat, lng
