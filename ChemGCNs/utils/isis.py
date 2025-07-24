@@ -27,8 +27,7 @@ standardize: bool = False
 
 class ISIS:
     """
-    rpy2를 이용해 R SIS 패키지의 SIS 함수를 호출하여 
-    변수 선택(Feature Screening)을 수행하는 클래스.
+    rpy2로 R SIS 패키지의 SIS 함수 호출
     """
     def __init__(self, df):
         pandas2ri.activate()
