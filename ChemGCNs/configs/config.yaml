@@ -1,5 +1,5 @@
 SEED: 100
-DATASET: 'datasets\molproperty_bp'
+DATASET: 'datasets\molproperty_lp'
 
 BATCH_SIZE: 32
 MAX_EPOCHS: 1
