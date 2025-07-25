@@ -15,7 +15,7 @@ hyperparams
 """
 
 nfolds = FloatVector([10])[0]
-nsis = FloatVector([100])[0]
+nsis = FloatVector([10])[0]
 seed = FloatVector([SEED])[0]
 
 family: str = 'gaussian' # gaussian / binomial / poisson / cox
