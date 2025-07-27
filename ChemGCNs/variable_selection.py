@@ -96,7 +96,6 @@ num_removed_features = df_removed_features.shape[1] - 1  # logvp 열 제외
 print("제거 후 남은 feature 개수:", num_removed_features, '\n')
 print(df_removed_features.shape)
 
-df_removed_features
 
 
 # ISIS
