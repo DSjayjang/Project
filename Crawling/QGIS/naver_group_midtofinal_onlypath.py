@@ -4,12 +4,12 @@ from datetime import datetime, timedelta
 import time
 
 # 네이버 API 키
-NAVER_CLIENT_ID = "tz8id9y25w"
-NAVER_CLIENT_SECRET = "Ay1Vbs4T4xsJ3Lcmocgp7WydodixFWaU2vJL4XYz"
+NAVER_CLIENT_ID = "oa77i9oz1h"
+NAVER_CLIENT_SECRET = "xvC9h8wAZLXjsokASCSKjLfNJ5uR63sKBGz705KA"
 
 # 범위
 START_ROW = 0
-END_ROW = 2
+END_ROW = 1128
 
 def parse_datetime(time_str):
     try:
@@ -40,7 +40,7 @@ def run_simulation():
     paths_by_num = {}
 
     for _, row in df.iterrows():
-        num = int(row["index"])
+        num = int(row["idx"])
         start_lat, start_lng = row["mid_lat"], row["mid_lng"]
         end_lat, end_lng = row["end_lat"], row["end_lng"]
 
