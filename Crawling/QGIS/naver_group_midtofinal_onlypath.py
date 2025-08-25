@@ -7,9 +7,12 @@ import time
 NAVER_CLIENT_ID = "oa77i9oz1h"
 NAVER_CLIENT_SECRET = "xvC9h8wAZLXjsokASCSKjLfNJ5uR63sKBGz705KA"
 
-# 범위
-START_ROW = 0
-END_ROW = 1128
+# 날짜
+day = 2
+
+# # 범위
+# START_ROW = 0
+# END_ROW = 1000
 
 def parse_datetime(time_str):
     try:
@@ -34,7 +37,7 @@ def call_naver_api(start_lat, start_lng, end_lat, end_lng):
     return res.json()
 
 def run_simulation():
-    df = pd.read_csv(r".\QGIS\df_path.csv", encoding = 'cp949').iloc[START_ROW:END_ROW]
+    df = pd.read_csv(fr".\QGIS\df_path_{day}.csv", encoding = 'cp949')#.iloc[START_ROW:END_ROW]
 
     # num -> [ "lon,lat", "lon,lat", ... ] 형태로 저장
     paths_by_num = {}
@@ -77,7 +80,8 @@ def run_simulation():
         rows.append(row_dict)
 
     out_df = pd.DataFrame(rows, columns=[str(n) for n in nums_sorted])
-    out_name = f"naver_paths_matrix_{START_ROW}_{END_ROW}.csv"
+    # out_name = f"naver_paths_matrix_{day}_{START_ROW}_{END_ROW}.csv"
+    out_name = f"naver_paths_matrix_{day}.csv"
     out_df.to_csv(out_name, index=False, encoding="utf-8-sig")
     print("📁 저장 완료:", out_name)
 
