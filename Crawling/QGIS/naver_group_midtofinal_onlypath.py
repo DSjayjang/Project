@@ -8,7 +8,6 @@ NAVER_CLIENT_ID = "oa77i9oz1h"
 NAVER_CLIENT_SECRET = "xvC9h8wAZLXjsokASCSKjLfNJ5uR63sKBGz705KA"
 
 # 날짜
-day = 2
 
 # # 범위
 # START_ROW = 0
@@ -36,8 +35,8 @@ def call_naver_api(start_lat, start_lng, end_lat, end_lng):
     res.raise_for_status()
     return res.json()
 
-def run_simulation():
-    df = pd.read_csv(fr".\QGIS\df_path_{day}.csv", encoding = 'cp949')#.iloc[START_ROW:END_ROW]
+def run_simulation(day, hour):
+    df = pd.read_csv(fr".\datasets\df_path\df_path_{day}_{hour}.csv", encoding = 'cp949')#.iloc[START_ROW:END_ROW]
 
     # num -> [ "lon,lat", "lon,lat", ... ] 형태로 저장
     paths_by_num = {}
@@ -81,9 +80,16 @@ def run_simulation():
 
     out_df = pd.DataFrame(rows, columns=[str(n) for n in nums_sorted])
     # out_name = f"naver_paths_matrix_{day}_{START_ROW}_{END_ROW}.csv"
-    out_name = f"naver_paths_matrix_{day}.csv"
+    out_name = fr".\results\paths_matrix\naver_paths_matrix_{day}_{hour}.csv"
     out_df.to_csv(out_name, index=False, encoding="utf-8-sig")
     print("📁 저장 완료:", out_name)
 
 if __name__ == "__main__":
-    run_simulation()
+    for day in range(1, 31):
+        for hour in range(0, 23):
+
+            try:
+                run_simulation(day=day, hour=hour)
+            except FileNotFoundError:
+                print(f"⚠️ 파일 없음: geo_group_midtofinal_{day}_{hour}.csv → 건너뜀")
+                continue
