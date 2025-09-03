@@ -34,17 +34,17 @@ def main():
     model_EGCN_S = EGCN.Net(dim_atomic_feat, 1, 2).to(device)
     model_EGCN = EGCN.Net(dim_atomic_feat, 1, 3).to(device)
 
-    model_CFGCN3 = CFGCN_3.Net(dim_atomic_feat, 1, 3).to(device)
-    model_CFGCN5 = CFGCN_5.Net(dim_atomic_feat, 1, 5).to(device)
-    model_CFGCN7 = CFGCN_7.Net(dim_atomic_feat, 1, 7).to(device)
-    model_CFGCN10 = CFGCN_10.Net(dim_atomic_feat, 1, 10).to(device)
-    model_CFGCN20 = CFGCN_20.Net(dim_atomic_feat, 1, 20).to(device)
+    # model_CFGCN3 = CFGCN_3.Net(dim_atomic_feat, 1, 3).to(device)
+    # model_CFGCN5 = CFGCN_5.Net(dim_atomic_feat, 1, 5).to(device)
+    # model_CFGCN7 = CFGCN_7.Net(dim_atomic_feat, 1, 7).to(device)
+    # model_CFGCN10 = CFGCN_10.Net(dim_atomic_feat, 1, 10).to(device)
+    # model_CFGCN20 = CFGCN_20.Net(dim_atomic_feat, 1, 20).to(device)
 
-    model_KFGCN3 = KFGCN_3.Net(dim_atomic_feat, 1, 3).to(device)
-    model_KFGCN5 = KFGCN_5.Net(dim_atomic_feat, 1, 5).to(device)
-    model_KFGCN7 = KFGCN_7.Net(dim_atomic_feat, 1, 7).to(device)
-    model_KFGCN10 = KFGCN_10.Net(dim_atomic_feat, 1, 10).to(device)
-    model_KFGCN20 = KFGCN_20.Net(dim_atomic_feat, 1, 20).to(device)
+    # model_KFGCN3 = KFGCN_3.Net(dim_atomic_feat, 1, 3).to(device)
+    # model_KFGCN5 = KFGCN_5.Net(dim_atomic_feat, 1, 5).to(device)
+    # model_KFGCN7 = KFGCN_7.Net(dim_atomic_feat, 1, 7).to(device)
+    # model_KFGCN10 = KFGCN_10.Net(dim_atomic_feat, 1, 10).to(device)
+    # model_KFGCN20 = KFGCN_20.Net(dim_atomic_feat, 1, 20).to(device)
 
     # define loss function
     criterion = nn.L1Loss(reduction='sum')
@@ -66,38 +66,38 @@ def main():
     print('test loss (EGCN): ' + str(test_losses['EGCN']))
 
 
-    print('--------- CFGCN ---------')
-    test_losses['CFGCN3'] = trainer.cross_validation(dataset, model_CFGCN3, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_3)
-    print('test loss (CFGCN3): ' + str(test_losses['CFGCN3']))
+    # print('--------- CFGCN ---------')
+    # test_losses['CFGCN3'] = trainer.cross_validation(dataset, model_CFGCN3, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_3)
+    # print('test loss (CFGCN3): ' + str(test_losses['CFGCN3']))
 
-    test_losses['CFGCN5'] = trainer.cross_validation(dataset, model_CFGCN5, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_5)
-    print('test loss (CFGCN5): ' + str(test_losses['CFGCN5']))
+    # test_losses['CFGCN5'] = trainer.cross_validation(dataset, model_CFGCN5, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_5)
+    # print('test loss (CFGCN5): ' + str(test_losses['CFGCN5']))
 
-    test_losses['CFGCN7'] = trainer.cross_validation(dataset, model_CFGCN7, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_7)
-    print('test loss (CFGCN7): ' + str(test_losses['CFGCN7']))
+    # test_losses['CFGCN7'] = trainer.cross_validation(dataset, model_CFGCN7, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_7)
+    # print('test loss (CFGCN7): ' + str(test_losses['CFGCN7']))
 
-    test_losses['CFGCN10'] = trainer.cross_validation(dataset, model_CFGCN10, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_10)
-    print('test loss (CFGCN10): ' + str(test_losses['CFGCN10']))
+    # test_losses['CFGCN10'] = trainer.cross_validation(dataset, model_CFGCN10, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_10)
+    # print('test loss (CFGCN10): ' + str(test_losses['CFGCN10']))
 
-    test_losses['CFGCN20'] = trainer.cross_validation(dataset, model_CFGCN20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_20)
-    print('test loss (CFGCN20): ' + str(test_losses['CFGCN20']))
+    # test_losses['CFGCN20'] = trainer.cross_validation(dataset, model_CFGCN20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_20)
+    # print('test loss (CFGCN20): ' + str(test_losses['CFGCN20']))
 
 
-    print('--------- KFGCN ---------')
-    test_losses['KFGCN3'] = trainer.cross_validation(dataset, model_KFGCN3, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_3)
-    print('test loss (KFGCN3): ' + str(test_losses['KFGCN3']))
+    # print('--------- KFGCN ---------')
+    # test_losses['KFGCN3'] = trainer.cross_validation(dataset, model_KFGCN3, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_3)
+    # print('test loss (KFGCN3): ' + str(test_losses['KFGCN3']))
 
-    test_losses['KFGCN5'] = trainer.cross_validation(dataset, model_KFGCN5, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_5)
-    print('test loss (KFGCN5): ' + str(test_losses['KFGCN5']))
+    # test_losses['KFGCN5'] = trainer.cross_validation(dataset, model_KFGCN5, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_5)
+    # print('test loss (KFGCN5): ' + str(test_losses['KFGCN5']))
 
-    test_losses['KFGCN7'] = trainer.cross_validation(dataset, model_KFGCN7, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_7)
-    print('test loss (KFGCN7): ' + str(test_losses['KFGCN7']))
+    # test_losses['KFGCN7'] = trainer.cross_validation(dataset, model_KFGCN7, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_7)
+    # print('test loss (KFGCN7): ' + str(test_losses['KFGCN7']))
 
-    test_losses['KFGCN10'] = trainer.cross_validation(dataset, model_KFGCN10, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_10)
-    print('test loss (KFGCN10): ' + str(test_losses['KFGCN10']))
+    # test_losses['KFGCN10'] = trainer.cross_validation(dataset, model_KFGCN10, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_10)
+    # print('test loss (KFGCN10): ' + str(test_losses['KFGCN10']))
 
-    test_losses['KFGCN20'] = trainer.cross_validation(dataset, model_KFGCN20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_20)
-    print('test loss (KFGCN20): ' + str(test_losses['KFGCN20']))
+    # test_losses['KFGCN20'] = trainer.cross_validation(dataset, model_KFGCN20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, collate_kfgcn_esol_20)
+    # print('test loss (KFGCN20): ' + str(test_losses['KFGCN20']))
 
     print(test_losses)
 
