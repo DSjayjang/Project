@@ -4,7 +4,7 @@ CNN,3.91
 C(=O)O,3.75
 CCl,8.37
 CN,7.88
-C=CCl,8.0
+C=CCl,8
 CN(C)C,7.38
 CC1CO1,6.29
 CCC(=O)C,4.51
@@ -31,7 +31,7 @@ OS(=O)(=O)O,-9.73
 [N+](=O)(O)[O-],4.14
 P(Cl)(Cl)Cl,4.79
 ClCl,8.67
-OS(=O)(=O)Cl,0.0
+OS(=O)(=O)Cl,0
 C[N+](=O)[O-],3.58
 C1N2CN3CN1CN(C2)C3,-7.4
 OO,0.68
