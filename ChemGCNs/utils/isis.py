@@ -14,6 +14,8 @@ r('options(warn=-1)')
 hyperparams
 """
 
+# 40개 >> 28개: 성능 X
+
 nfolds = FloatVector([10])[0]
 nsis = FloatVector([40])[0]
 seed = FloatVector([SEED])[0]
@@ -53,7 +55,7 @@ class ISIS:
             tune = tune,
             penalty = penalty,
             nfolds = nfolds,
-            nsis = nsis,
+            # nsis = nsis,
             varISIS = varISIS,
             seed = seed, q = q,
             standardize = standardize)
