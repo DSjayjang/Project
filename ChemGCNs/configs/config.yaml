@@ -1,5 +1,5 @@
 SEED: 100
-DATASET: 'datasets\VP' # freesolv / esol / lipo / logvp / VP
+DATASET: 'datasets\esol' # freesolv / esol / lipo / logvp / VP
 
 BATCH_SIZE: 32
 MAX_EPOCHS: 1
