@@ -70,6 +70,13 @@ def atoms_to_symbols(atoms):
     # return symbols
     return [atom.GetSymbol() for atom in atoms]
 
+def weight_reset(m):
+    """
+    weight reset ?!
+    """
+    if hasattr(m, 'reset_parameters'):
+        m.reset_parameters()
+
 """
 for variable selection
 """
