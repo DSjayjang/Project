@@ -6,9 +6,9 @@ from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# GCN, GAT용
+# for GCN, GAT
 def train_model_gcn(model, criterion, optimizer, train_data_loader, max_epochs):   
-    train_losses = [] # Train loss 저장
+    train_losses = []
     model.train()
 
     for epoch in range(0, max_epochs):
@@ -23,15 +23,16 @@ def train_model_gcn(model, criterion, optimizer, train_data_loader, max_epochs):
             train_loss += loss.detach().item()
 
         train_loss /= len(train_data_loader.dataset)
-        train_losses.append(train_loss)  # Save loss for this epoch
+        train_losses.append(train_loss)
 
         print('Epoch {}, train loss {:.4f}'.format(epoch + 1, train_loss))
 
-    return train_losses  # Epoch별 train loss, valid loss 반환 
+    return train_losses
 
+
+# for EGCN, CONCAT_DS, KROVEX
 def train_model(model, criterion, optimizer, train_data_loader, max_epochs):
-
-    train_losses = [] # Train loss 저장
+    train_losses = []
     model.train()
 
     for epoch in range(0, max_epochs):
@@ -46,13 +47,14 @@ def train_model(model, criterion, optimizer, train_data_loader, max_epochs):
             train_loss += loss.detach().item()
 
         train_loss /= len(train_data_loader.dataset)
-        train_losses.append(train_loss)  # Save loss for this epoch
+        train_losses.append(train_loss)
 
         print('Epoch {}, train loss {:.4f}'.format(epoch + 1, train_loss))
 
-    return train_losses  # Epoch별 train loss, valid loss 반환 
+    return train_losses
 
-# GCN, GAT용
+
+# for GCN, GAT
 def collect_train_preds_gcn(model, criterion, train_data_loader):
     preds = None
     model.eval()
@@ -61,7 +63,6 @@ def collect_train_preds_gcn(model, criterion, train_data_loader):
 
     with torch.no_grad():
         train_loss = 0
-        correct = 0
 
         for bg, target in train_data_loader:
             pred = model(bg)
@@ -79,9 +80,10 @@ def collect_train_preds_gcn(model, criterion, train_data_loader):
 
     preds = preds.cpu().numpy()
     targets = targets.cpu().numpy()
-    # self_feats = self_feats.cpu().numpy()
     np.savetxt('result_train.csv', np.concatenate((targets, preds), axis=1), delimiter=',')
 
+
+# for EGCN, CONCAT_DS, KROVEX
 def collect_train_preds(model, criterion, train_data_loader):
     preds = None
     model.eval()
@@ -91,7 +93,6 @@ def collect_train_preds(model, criterion, train_data_loader):
 
     with torch.no_grad():
         train_loss = 0
-        correct = 0
 
         for bg, self_feat, target in train_data_loader:
             pred = model(bg, self_feat)
@@ -107,9 +108,6 @@ def collect_train_preds(model, criterion, train_data_loader):
                 targets = torch.cat((targets, target), dim=0)
                 self_feats = torch.cat((self_feats, self_feat), dim=0)
 
-            # if accs is not None:
-            #     correct += torch.eq(torch.max(pred, dim=1)[1], target).sum().item()
-
         train_loss /= len(train_data_loader.dataset)
 
     preds = preds.cpu().numpy()
@@ -118,12 +116,11 @@ def collect_train_preds(model, criterion, train_data_loader):
     np.savetxt('result_train.csv', np.concatenate((targets, preds, self_feats), axis=1), delimiter=',')
 
 
-
-# GCN, GAT용
+# for GCN, GAT
 def final_train_model_gcn(model, criterion, optimizer, train_data_loader, max_epochs):
-    preds = None # pred 저장
+    preds = None
 
-    train_losses = [] # Train loss 저장
+    train_losses = []
     model.train()
 
     for epoch in range(0, max_epochs):
@@ -137,33 +134,30 @@ def final_train_model_gcn(model, criterion, optimizer, train_data_loader, max_ep
             optimizer.step()
             train_loss += loss.detach().item()
 
-            # new
             if preds is None:
                 preds = pred.clone().detach()
                 targets = target.clone().detach()
-                # self_feats = self_feat.clone().detach()
             else:
                 preds = torch.cat((preds, pred), dim=0)
                 targets = torch.cat((targets, target), dim=0)
 
         train_loss /= len(train_data_loader.dataset)
-        train_losses.append(train_loss)  # Save loss for this epoch
+        train_losses.append(train_loss)
 
         print('Epoch {}, train loss {:.4f}'.format(epoch + 1, train_loss))
 
     preds = preds.detach().cpu().numpy()
     targets = targets.cpu().numpy()
-
     np.savetxt('result_train.csv', np.concatenate((targets, preds), axis=1), delimiter=',')
 
-    return train_losses  # Epoch별 train loss, valid loss 반환 
+    return train_losses
 
 
-
+# for EGCN, CONCAT_DS, KROVEX
 def final_train_model(model, criterion, optimizer, train_data_loader, max_epochs):
-    preds = None # pred 저장
+    preds = None
 
-    train_losses = [] # Train loss 저장
+    train_losses = []
     model.train()
 
     for epoch in range(0, max_epochs):
@@ -177,7 +171,6 @@ def final_train_model(model, criterion, optimizer, train_data_loader, max_epochs
             optimizer.step()
             train_loss += loss.detach().item()
 
-            # new
             if preds is None:
                 preds = pred.clone().detach()
                 targets = target.clone().detach()
@@ -186,10 +179,9 @@ def final_train_model(model, criterion, optimizer, train_data_loader, max_epochs
                 preds = torch.cat((preds, pred), dim=0)
                 targets = torch.cat((targets, target), dim=0)
                 self_feats = torch.cat((self_feats, self_feat), dim=0)
-            # new
 
         train_loss /= len(train_data_loader.dataset)
-        train_losses.append(train_loss)  # Save loss for this epoch
+        train_losses.append(train_loss)
 
         print('Epoch {}, train loss {:.4f}'.format(epoch + 1, train_loss))
 
@@ -198,19 +190,19 @@ def final_train_model(model, criterion, optimizer, train_data_loader, max_epochs
     self_feats = self_feats.cpu().numpy()
     np.savetxt('result_train.csv', np.concatenate((targets, preds, self_feats), axis=1), delimiter=',')
 
-    return train_losses  # Epoch별 train loss, valid loss 반환 
+    return train_losses
 
-# GCN, GAT용
+
+# for GCN, GAT
 def val_model_gcn(model, criterion, val_data_loader, k):
     preds = None
     model.eval()
 
     targets = None
-    # self_feats = None
 
     with torch.no_grad():
         val_loss = 0
-        correct = 0
+        # correct = 0
 
         for bg, target in val_data_loader:
             pred = model(bg)
@@ -235,6 +227,7 @@ def val_model_gcn(model, criterion, val_data_loader, k):
     return val_loss, preds
 
 
+# for EGCN, CONCAT_DS, KROVEX
 def val_model(model, criterion, val_data_loader, k):
     preds = None
     model.eval()
@@ -244,7 +237,6 @@ def val_model(model, criterion, val_data_loader, k):
 
     with torch.no_grad():
         val_loss = 0
-        correct = 0
 
         for bg, self_feat, target in val_data_loader:
             pred = model(bg, self_feat)
@@ -269,6 +261,7 @@ def val_model(model, criterion, val_data_loader, k):
     self_feats = self_feats.cpu().numpy()
 
     return val_loss, preds
+
 
 def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epochs, train, val, collate):
     num_data_points = len(dataset)
@@ -345,7 +338,8 @@ def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epoch
 
     return np.mean(val_losses), best_model, best_k
 
-# 최종 test용 / GCN, GAT용
+
+# for GCN, GAT
 def test_model_gcn(model, criterion, test_data_loader):
     preds = None
     model.eval()
@@ -354,7 +348,7 @@ def test_model_gcn(model, criterion, test_data_loader):
 
     with torch.no_grad():
         test_loss = 0
-        correct = 0
+        # correct = 0
 
         for bg, target in test_data_loader:
             pred = model(bg)
@@ -377,7 +371,7 @@ def test_model_gcn(model, criterion, test_data_loader):
     return test_loss, preds
 
 
-# 최종 test용
+# for EGCN, CONCAT_DS, KROVEX
 def test_model(model, criterion, test_data_loader):
     preds = None
     model.eval()
@@ -387,7 +381,7 @@ def test_model(model, criterion, test_data_loader):
 
     with torch.no_grad():
         test_loss = 0
-        correct = 0
+        # correct = 0
 
         for bg, self_feat, target in test_data_loader:
             pred = model(bg, self_feat)

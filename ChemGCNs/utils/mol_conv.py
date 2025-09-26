@@ -3,13 +3,11 @@ import pandas as pd
 import torch
 import rdkit.Chem.Descriptors as dsc
 
-from utils.mol_props import load_atomic_props
 from utils.utils import FeatureNormalization
 from utils.mol_graph import smiles_to_mol_graph
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# 이것을 이제 DATASET을 입력받는 클래스로 만들어야 함
 def read_dataset(file_name):
     samples = []
     mol_graphs = []
@@ -34,19 +32,109 @@ def read_dataset(file_name):
 
     return samples
 
-def read_dataset_esol(file_name):
+# freesolv
+def read_dataset_freesolv(file_name):
     samples = []
     mol_graphs = []
     data_mat = np.array(pd.read_csv(file_name))
     smiles = data_mat[:, 0]
-#    target = np.array(data_mat[:, 1:3], dtype=np.float)
     target = np.array(data_mat[:, 1:3], dtype=float)
 
     for i in range(0, data_mat.shape[0]):
         mol, mol_graph = smiles_to_mol_graph(smiles[i])
 
         if mol is not None and mol_graph is not None:
-            ####################################################
+            # 1
+            mol_graph.NHOHCount = dsc.NHOHCount(mol)
+            mol_graph.SlogP_VSA2 = dsc.SlogP_VSA2(mol)
+            mol_graph.SlogP_VSA10 = dsc.SlogP_VSA10(mol)
+            mol_graph.NumAromaticRings = dsc.NumAromaticRings(mol)
+            mol_graph.MaxEStateIndex = dsc.MaxEStateIndex(mol)
+            # 6
+            mol_graph.PEOE_VSA14 = dsc.PEOE_VSA14(mol)
+            mol_graph.fr_Ar_NH = dsc.fr_Ar_NH(mol)
+            mol_graph.SMR_VSA3 = dsc.SMR_VSA3(mol)
+            mol_graph.SMR_VSA7 = dsc.SMR_VSA7(mol)
+            mol_graph.SlogP_VSA5 = dsc.SlogP_VSA5(mol)
+            # 11
+            mol_graph.VSA_EState8 = dsc.VSA_EState8(mol)
+            mol_graph.MaxAbsEStateIndex = dsc.MaxAbsEStateIndex(mol)
+            mol_graph.PEOE_VSA2 = dsc.PEOE_VSA2(mol)
+            mol_graph.fr_Nhpyrrole = dsc.fr_Nhpyrrole(mol)
+            mol_graph.fr_amide = dsc.fr_amide(mol)
+            # 16
+            mol_graph.SlogP_VSA3 = dsc.SlogP_VSA3(mol)
+            mol_graph.BCUT2D_MRHI = dsc.BCUT2D_MRHI(mol)
+            mol_graph.fr_nitrile = dsc.fr_nitrile(mol)
+            mol_graph.MolLogP = dsc.MolLogP(mol)
+            mol_graph.PEOE_VSA10 = dsc.PEOE_VSA10(mol)
+            # 21
+            mol_graph.MinPartialCharge = dsc.MinPartialCharge(mol)
+            mol_graph.fr_Al_OH = dsc.fr_Al_OH(mol)
+            mol_graph.fr_sulfone = dsc.fr_sulfone(mol)
+            mol_graph.fr_Al_COO = dsc.fr_Al_COO(mol)
+            mol_graph.fr_nitro_arom_nonortho = dsc.fr_nitro_arom_nonortho(mol)
+            # 26
+            mol_graph.fr_imidazole = dsc.fr_imidazole(mol)
+            mol_graph.fr_ketone_Topliss = dsc.fr_ketone_Topliss(mol)
+            mol_graph.PEOE_VSA7 = dsc.PEOE_VSA7(mol)
+            mol_graph.fr_alkyl_halide = dsc.fr_alkyl_halide(mol)
+            mol_graph.NumSaturatedHeterocycles = dsc.NumSaturatedHeterocycles(mol)
+            # 31
+            mol_graph.fr_methoxy = dsc.fr_methoxy(mol)
+            mol_graph.fr_phos_acid = dsc.fr_phos_acid(mol)
+            mol_graph.fr_pyridine = dsc.fr_pyridine(mol)
+            mol_graph.MinAbsEStateIndex = dsc.MinAbsEStateIndex(mol)
+            mol_graph.fr_para_hydroxylation = dsc.fr_para_hydroxylation(mol)
+            # 36
+            mol_graph.fr_phos_ester = dsc.fr_phos_ester(mol)
+            mol_graph.NumAromaticHeterocycles = dsc.NumAromaticHeterocycles(mol)
+            mol_graph.PEOE_VSA8 = dsc.PEOE_VSA8(mol)
+            mol_graph.fr_Ndealkylation2 = dsc.fr_Ndealkylation2(mol)
+            mol_graph.PEOE_VSA5 = dsc.PEOE_VSA5(mol)
+            # 41
+            mol_graph.fr_aryl_methyl = dsc.fr_aryl_methyl(mol)
+            mol_graph.NumHDonors = dsc.NumHDonors(mol)
+            mol_graph.fr_imide = dsc.fr_imide(mol)
+            mol_graph.fr_priamide = dsc.fr_priamide(mol)
+            mol_graph.RingCount = dsc.RingCount(mol)
+            # 46
+            mol_graph.SlogP_VSA8 = dsc.SlogP_VSA8(mol)
+            mol_graph.VSA_EState4 = dsc.VSA_EState4(mol)
+            mol_graph.SMR_VSA5 = dsc.SMR_VSA5(mol)
+            mol_graph.FpDensityMorgan3 = dsc.FpDensityMorgan3(mol)
+            mol_graph.FractionCSP3 = dsc.FractionCSP3(mol)
+
+            samples.append((mol_graph, target[i]))
+            mol_graphs.append(mol_graph)
+
+    for feat in ['NHOHCount', 'SlogP_VSA2', 'SlogP_VSA10', 'NumAromaticRings', 'MaxEStateIndex', 
+                'PEOE_VSA14', 'fr_Ar_NH', 'SMR_VSA3', 'SMR_VSA7', 'SlogP_VSA5', 
+                'VSA_EState8', 'MaxAbsEStateIndex', 'PEOE_VSA2', 'fr_Nhpyrrole', 'fr_amide', 
+                'SlogP_VSA3', 'BCUT2D_MRHI', 'fr_nitrile', 'MolLogP', 'PEOE_VSA10', 
+                'MinPartialCharge', 'fr_Al_OH', 'fr_sulfone', 'fr_Al_COO', 'fr_nitro_arom_nonortho', 
+                'fr_imidazole', 'fr_ketone_Topliss', 'PEOE_VSA7', 'fr_alkyl_halide', 'NumSaturatedHeterocycles', 
+                'fr_methoxy', 'fr_phos_acid', 'fr_pyridine', 'MinAbsEStateIndex', 'fr_para_hydroxylation', 
+                'fr_phos_ester', 'NumAromaticHeterocycles', 'PEOE_VSA8', 'fr_Ndealkylation2', 'PEOE_VSA5', 
+                'fr_aryl_methyl', 'NumHDonors', 'fr_imide', 'fr_priamide', 'RingCount', 
+                'SlogP_VSA8', 'VSA_EState4', 'SMR_VSA5', 'FpDensityMorgan3', 'FractionCSP3']:
+        FeatureNormalization(mol_graphs, feat)
+
+    return samples
+
+
+# esol
+def read_dataset_esol(file_name):
+    samples = []
+    mol_graphs = []
+    data_mat = np.array(pd.read_csv(file_name))
+    smiles = data_mat[:, 0]
+    target = np.array(data_mat[:, 1:3], dtype=float)
+
+    for i in range(0, data_mat.shape[0]):
+        mol, mol_graph = smiles_to_mol_graph(smiles[i])
+
+        if mol is not None and mol_graph is not None:
             # 1
             mol_graph.MolLogP = dsc.MolLogP(mol)
             mol_graph.MaxAbsPartialCharge = dsc.MaxAbsPartialCharge(mol)
@@ -124,93 +212,26 @@ def read_dataset_esol(file_name):
             mol_graph.SMR_VSA2 = dsc.SMR_VSA2(mol)
             mol_graph.fr_lactone = dsc.fr_lactone(mol)
 
-            ####################################################
-
             samples.append((mol_graph, target[i]))
             mol_graphs.append(mol_graph)
 
-    ####################################################
-    # 1
-    FeatureNormalization(mol_graphs, 'MolLogP')
-    FeatureNormalization(mol_graphs, 'MaxAbsPartialCharge')
-    FeatureNormalization(mol_graphs, 'MaxEStateIndex')
-    FeatureNormalization(mol_graphs, 'SMR_VSA10')
-    FeatureNormalization(mol_graphs, 'Kappa2')
-    # 6
-    FeatureNormalization(mol_graphs, 'BCUT2D_MWLOW')
-    FeatureNormalization(mol_graphs, 'PEOE_VSA13')
-    FeatureNormalization(mol_graphs, 'MinAbsPartialCharge')
-    FeatureNormalization(mol_graphs, 'BCUT2D_CHGHI')
-    FeatureNormalization(mol_graphs, 'PEOE_VSA6')
-    # 11
-    FeatureNormalization(mol_graphs, 'SlogP_VSA1')
-    FeatureNormalization(mol_graphs, 'fr_nitro')
-    FeatureNormalization(mol_graphs, 'BalabanJ')
-    FeatureNormalization(mol_graphs, 'SMR_VSA9')
-    FeatureNormalization(mol_graphs, 'fr_alkyl_halide')
-    # 16
-    FeatureNormalization(mol_graphs, 'fr_hdrzine')
-    FeatureNormalization(mol_graphs, 'PEOE_VSA8')
-    FeatureNormalization(mol_graphs, 'fr_Ar_NH')
-    FeatureNormalization(mol_graphs, 'fr_imidazole')
-    FeatureNormalization(mol_graphs, 'fr_Nhpyrrole')
-    # 21
-    FeatureNormalization(mol_graphs, 'EState_VSA5')
-    FeatureNormalization(mol_graphs, 'PEOE_VSA4')
-    FeatureNormalization(mol_graphs, 'fr_ester')
-    FeatureNormalization(mol_graphs, 'PEOE_VSA2')
-    FeatureNormalization(mol_graphs, 'NumAromaticCarbocycles')
-    # 26
-    FeatureNormalization(mol_graphs, 'BCUT2D_LOGPHI')
-    FeatureNormalization(mol_graphs, 'EState_VSA11')
-    FeatureNormalization(mol_graphs, 'fr_furan')
-    FeatureNormalization(mol_graphs, 'EState_VSA2')
-    FeatureNormalization(mol_graphs, 'fr_benzene')
-    # 31
-    FeatureNormalization(mol_graphs, 'fr_sulfide')
-    FeatureNormalization(mol_graphs, 'fr_aryl_methyl')
-    FeatureNormalization(mol_graphs, 'SlogP_VSA10')
-    FeatureNormalization(mol_graphs, 'HeavyAtomMolWt')
-    FeatureNormalization(mol_graphs, 'fr_nitro_arom_nonortho')
-    # 36
-    FeatureNormalization(mol_graphs, 'FpDensityMorgan2')
-    FeatureNormalization(mol_graphs, 'EState_VSA8')
-    FeatureNormalization(mol_graphs, 'fr_bicyclic')
-    FeatureNormalization(mol_graphs, 'fr_aniline')
-    FeatureNormalization(mol_graphs, 'fr_allylic_oxid')
-    # 41
-    FeatureNormalization(mol_graphs, 'fr_C_S')
-    FeatureNormalization(mol_graphs, 'SlogP_VSA7')
-    FeatureNormalization(mol_graphs, 'SlogP_VSA4')
-    FeatureNormalization(mol_graphs, 'fr_para_hydroxylation')
-    FeatureNormalization(mol_graphs, 'PEOE_VSA7')
-    # 46
-    FeatureNormalization(mol_graphs, 'fr_Al_OH_noTert')
-    FeatureNormalization(mol_graphs, 'fr_pyridine')
-    FeatureNormalization(mol_graphs, 'fr_phos_acid')
-    FeatureNormalization(mol_graphs, 'fr_phos_ester')
-    FeatureNormalization(mol_graphs, 'NumAromaticHeterocycles')
-    # 51
-    FeatureNormalization(mol_graphs, 'EState_VSA7')
-    FeatureNormalization(mol_graphs, 'PEOE_VSA12')
-    FeatureNormalization(mol_graphs, 'Ipc')
-    FeatureNormalization(mol_graphs, 'FpDensityMorgan1')
-    FeatureNormalization(mol_graphs, 'PEOE_VSA14')
-    # 56
-    FeatureNormalization(mol_graphs, 'fr_guanido')
-    FeatureNormalization(mol_graphs, 'fr_benzodiazepine')
-    FeatureNormalization(mol_graphs, 'fr_thiophene')
-    FeatureNormalization(mol_graphs, 'fr_Ndealkylation1')
-    FeatureNormalization(mol_graphs, 'fr_aldehyde')
-    # 61
-    FeatureNormalization(mol_graphs, 'fr_term_acetylene')
-    FeatureNormalization(mol_graphs, 'SMR_VSA2')
-    FeatureNormalization(mol_graphs, 'fr_lactone')
-    
+    for feat in ['MolLogP', 'MaxAbsPartialCharge', 'MaxEStateIndex', 'SMR_VSA10', 'Kappa2', 
+                'BCUT2D_MWLOW', 'PEOE_VSA13', 'MinAbsPartialCharge', 'BCUT2D_CHGHI', 'PEOE_VSA6', 
+                'SlogP_VSA1', 'fr_nitro', 'BalabanJ', 'SMR_VSA9', 'fr_alkyl_halide', 
+                'fr_hdrzine', 'PEOE_VSA8', 'fr_Ar_NH', 'fr_imidazole', 'fr_Nhpyrrole', 
+                'EState_VSA5', 'PEOE_VSA4', 'fr_ester', 'PEOE_VSA2', 'NumAromaticCarbocycles', 
+                'BCUT2D_LOGPHI', 'EState_VSA11', 'fr_furan', 'EState_VSA2', 'fr_benzene', 
+                'fr_sulfide', 'fr_aryl_methyl', 'SlogP_VSA10', 'HeavyAtomMolWt', 'fr_nitro_arom_nonortho', 
+                'FpDensityMorgan2', 'EState_VSA8', 'fr_bicyclic', 'fr_aniline', 'fr_allylic_oxid', 
+                'fr_C_S', 'SlogP_VSA7', 'SlogP_VSA4', 'fr_para_hydroxylation', 'PEOE_VSA7', 
+                'fr_Al_OH_noTert', 'fr_pyridine', 'fr_phos_acid', 'fr_phos_ester', 'NumAromaticHeterocycles', 
+                'EState_VSA7', 'PEOE_VSA12', 'Ipc', 'FpDensityMorgan1', 'PEOE_VSA14', 
+                'fr_guanido', 'fr_benzodiazepine', 'fr_thiophene', 'fr_Ndealkylation1', 'fr_aldehyde', 
+                'fr_term_acetylene', 'SMR_VSA2', 'fr_lactone']:
+        FeatureNormalization(mol_graphs, feat)
+
     return samples
 
-
-##############################################################################################################################
 ##################### 여긴 테스트중이고 #####################
 
 from torch.utils.data import Dataset

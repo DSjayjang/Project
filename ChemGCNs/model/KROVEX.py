@@ -4,8 +4,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import dgl
 
-
-#msg = fn.copy_src(src='h', out='m')
 msg = fn.copy_u('h', 'm')
 
 def reduce(nodes):
@@ -38,9 +36,9 @@ class GCNLayer(nn.Module):
         return g.ndata.pop('h')
 
 
-class KDGCN_Net_3(nn.Module):
+class kronecker_Net_3(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(KDGCN_Net_3, self).__init__()
+        super(kronecker_Net_3, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
@@ -65,6 +63,7 @@ class KDGCN_Net_3(nn.Module):
         hg = torch.bmm(hg, self_feat)
         hg = hg.view(hg.size(0), -1)
 
+        # fully connectex networks
         out = F.relu(self.bn1(self.fc1(hg)))
         out = self.dropout(out)
         out = F.relu(self.bn2(self.fc2(out)))
@@ -73,9 +72,9 @@ class KDGCN_Net_3(nn.Module):
 
         return out
     
-class KDGCN_Net_5(nn.Module):
+class kronecker_Net_5(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(KDGCN_Net_5, self).__init__()
+        super(kronecker_Net_5, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
@@ -100,6 +99,7 @@ class KDGCN_Net_5(nn.Module):
         hg = torch.bmm(hg, self_feat)
         hg = hg.view(hg.size(0), -1)
 
+        # fully connectex networks
         out = F.relu(self.bn1(self.fc1(hg)))
         out = self.dropout(out)
         out = F.relu(self.bn2(self.fc2(out)))
@@ -109,9 +109,9 @@ class KDGCN_Net_5(nn.Module):
         return out
     
 
-class KDGCN_Net_7(nn.Module):
+class kronecker_Net_7(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(KDGCN_Net_7, self).__init__()
+        super(kronecker_Net_7, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
@@ -136,6 +136,7 @@ class KDGCN_Net_7(nn.Module):
         hg = torch.bmm(hg, self_feat)
         hg = hg.view(hg.size(0), -1)
 
+        # fully connectex networks
         out = F.relu(self.bn1(self.fc1(hg)))
         out = self.dropout(out)
         out = F.relu(self.bn2(self.fc2(out)))
@@ -145,9 +146,9 @@ class KDGCN_Net_7(nn.Module):
         return out
     
 
-class KDGCN_Net_10(nn.Module):
+class kronecker_Net_10(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(KDGCN_Net_10, self).__init__()
+        super(kronecker_Net_10, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
@@ -172,6 +173,7 @@ class KDGCN_Net_10(nn.Module):
         hg = torch.bmm(hg, self_feat)
         hg = hg.view(hg.size(0), -1)
 
+        # fully connectex networks
         out = F.relu(self.bn1(self.fc1(hg)))
         out = self.dropout(out)
         out = F.relu(self.bn2(self.fc2(out)))
@@ -181,9 +183,9 @@ class KDGCN_Net_10(nn.Module):
         return out
     
 
-class KDGCN_Net_20(nn.Module):
+class kronecker_Net_20(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(KDGCN_Net_20, self).__init__()
+        super(kronecker_Net_20, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
@@ -214,12 +216,13 @@ class KDGCN_Net_20(nn.Module):
         out = F.relu(self.bn2(self.fc2(out)))
         out = self.fc3(out)
 
-
         return out
-    
-class KDGCN_Net(nn.Module):
+
+
+# KROVEX
+class Net(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(KDGCN_Net, self).__init__()
+        super(Net, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
@@ -233,23 +236,19 @@ class KDGCN_Net(nn.Module):
         self.bn3 = nn.BatchNorm1d(8)
         self.dropout = nn.Dropout(0.3)
 
-
     def forward(self, g, self_feat):
-        # 그래프 합성곱
         h = F.relu(self.gc1(g, g.ndata['feat']))
         h = F.relu(self.gc2(g, h))
         g.ndata['h'] = h
 
-        # 그래프 임베딩 생성
         hg = dgl.mean_nodes(g, 'h')
 
-        # 통합
         hg = hg.unsqueeze(2)
         self_feat = self_feat.unsqueeze(1)
         hg = torch.bmm(hg, self_feat)
         hg = hg.view(hg.size(0), -1)
 
-        # FCNN
+        # fully connectex networks
         out = F.relu(self.bn1(self.fc1(hg)))
         out = self.dropout(out)
 

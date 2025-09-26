@@ -5,7 +5,7 @@ import dgl
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-def collate_kfgcn_3(samples):
+def descriptor_selection_3(samples):
     self_feats = np.empty((len(samples), 3), dtype=np.float32)
 
     for i in range(0, len(samples)):
@@ -20,7 +20,7 @@ def collate_kfgcn_3(samples):
 
     return batched_graph, torch.tensor(self_feats).to(device), torch.tensor(labels, dtype=torch.float32).to(device)
 
-def collate_kfgcn_5(samples):
+def descriptor_selection_5(samples):
     self_feats = np.empty((len(samples), 5), dtype=np.float32)
 
     for i in range(0, len(samples)):
@@ -37,7 +37,7 @@ def collate_kfgcn_5(samples):
 
     return batched_graph, torch.tensor(self_feats).to(device), torch.tensor(labels, dtype=torch.float32).to(device)
         
-def collate_kfgcn_7(samples):
+def descriptor_selection_7(samples):
     self_feats = np.empty((len(samples), 7), dtype=np.float32)
 
     for i in range(0, len(samples)):
@@ -57,7 +57,7 @@ def collate_kfgcn_7(samples):
 
     return batched_graph, torch.tensor(self_feats).to(device), torch.tensor(labels, dtype=torch.float32).to(device)
 
-def collate_kfgcn_10(samples):
+def descriptor_selection_10(samples):
     self_feats = np.empty((len(samples), 10), dtype=np.float32)
 
     for i in range(0, len(samples)):
@@ -80,7 +80,7 @@ def collate_kfgcn_10(samples):
 
     return batched_graph, torch.tensor(self_feats).to(device), torch.tensor(labels, dtype=torch.float32).to(device)
 
-def collate_kfgcn_20(samples):
+def descriptor_selection_20(samples):
     self_feats = np.empty((len(samples), 20), dtype=np.float32)
 
     for i in range(0, len(samples)):

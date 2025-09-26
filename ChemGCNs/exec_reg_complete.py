@@ -6,9 +6,12 @@ import utils.mol_conv as mc
 from utils import trainer
 from utils.test_mol import mol_collate_gcn as mcol
 
-from model.test_model import GCN
-from model.test_model import GAT
-from model.test_model import EGCN
+from model import GCN
+from model import GAT
+from model import EGCN
+
+from utils.mol_props import dim_atomic_feat
+
 from configs.config import SET_SEED, DATASET, BATCH_SIZE, MAX_EPOCHS, K
 
 def main():
@@ -24,11 +27,11 @@ def main():
     dataset = mc.read_dataset(DATASET + '.csv')
     random.shuffle(dataset)
 
-    model_GCN = GCN.Net(mc.dim_atomic_feat, 1).to(device)
-    model_GAT = GAT.Net(mc.dim_atomic_feat, 1, 4).to(device)
-    model_EGCN_R = EGCN.Net(mc.dim_atomic_feat, 1, 1).to(device)
-    model_EGCN_S = EGCN.Net(mc.dim_atomic_feat, 1, 2).to(device)
-    model_EGCN = EGCN.Net(mc.dim_atomic_feat, 1, 3).to(device)
+    model_GCN = GCN.Net(dim_atomic_feat, 1).to(device)
+    model_GAT = GAT.Net(dim_atomic_feat, 1, 4).to(device)
+    model_EGCN_R = EGCN.Net(dim_atomic_feat, 1, 1).to(device)
+    model_EGCN_S = EGCN.Net(dim_atomic_feat, 1, 2).to(device)
+    model_EGCN = EGCN.Net(dim_atomic_feat, 1, 3).to(device)
 
     # loss
     criterion = nn.L1Loss(reduction='sum')

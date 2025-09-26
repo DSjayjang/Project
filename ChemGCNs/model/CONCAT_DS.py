@@ -4,8 +4,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import dgl
 
-
-#msg = fn.copy_src(src='h', out='m')
 msg = fn.copy_u('h', 'm')
 
 def reduce(nodes):
@@ -38,9 +36,9 @@ class GCNLayer(nn.Module):
         return g.ndata.pop('h')
 
 
-class CDGCN_Net_3(nn.Module):
+class concat_Net_3(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(CDGCN_Net_3, self).__init__()
+        super(concat_Net_3, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
@@ -63,9 +61,9 @@ class CDGCN_Net_3(nn.Module):
 
         return out
     
-class CDGCN_Net_5(nn.Module):
+class concat_Net_5(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(CDGCN_Net_5, self).__init__()
+        super(concat_Net_5, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
@@ -88,9 +86,9 @@ class CDGCN_Net_5(nn.Module):
 
         return out
 
-class CDGCN_Net_7(nn.Module):
+class concat_Net_7(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(CDGCN_Net_7, self).__init__()
+        super(concat_Net_7, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
@@ -113,9 +111,9 @@ class CDGCN_Net_7(nn.Module):
 
         return out
     
-class CDGCN_Net_10(nn.Module):
+class concat_Net_10(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(CDGCN_Net_10, self).__init__()
+        super(concat_Net_10, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
@@ -138,9 +136,9 @@ class CDGCN_Net_10(nn.Module):
 
         return out
     
-class CDGCN_Net_20(nn.Module):
+class concat_Net_20(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(CDGCN_Net_20, self).__init__()
+        super(concat_Net_20, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
@@ -163,9 +161,9 @@ class CDGCN_Net_20(nn.Module):
 
         return out
     
-class CDGCN_Net(nn.Module):
+class concat_Net(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(CDGCN_Net, self).__init__()
+        super(concat_Net, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
