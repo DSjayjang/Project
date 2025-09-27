@@ -1,13 +1,13 @@
 import numpy as np
 import pandas as pd
 
-from configs.config import SET_SEED, SEED, DATASET
+from configs.config import SET_SEED, SEED, DATASET_PATH
 from utils.utils import MolecularFeatureExtractor
 
 # 재현성 난수 고정
 SET_SEED()
 
-df = pd.read_csv(DATASET + '.csv')
+df = pd.read_csv(DATASET_PATH + '.csv')
 smiles_list = df['smiles'].tolist()
 
 # target 정의
