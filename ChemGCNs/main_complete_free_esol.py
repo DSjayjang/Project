@@ -25,17 +25,23 @@ def main():
 
     if DATASET_NAME == 'freesolv':
         print('DATASET_NAME: ', DATASET_NAME)
-
         dataset = mc.read_dataset_freesolv(DATASET_PATH + '.csv')
         num_descriptors = 50
         descriptors = mol_collate.descriptor_selection_freesolv
 
     elif DATASET_NAME == 'esol':
         print('DATASET_NAME: ', DATASET_NAME)
-
         dataset = mc.read_dataset_esol(DATASET_PATH + '.csv')
         num_descriptors = 63
         descriptors = mol_collate.descriptor_selection_esol
+
+    elif DATASET_NAME == 'scgas':
+        print('DATASET_NAME: ', DATASET_NAME)
+        BATCH_SIZE = 128
+        from utils.ablation import mol_collate_scgas as mcol
+        dataset = mc.read_dataset_esol(DATASET_PATH + '.csv')
+        num_descriptors = 23
+        descriptors = mol_collate.descriptor_selection_scgas
 
     random.shuffle(dataset)
     train_dataset, test_dataset = train_test_split(dataset, test_size = 0.2, random_state = config.SEED)

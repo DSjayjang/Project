@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import utils.mol_conv as mc
 from utils import trainer
-from utils.test_mol import mol_collate_gcn as mcol
+from utils import mol_collate_gcn as mcol
 from model.test_model import GCN
 from model.test_model import GAT
 from model.test_model import EGCN
@@ -46,9 +46,9 @@ def main():
     test_losses['GCN'] = trainer.cross_validation(dataset, model_GCN, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train, trainer.test, mcol.collate_gcn)
     print('test loss (GCN): ' + str(test_losses['GCN']))
 
-    # print('--------- GAT ---------')
-    # test_losses['GAT'] = trainer.cross_validation(dataset, model_GAT, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train, trainer.test, mcol.collate_gcn)
-    # print('test loss (GAT): ' + str(test_losses['GAT']))
+    print('--------- GAT ---------')
+    test_losses['GAT'] = trainer.cross_validation(dataset, model_GAT, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train, trainer.test, mcol.collate_gcn)
+    print('test loss (GAT): ' + str(test_losses['GAT']))
 
     print('--------- EGCN_RING ---------')
     test_losses['EGCN_R'] = trainer.cross_validation(dataset, model_EGCN_R, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_emodel, trainer.test_emodel, mcol.collate_egcn_ring)

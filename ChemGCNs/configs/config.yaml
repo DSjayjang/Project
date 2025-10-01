@@ -1,5 +1,7 @@
 SEED: 100
-DATASET: 'logvp_cp_0927' # freesolv / esol / lipo / logvp / VP / vp_unique / logvp_cp / logvp_cp_0927
+DATASET: 'scgas' # freesolv / esol / scgas
+
+# lipo / logvp / VP / vp_unique / logvp_cp / logvp_cp_0927
 
 BATCH_SIZE: 32
 MAX_EPOCHS: 1

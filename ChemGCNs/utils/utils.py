@@ -78,7 +78,7 @@ def weight_reset(m):
         m.reset_parameters()
 
 """
-for variable selection
+descriptor extiontor
 """
 class MolecularFeatureExtractor:
     def __init__(self):

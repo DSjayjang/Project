@@ -22,7 +22,6 @@ class MolGraph(dgl.DGLGraph):
         self.smiles = smiles
         self.atomic_nodes = []
         self.neighbors = {}
-        # try:
         self.mol = Chem.MolFromSmiles(smiles)
         
         self.adj_mat = Chem.GetAdjacencyMatrix(self.mol)
@@ -31,12 +30,6 @@ class MolGraph(dgl.DGLGraph):
         for atom in self.mol.GetAtoms():
             self.feat_mat[ind, :] = props.get(atom.GetAtomicNum())
             ind = ind + 1
-        # self.to(device)
-
-        # except Exception as e:
-        #     print(f"Error processing SMILES: {smiles}")
-        #     print(traceback.format_exc())  # 예외 정보를 출력
-        #     # return None, None
 
         edges = adj_mat_to_edges(self.adj_mat)
         self.add_nodes(self.adj_mat.shape[0])

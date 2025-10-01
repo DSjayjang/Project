@@ -4,7 +4,7 @@ import numpy as np
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-def train(model, criterion, optimizer, train_data_loader, max_epochs):
+def train_gcn(model, criterion, optimizer, train_data_loader, max_epochs):
     model.train()
 
     for epoch in range(0, max_epochs):
@@ -23,7 +23,7 @@ def train(model, criterion, optimizer, train_data_loader, max_epochs):
         print('Epoch {}, train loss {:.4f}'.format(epoch + 1, train_loss))
 
 
-def train_emodel(model, criterion, optimizer, train_data_loader, max_epochs):
+def train_model(model, criterion, optimizer, train_data_loader, max_epochs):
     model.train()
 
     for epoch in range(0, max_epochs):
@@ -42,7 +42,7 @@ def train_emodel(model, criterion, optimizer, train_data_loader, max_epochs):
         print('Epoch {}, train loss {:.4f}'.format(epoch + 1, train_loss))
 
 
-def test(model, criterion, test_data_loader, accs=None):
+def test_gcn(model, criterion, test_data_loader, accs=None):
     preds = None
     model.eval()
 
@@ -74,7 +74,7 @@ def test(model, criterion, test_data_loader, accs=None):
     return test_loss, preds
 
 
-def test_emodel(model, criterion, test_data_loader, accs=None):
+def test_model(model, criterion, test_data_loader, accs=None):
     preds = None
     model.eval()
 

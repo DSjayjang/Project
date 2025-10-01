@@ -232,39 +232,55 @@ def read_dataset_esol(file_name):
 
     return samples
 
-##################### 여긴 테스트중이고 #####################
+# esol
+def read_dataset_esol(file_name):
+    samples = []
+    mol_graphs = []
+    data_mat = np.array(pd.read_csv(file_name))
+    smiles = data_mat[:, 0]
+    target = np.array(data_mat[:, 1:3], dtype=float)
 
-from torch.utils.data import Dataset
+    for i in range(0, data_mat.shape[0]):
+        mol, mol_graph = smiles_to_mol_graph(smiles[i])
 
-class MoleculeDataset(Dataset):
-    def __init__(self, file_name):
-        self.samples = []
-        self.mol_graphs = []
+        if mol is not None and mol_graph is not None:
+            # 1
+            mol_graph.MolMR = dsc.MolMR(mol)
+            mol_graph.TPSA = dsc.TPSA(mol)
+            mol_graph.fr_halogen = dsc.fr_halogen(mol)
+            mol_graph.SlogP_VSA12 = dsc.SlogP_VSA12(mol)
+            mol_graph.RingCount = dsc.RingCount(mol)
+            # 6
+            mol_graph.Kappa1 = dsc.Kappa1(mol)
+            mol_graph.NumHAcceptors = dsc.NumHAcceptors(mol)
+            mol_graph.NumHDonors = dsc.NumHDonors(mol)
+            mol_graph.SMR_VSA7 = dsc.SMR_VSA7(mol)
+            mol_graph.SMR_VSA5 = dsc.SMR_VSA5(mol)
+            # 11
+            mol_graph.Chi1 = dsc.Chi1(mol)
+            mol_graph.Chi3n = dsc.Chi3n(mol)
+            mol_graph.BertzCT = dsc.BertzCT(mol)
+            mol_graph.VSA_EState8 = dsc.VSA_EState8(mol)
+            mol_graph.NumAliphaticCarbocycles = dsc.NumAliphaticCarbocycles(mol)
+            # 16
+            mol_graph.HallKierAlpha = dsc.HallKierAlpha(mol)
+            mol_graph.VSA_EState6 = dsc.VSA_EState6(mol)
+            mol_graph.NumAromaticRings = dsc.NumAromaticRings(mol)
+            mol_graph.Chi4n = dsc.Chi4n(mol)
+            mol_graph.PEOE_VSA7 = dsc.PEOE_VSA7(mol)
+            # 21
+            mol_graph.SlogP_VSA5 = dsc.SlogP_VSA5(mol)
+            mol_graph.VSA_EState7 = dsc.VSA_EState7(mol)
+            mol_graph.NOCount = dsc.NOCount(mol)
 
-        file_name += '.csv'
-        # CSV 불러오기
-        data_mat = np.array(pd.read_csv(file_name))
-        smiles = data_mat[:, 0]
-        target = np.array(data_mat[:, 1:3], dtype=float)
+            samples.append((mol_graph, target[i]))
+            mol_graphs.append(mol_graph)
 
-        # SMILES → mol, graph 변환
-        for i in range(data_mat.shape[0]):
-            mol, mol_graph = smiles_to_mol_graph(smiles[i])
+    for feat in ['MolMR', 'TPSA', 'fr_halogen', 'SlogP_VSA12', 'RingCount', 
+                'Kappa1', 'NumHAcceptors', 'NumHDonors', 'SMR_VSA7', 'SMR_VSA5',
+                'Chi1', 'Chi3n', 'BertzCT', 'VSA_EState8', 'NumAliphaticCarbocycles', 
+                'HallKierAlpha', 'VSA_EState6', 'NumAromaticRings', 'Chi4n', 'PEOE_VSA7', 
+                'SlogP_VSA5', 'VSA_EState7', 'NOCount']:
+        FeatureNormalization(mol_graphs, feat)
 
-            if mol is not None and mol_graph is not None:
-                mol_graph.num_atoms = mol.GetNumAtoms()
-                mol_graph.weight = dsc.ExactMolWt(mol)
-                mol_graph.num_rings = mol.GetRingInfo().NumRings()
-
-                self.samples.append((mol_graph, target[i]))
-                self.mol_graphs.append(mol_graph)
-
-        # Feature 정규화
-        for feat in ['num_atoms', 'weight', 'num_rings']:
-            FeatureNormalization(self.mol_graphs, feat)
-
-    def __len__(self):
-        return len(self.samples)
-
-    def __getitem__(self, idx):
-        return self.samples[idx]
+    return samples
