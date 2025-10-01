@@ -16,22 +16,18 @@ from utils.mol_props import dim_atomic_feat
 
 
 def main():
-    # seed
     SET_SEED()
-    
-    # check GPU availability
+
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(device)
 
-    # load train, validation, and test datasets
     print('Data loading...')
     dataset = mc.read_dataset(DATASET + '.csv')
-    # dataset = MoleculeDataset(DATASET) # test 중
 
     random.shuffle(dataset)
 
     model_GCN = GCN.Net(dim_atomic_feat, 1).to(device)
-    # model_GAT = GAT.Net(dim_atomic_feat, 1, 4).to(device)
+    model_GAT = GAT.Net(dim_atomic_feat, 1, 4).to(device)
     model_EGCN_R = EGCN.Net(dim_atomic_feat, 1, 1).to(device)
     model_EGCN_S = EGCN.Net(dim_atomic_feat, 1, 2).to(device)
     model_EGCN = EGCN.Net(dim_atomic_feat, 1, 3).to(device)

@@ -25,6 +25,7 @@ def main():
     # load train, validation, and test datasets
     print('Data loading...')
     dataset = mc.read_dataset(DATASET + '.csv')
+    
     random.shuffle(dataset)
 
     model_GCN = GCN.Net(dim_atomic_feat, 1).to(device)
