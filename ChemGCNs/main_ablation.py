@@ -1,13 +1,11 @@
 import random
-
 import torch
 import torch.nn as nn
-
-from utils.mol_props import dim_atomic_feat
 
 import utils.mol_conv as mc
 from utils import trainer
 from utils import mol_collate
+from utils.mol_props import dim_atomic_feat
 
 from model import CONCAT_DS, KROVEX
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K
@@ -34,9 +32,10 @@ def main():
 
     elif DATASET_NAME == 'scgas':
         print('DATASET_NAME: ', DATASET_NAME)
+        global BATCH_SIZE
         BATCH_SIZE = 128
         from utils.ablation import mol_collate_scgas as mcol
-        dataset = mc.read_dataset_esol(DATASET_PATH + '.csv')
+        dataset = mc.read_dataset_scgas(DATASET_PATH + '.csv')
         num_descriptors = 23
         descriptors = mol_collate.descriptor_selection_scgas
 

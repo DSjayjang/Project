@@ -232,8 +232,8 @@ def read_dataset_esol(file_name):
 
     return samples
 
-# esol
-def read_dataset_esol(file_name):
+# Self-Curated Gas
+def read_dataset_scgas(file_name):
     samples = []
     mol_graphs = []
     data_mat = np.array(pd.read_csv(file_name))

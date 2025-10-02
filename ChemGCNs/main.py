@@ -7,11 +7,10 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-from utils.mol_props import dim_atomic_feat
-
 import utils.mol_conv as mc
 from utils import mol_collate, evaluation
 from utils.utils import weight_reset
+from utils.mol_props import dim_atomic_feat
 
 from model import KROVEX
 from configs import config
@@ -37,6 +36,7 @@ def main():
 
     elif DATASET_NAME == 'scgas':
         print('DATASET_NAME: ', DATASET_NAME)
+        global BATCH_SIZE
         BATCH_SIZE = 128
         from utils.ablation import mol_collate_scgas as mcol
         dataset = mc.read_dataset_esol(DATASET_PATH + '.csv')

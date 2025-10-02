@@ -80,7 +80,7 @@ def collect_train_preds_gcn(model, criterion, train_data_loader):
 
     preds = preds.cpu().numpy()
     targets = targets.cpu().numpy()
-    np.savetxt('result_train.csv', np.concatenate((targets, preds), axis=1), delimiter=',')
+    np.savetxt(r'.\results\result_train.csv', np.concatenate((targets, preds), axis=1), delimiter=',')
 
 
 # for EGCN, CONCAT_DS, KROVEX
@@ -113,7 +113,7 @@ def collect_train_preds(model, criterion, train_data_loader):
     preds = preds.cpu().numpy()
     targets = targets.cpu().numpy()
     self_feats = self_feats.cpu().numpy()
-    np.savetxt('result_train.csv', np.concatenate((targets, preds, self_feats), axis=1), delimiter=',')
+    np.savetxt(r'.\results\result_train.csv', np.concatenate((targets, preds, self_feats), axis=1), delimiter=',')
 
 
 # for GCN, GAT
@@ -148,7 +148,7 @@ def final_train_model_gcn(model, criterion, optimizer, train_data_loader, max_ep
 
     preds = preds.detach().cpu().numpy()
     targets = targets.cpu().numpy()
-    np.savetxt('result_train.csv', np.concatenate((targets, preds), axis=1), delimiter=',')
+    np.savetxt(r'.\results\result_train.csv', np.concatenate((targets, preds), axis=1), delimiter=',')
 
     return train_losses
 
@@ -188,7 +188,7 @@ def final_train_model(model, criterion, optimizer, train_data_loader, max_epochs
     preds = preds.detach().cpu().numpy()
     targets = targets.cpu().numpy()
     self_feats = self_feats.cpu().numpy()
-    np.savetxt('result_train.csv', np.concatenate((targets, preds, self_feats), axis=1), delimiter=',')
+    np.savetxt(r'.\results\result_train.csv', np.concatenate((targets, preds, self_feats), axis=1), delimiter=',')
 
     return train_losses
 
@@ -202,7 +202,6 @@ def val_model_gcn(model, criterion, val_data_loader, k):
 
     with torch.no_grad():
         val_loss = 0
-        # correct = 0
 
         for bg, target in val_data_loader:
             pred = model(bg)
@@ -284,9 +283,8 @@ def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epoch
         models.append(copy.deepcopy(model))
         optimizers.append(optim.Adam(models[k].parameters(), weight_decay=0.01))
 
-    # Fold마다 손실 기록
-    fold_train_losses = []  # 각 fold별 train loss
-    fold_valid_losses = []  # 각 fold별 train loss
+    fold_train_losses = []
+    fold_valid_losses = []
 
     
     for k in range(num_folds):
@@ -334,7 +332,7 @@ def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epoch
     plt.show()
 
     Loss_df = pd.DataFrame({'Fold': list(range(1, len(fold_train_losses) + 1)), 'Train Loss': fold_train_losses})
-    Loss_df.to_csv('Loss.csv', index = False)
+    Loss_df.to_csv(r'.\results\loss.csv', index = False)
 
     return np.mean(val_losses), best_model, best_k
 
@@ -348,7 +346,6 @@ def test_model_gcn(model, criterion, test_data_loader):
 
     with torch.no_grad():
         test_loss = 0
-        # correct = 0
 
         for bg, target in test_data_loader:
             pred = model(bg)
@@ -366,7 +363,7 @@ def test_model_gcn(model, criterion, test_data_loader):
 
     preds = preds.cpu().numpy()
     targets = targets.cpu().numpy()
-    np.savetxt('result_test.csv', np.concatenate((targets, preds), axis=1), delimiter=',')
+    np.savetxt(r'.\results\result_test.csv', np.concatenate((targets, preds), axis=1), delimiter=',')
 
     return test_loss, preds
 
@@ -381,7 +378,6 @@ def test_model(model, criterion, test_data_loader):
 
     with torch.no_grad():
         test_loss = 0
-        # correct = 0
 
         for bg, self_feat, target in test_data_loader:
             pred = model(bg, self_feat)
@@ -402,6 +398,6 @@ def test_model(model, criterion, test_data_loader):
     preds = preds.cpu().numpy()
     targets = targets.cpu().numpy()
     self_feats = self_feats.cpu().numpy()
-    np.savetxt('result_test.csv', np.concatenate((targets, preds, self_feats), axis=1), delimiter=',')
+    np.savetxt(r'.\results\result_test.csv', np.concatenate((targets, preds, self_feats), axis=1), delimiter=',')
 
     return test_loss, preds

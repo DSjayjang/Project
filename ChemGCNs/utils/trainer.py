@@ -48,7 +48,6 @@ def test_gcn(model, criterion, test_data_loader, accs=None):
 
     with torch.no_grad():
         test_loss = 0
-        correct = 0
 
         for bg, target in test_data_loader:
             pred = model(bg)
@@ -60,16 +59,9 @@ def test_gcn(model, criterion, test_data_loader, accs=None):
             else:
                 preds = torch.cat((preds, pred), dim=0)
 
-            if accs is not None:
-                correct += torch.eq(torch.max(pred, dim=1)[1], target).sum().item()
-
         test_loss /= len(test_data_loader.dataset)
 
         print('Test loss: ' + str(test_loss))
-
-    if accs is not None:
-        accs.append(correct / len(test_data_loader.dataset) * 100)
-        print('Test accuracy: ' + str((correct / len(test_data_loader.dataset) * 100)) + '%')
 
     return test_loss, preds
 
@@ -83,7 +75,6 @@ def test_model(model, criterion, test_data_loader, accs=None):
 
     with torch.no_grad():
         test_loss = 0
-        correct = 0
 
         for bg, self_feat, target in test_data_loader:
             pred = model(bg, self_feat)
@@ -99,20 +90,13 @@ def test_model(model, criterion, test_data_loader, accs=None):
                 targets = torch.cat((targets, target), dim=0)
                 self_feats = torch.cat((self_feats, self_feat), dim=0)
 
-            if accs is not None:
-                correct += torch.eq(torch.max(pred, dim=1)[1], target).sum().item()
-
         test_loss /= len(test_data_loader.dataset)
         print('Test loss: ' + str(test_loss))
-
-    if accs is not None:
-        accs.append(correct / len(test_data_loader.dataset) * 100)
-        print('Test accuracy: ' + str((correct / len(test_data_loader.dataset) * 100)) + '%')
 
     preds = preds.cpu().numpy()
     targets = targets.cpu().numpy()
     self_feats = self_feats.cpu().numpy()
-    np.savetxt('result.csv', np.concatenate((targets, preds, self_feats), axis=1), delimiter=',')
+    np.savetxt(r'.\results\result.csv', np.concatenate((targets, preds, self_feats), axis=1), delimiter=',')
 
     return test_loss, preds
 

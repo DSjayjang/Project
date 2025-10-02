@@ -78,7 +78,7 @@ def descriptor_selection_freesolv(samples):
     batched_graph = dgl.batch(graphs)
 
     return batched_graph, torch.tensor(self_feats).to(device), torch.tensor(labels, dtype=torch.float32).to(device)
-\
+
 # ESOL
 def descriptor_selection_esol(samples):
     self_feats = np.empty((len(samples), 63), dtype=np.float32)

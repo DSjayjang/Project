@@ -1,9 +1,6 @@
 import numpy as np
 import pandas as pd
 
-from rdkit import Chem
-from rdkit.Chem import Descriptors
-
 def FeatureNormalization(mol_graphs, feat_name):
     """
     feature(z-score) 정규화 함수
@@ -62,12 +59,6 @@ def adj_mat_to_edges(adj_mat):
     return edges
 
 def atoms_to_symbols(atoms):
-    # symbols = []
-
-    # for atom in atoms:
-    #     symbols.append(atom.GetSymbol())
-
-    # return symbols
     return [atom.GetSymbol() for atom in atoms]
 
 def weight_reset(m):
@@ -76,28 +67,3 @@ def weight_reset(m):
     """
     if hasattr(m, 'reset_parameters'):
         m.reset_parameters()
-
-"""
-descriptor extiontor
-"""
-class MolecularFeatureExtractor:
-    def __init__(self):
-        self.descriptors = [desc[0] for desc in Descriptors._descList]
-
-    def extract_molecular_features(self, smiles_list):
-        features_dict = {desc: [] for desc in self.descriptors}
-
-        for smiles in smiles_list:
-            mol = Chem.MolFromSmiles(smiles)
-            if mol:
-                for descriptor_name in self.descriptors:
-                    descriptor_function = getattr(Descriptors, descriptor_name)
-                    try:
-                        features_dict[descriptor_name].append(descriptor_function(mol))
-                    except:
-                        features_dict[descriptor_name].append(None)
-            else:
-                for descriptor_name in self.descriptors:
-                    features_dict[descriptor_name].append(None)
-
-        return pd.DataFrame(features_dict)

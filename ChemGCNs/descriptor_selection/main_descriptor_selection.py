@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
-
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from configs.config import SET_SEED, SEED, DATASET_PATH
-from utils.utils import MolecularFeatureExtractor
+from utils import MolecularFeatureExtractor
 
 # 재현성 난수 고정
 SET_SEED()
@@ -98,7 +99,7 @@ print(df_removed_features.shape)
 
 
 # ISIS
-from utils.isis import ISIS
+from isis import ISIS
 screening = ISIS(df_removed_features)
 selected_feats = screening.fit()
 df_screening = screening.transform()

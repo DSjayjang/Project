@@ -1,5 +1,5 @@
 SEED: 100
-DATASET: 'scgas' # freesolv / esol / scgas
+DATASET: 'esol' # freesolv / esol / scgas
 
 # lipo / logvp / VP / vp_unique / logvp_cp / logvp_cp_0927
 
