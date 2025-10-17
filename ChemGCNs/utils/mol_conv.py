@@ -232,6 +232,62 @@ def read_dataset_esol(file_name):
 
     return samples
 
+# lipo
+def read_dataset_lipo(file_name):
+    samples = []
+    mol_graphs = []
+    data_mat = np.array(pd.read_csv(file_name))
+    smiles = data_mat[:, 0]
+    target = np.array(data_mat[:, 1:3], dtype=float)
+
+    for i in range(0, data_mat.shape[0]):
+        mol, mol_graph = smiles_to_mol_graph(smiles[i])
+
+        if mol is not None and mol_graph is not None:
+            # 1
+            mol_graph.MolLogP = dsc.MolLogP(mol)
+            mol_graph.fr_COO = dsc.fr_COO(mol)
+            mol_graph.Ipc = dsc.Ipc(mol)
+            mol_graph.fr_sulfonamd = dsc.fr_sulfonamd(mol)
+            mol_graph.PEOE_VSA7 = dsc.PEOE_VSA7(mol)
+            # 6
+            mol_graph.PEOE_VSA13 = dsc.PEOE_VSA13(mol)
+            mol_graph.SlogP_VSA10 = dsc.SlogP_VSA10(mol)
+            mol_graph.fr_unbrch_alkane = dsc.fr_unbrch_alkane(mol)
+            mol_graph.SMR_VSA10 = dsc.SMR_VSA10(mol)
+            mol_graph.PEOE_VSA12 = dsc.PEOE_VSA12(mol)
+            # 11
+            mol_graph.fr_guanido = dsc.fr_guanido(mol)
+            mol_graph.FpDensityMorgan1 = dsc.FpDensityMorgan1(mol)
+            mol_graph.NHOHCount = dsc.NHOHCount(mol)
+            mol_graph.fr_sulfide = dsc.fr_sulfide(mol)
+            mol_graph.VSA_EState5 = dsc.VSA_EState5(mol)
+            # 16
+            mol_graph.fr_HOCCN = dsc.fr_HOCCN(mol)
+            mol_graph.fr_piperdine = dsc.fr_piperdine(mol)
+            mol_graph.NumSaturatedCarbocycles = dsc.NumSaturatedCarbocycles(mol)
+            mol_graph.fr_amidine = dsc.fr_amidine(mol)
+            mol_graph.NumHDonors = dsc.NumHDonors(mol)
+            # 21
+            mol_graph.NumAromaticRings = dsc.NumAromaticRings(mol)
+            mol_graph.BalabanJ = dsc.BalabanJ(mol)
+            mol_graph.NumAromaticHeterocycles = dsc.NumAromaticHeterocycles(mol)
+            mol_graph.MinEStateIndex = dsc.MinEStateIndex(mol)
+            mol_graph.fr_Ar_N = dsc.fr_Ar_N(mol)
+
+            samples.append((mol_graph, target[i]))
+            mol_graphs.append(mol_graph)
+
+    for feat in ['MolLogP', 'fr_COO', 'Ipc', 'fr_sulfonamd', 'PEOE_VSA7',
+                'PEOE_VSA13', 'SlogP_VSA10', 'fr_unbrch_alkane', 'SMR_VSA10', 'PEOE_VSA12',
+                'fr_guanido', 'FpDensityMorgan1', 'NHOHCount', 'fr_sulfide', 'VSA_EState5',
+                'fr_HOCCN', 'fr_piperdine', 'NumSaturatedCarbocycles', 'fr_amidine', 'NumHDonors',
+                'NumAromaticRings', 'BalabanJ', 'NumAromaticHeterocycles', 'MinEStateIndex', 'fr_Ar_N']:
+        FeatureNormalization(mol_graphs, feat)
+
+    return samples
+
+
 # Self-Curated Gas
 def read_dataset_scgas(file_name):
     samples = []

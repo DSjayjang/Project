@@ -168,6 +168,48 @@ def descriptor_selection_esol(samples):
 
     return batched_graph, torch.tensor(self_feats).to(device), torch.tensor(labels, dtype=torch.float32).to(device)
 
+# ESOL
+def descriptor_selection_lipo(samples):
+    self_feats = np.empty((len(samples), 25), dtype=np.float32)
+
+    for i in range(0, len(samples)):
+        mol_graph = samples[i][0]
+
+        # 1
+        self_feats[i, 0] = mol_graph.MolLogP
+        self_feats[i, 1] = mol_graph.fr_COO
+        self_feats[i, 2] = mol_graph.Ipc
+        self_feats[i, 3] = mol_graph.fr_sulfonamd
+        self_feats[i, 4] = mol_graph.PEOE_VSA7
+        # 6
+        self_feats[i, 5] = mol_graph.PEOE_VSA13
+        self_feats[i, 6] = mol_graph.SlogP_VSA10
+        self_feats[i, 7] = mol_graph.fr_unbrch_alkane
+        self_feats[i, 8] = mol_graph.SMR_VSA10
+        self_feats[i, 9] = mol_graph.PEOE_VSA12
+        # 11
+        self_feats[i, 10] = mol_graph.fr_guanido
+        self_feats[i, 11] = mol_graph.FpDensityMorgan1
+        self_feats[i, 12] = mol_graph.NHOHCount
+        self_feats[i, 13] = mol_graph.fr_sulfide
+        self_feats[i, 14] = mol_graph.VSA_EState5
+        # 16
+        self_feats[i, 15] = mol_graph.fr_HOCCN
+        self_feats[i, 16] = mol_graph.fr_piperdine
+        self_feats[i, 17] = mol_graph.NumSaturatedCarbocycles
+        self_feats[i, 18] = mol_graph.fr_amidine
+        self_feats[i, 19] = mol_graph.NumHDonors
+        # 21
+        self_feats[i, 20] = mol_graph.NumAromaticRings
+        self_feats[i, 21] = mol_graph.BalabanJ
+        self_feats[i, 22] = mol_graph.NumAromaticHeterocycles
+        self_feats[i, 23] = mol_graph.MinEStateIndex
+        self_feats[i, 24] = mol_graph.fr_Ar_N
+
+    graphs, labels = map(list, zip(*samples))
+    batched_graph = dgl.batch(graphs)
+
+    return batched_graph, torch.tensor(self_feats).to(device), torch.tensor(labels, dtype=torch.float32).to(device)
 
 # Self-Curated Gas
 def descriptor_selection_scgas(samples):

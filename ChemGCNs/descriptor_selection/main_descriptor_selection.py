@@ -3,7 +3,7 @@ import pandas as pd
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from configs.config import SET_SEED, SEED, DATASET_PATH
-from utils import MolecularFeatureExtractor
+from descriptor_selection.utils import MolecularFeatureExtractor
 
 # 재현성 난수 고정
 SET_SEED()
@@ -99,7 +99,7 @@ print(df_removed_features.shape)
 
 
 # ISIS
-from isis import ISIS
+from descriptor_selection.isis import ISIS
 screening = ISIS(df_removed_features)
 selected_feats = screening.fit()
 df_screening = screening.transform()

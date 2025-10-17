@@ -30,6 +30,13 @@ def main():
         num_descriptors = 63
         descriptors = mol_collate.descriptor_selection_esol
 
+    elif DATASET_NAME == 'lipo':
+        print('DATASET_NAME: ', DATASET_NAME)
+        from utils.ablation import mol_collate_lipo as mcol
+        dataset = mc.read_dataset_lipo(DATASET_PATH + '.csv')
+        num_descriptors = 25
+        descriptors = mol_collate.descriptor_selection_lipo
+
     elif DATASET_NAME == 'scgas':
         print('DATASET_NAME: ', DATASET_NAME)
         global BATCH_SIZE
