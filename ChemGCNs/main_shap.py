@@ -12,9 +12,11 @@ from utils import mol_collate, evaluation
 from utils.utils import weight_reset
 from utils.mol_props import dim_atomic_feat
 
-from model import KROVEX
+from model import KROVEX_shap
 from configs import config
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K
+
+from utils.shap import SHAP # SHAP 분석
 
 def main():
     SET_SEED()
@@ -53,7 +55,7 @@ def main():
     train_dataset, test_dataset = train_test_split(dataset, test_size = 0.2, random_state = config.SEED)
 
     # kronecker-product + descriptor selection
-    model_KROVEX = KROVEX.Net(dim_atomic_feat, 1, num_descriptors).to(device)
+    model_KROVEX = KROVEX_shap.Net(dim_atomic_feat, 1, num_descriptors).to(device)
 
     # loss function
     criterion = nn.L1Loss(reduction='sum')
@@ -68,6 +70,7 @@ def main():
 
     final_model = copy.deepcopy(best_model)
     final_model.apply(weight_reset) # initializing weights
+
 
     optimizer = optim.Adam(final_model.parameters(), weight_decay=0.01)
 
@@ -85,6 +88,11 @@ def main():
     print('best_k-fold:', best_k)
     print('after k-fold, averaging of val_losses:', val_losses)
     print('test_losse:', test_loss)
+
+    # SHAP Analysis
+    shap = SHAP(final_model)
+    gcn_shap, desc_shap = shap.run(test_data_loader)
+    shap.plot_summary()
 
 if __name__ == '__main__':
     main()
