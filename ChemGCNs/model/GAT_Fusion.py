@@ -2,44 +2,62 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import dgl
-import dgl.function as fn
 
-class NodeApplyModule(nn.Module):
+
+class GATLayer(nn.Module):
     def __init__(self, dim_in, dim_out):
-        super(NodeApplyModule, self).__init__()
-        self.linear = nn.Linear(dim_in, dim_out)
+        super(GATLayer, self).__init__()
+        self.fc = nn.Linear(dim_in, dim_out, bias=False)
+        self.attn_fc = nn.Linear(2 * dim_out, 1, bias=False)
 
-    def forward(self, node):
-        h = self.linear(node.data['h'])
+    def edge_attention(self, edges):
+        z2 = torch.cat([edges.src['z'], edges.dst['z']], dim=1)
+        a = self.attn_fc(z2)
+
+        return {'e': F.leaky_relu(a)}
+
+    def message_func(self, edges):
+        return {'z': edges.src['z'], 'e': edges.data['e']}
+
+    def reduce_func(self, nodes):
+        alpha = F.softmax(nodes.mailbox['e'], dim=1)
+        h = torch.sum(alpha * nodes.mailbox['z'], dim=1)
 
         return {'h': h}
 
-class GCNLayer(nn.Module):
-    def __init__(self, dim_in, dim_out):
-        super(GCNLayer, self).__init__()
-        self.msg = fn.copy_u('h', 'm')
-        self.apply_mod = NodeApplyModule(dim_in, dim_out)
-
-    def reduce(self, nodes):
-        mbox = nodes.mailbox['m']
-        accum = torch.mean(mbox, dim = 1)
-
-        return {'h': accum}     
-
-    def forward(self, g, feature):
-        g.ndata['h'] = feature
-        g.update_all(self.msg, self.reduce)
-        g.apply_nodes(func = self.apply_mod)
+    def forward(self, g, h):
+        z = self.fc(h)
+        g.ndata['z'] = z
+        g.apply_edges(self.edge_attention)
+        g.update_all(self.message_func, self.reduce_func)
 
         return g.ndata.pop('h')
-    
 
-class kronecker_Net_3(nn.Module):
-    def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(kronecker_Net_3, self).__init__()
 
-        self.gc1 = GCNLayer(dim_in, 100)
-        self.gc2 = GCNLayer(100, 20)
+class MultiHeadGATLayer(nn.Module):
+    def __init__(self, dim_in, dim_out, num_heads, merge='cat'):
+        super(MultiHeadGATLayer, self).__init__()
+        self.heads = nn.ModuleList()
+        for i in range(num_heads):
+            self.heads.append(GATLayer(dim_in, dim_out))
+        self.merge = merge
+
+    def forward(self, g, h):
+        head_outs = [attn_head(g, h) for attn_head in self.heads]
+        if self.merge == 'cat':
+            # concat on the output feature dimension (dim=1)
+            return torch.cat(head_outs, dim=1)
+        else:
+            # merge using average
+            return torch.mean(torch.stack(head_outs))
+
+
+class kronecker_3(nn.Module):
+    def __init__(self, dim_in, dim_out, num_heads, dim_self_feat):
+        super(kronecker_3, self).__init__()
+
+        self.gc1 = MultiHeadGATLayer(dim_in, 100, num_heads)
+        self.gc2 = MultiHeadGATLayer(100 * num_heads, 20, 1)
 
         self.fc1 = nn.Linear(20 * 3, 32)
         self.fc2 = nn.Linear(32, 8)
@@ -69,14 +87,14 @@ class kronecker_Net_3(nn.Module):
         out = self.fc3(out)
 
         return out
-    
-    
-class kronecker_Net_5(nn.Module):
-    def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(kronecker_Net_5, self).__init__()
 
-        self.gc1 = GCNLayer(dim_in, 100)
-        self.gc2 = GCNLayer(100, 20)
+
+class kronecker_5(nn.Module):
+    def __init__(self, dim_in, dim_out, num_heads, dim_self_feat):
+        super(kronecker_5, self).__init__()
+
+        self.gc1 = MultiHeadGATLayer(dim_in, 100, num_heads)
+        self.gc2 = MultiHeadGATLayer(100 * num_heads, 20, 1)
 
         self.fc1 = nn.Linear(20 * 5, 32)
         self.fc2 = nn.Linear(32, 8)
@@ -92,7 +110,7 @@ class kronecker_Net_5(nn.Module):
         g.ndata['h'] = h
 
         hg = dgl.mean_nodes(g, 'h')
-
+        
         hg = hg.unsqueeze(2)
         self_feat = self_feat.unsqueeze(1)
         hg = torch.bmm(hg, self_feat)
@@ -106,14 +124,14 @@ class kronecker_Net_5(nn.Module):
         out = self.fc3(out)
 
         return out
-    
 
-class kronecker_Net_7(nn.Module):
-    def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(kronecker_Net_7, self).__init__()
 
-        self.gc1 = GCNLayer(dim_in, 100)
-        self.gc2 = GCNLayer(100, 20)
+class kronecker_7(nn.Module):
+    def __init__(self, dim_in, dim_out, num_heads, dim_self_feat):
+        super(kronecker_7, self).__init__()
+
+        self.gc1 = MultiHeadGATLayer(dim_in, 100, num_heads)
+        self.gc2 = MultiHeadGATLayer(100 * num_heads, 20, 1)
 
         self.fc1 = nn.Linear(20 * 7, 64)
         self.fc2 = nn.Linear(64, 16)
@@ -129,7 +147,7 @@ class kronecker_Net_7(nn.Module):
         g.ndata['h'] = h
 
         hg = dgl.mean_nodes(g, 'h')
-
+        
         hg = hg.unsqueeze(2)
         self_feat = self_feat.unsqueeze(1)
         hg = torch.bmm(hg, self_feat)
@@ -145,12 +163,12 @@ class kronecker_Net_7(nn.Module):
         return out
     
 
-class kronecker_Net_10(nn.Module):
-    def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(kronecker_Net_10, self).__init__()
+class kronecker_10(nn.Module):
+    def __init__(self, dim_in, dim_out, num_heads, dim_self_feat):
+        super(kronecker_10, self).__init__()
 
-        self.gc1 = GCNLayer(dim_in, 100)
-        self.gc2 = GCNLayer(100, 20)
+        self.gc1 = MultiHeadGATLayer(dim_in, 100, num_heads)
+        self.gc2 = MultiHeadGATLayer(100 * num_heads, 20, 1)
 
         self.fc1 = nn.Linear(20 * 10, 64)
         self.fc2 = nn.Linear(64, 16)
@@ -166,7 +184,7 @@ class kronecker_Net_10(nn.Module):
         g.ndata['h'] = h
 
         hg = dgl.mean_nodes(g, 'h')
-
+        
         hg = hg.unsqueeze(2)
         self_feat = self_feat.unsqueeze(1)
         hg = torch.bmm(hg, self_feat)
@@ -182,14 +200,14 @@ class kronecker_Net_10(nn.Module):
         return out
     
 
-class kronecker_Net_20(nn.Module):
-    def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(kronecker_Net_20, self).__init__()
+class kronecker_20(nn.Module):
+    def __init__(self, dim_in, dim_out, num_heads, dim_self_feat):
+        super(kronecker_20, self).__init__()
 
-        self.gc1 = GCNLayer(dim_in, 100)
-        self.gc2 = GCNLayer(100, 20)
+        self.gc1 = MultiHeadGATLayer(dim_in, 100, num_heads)
+        self.gc2 = MultiHeadGATLayer(100 * num_heads, 20, 1)
 
-        self.fc1 = nn.Linear(20 * dim_self_feat, 256) 
+        self.fc1 = nn.Linear(20 * 20, 256)
         self.fc2 = nn.Linear(256, 32)
         self.fc3 = nn.Linear(32, dim_out)
 
@@ -203,7 +221,7 @@ class kronecker_Net_20(nn.Module):
         g.ndata['h'] = h
 
         hg = dgl.mean_nodes(g, 'h')
-
+        
         hg = hg.unsqueeze(2)
         self_feat = self_feat.unsqueeze(1)
         hg = torch.bmm(hg, self_feat)
@@ -217,15 +235,14 @@ class kronecker_Net_20(nn.Module):
         out = self.fc3(out)
 
         return out
+    
 
-
-# KROVEX
 class Net(nn.Module):
-    def __init__(self, dim_in, dim_out, dim_self_feat):
+    def __init__(self, dim_in, dim_out, num_heads, dim_self_feat):
         super(Net, self).__init__()
 
-        self.gc1 = GCNLayer(dim_in, 100)
-        self.gc2 = GCNLayer(100, 20)
+        self.gc1 = MultiHeadGATLayer(dim_in, 100, num_heads)
+        self.gc2 = MultiHeadGATLayer(100 * num_heads, 20, 1)
 
         self.fc1 = nn.Linear(20 * dim_self_feat, 128)
         self.fc2 = nn.Linear(128, 32)
