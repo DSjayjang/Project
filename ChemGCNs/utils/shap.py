@@ -33,8 +33,8 @@ class SHAP:
                 x_desc_list.append(self_feat.cpu().numpy())
 
                 n_collected += self_feat.shape[0]
-                if n_collected >= self.max_samples:
-                    break
+                # if n_collected >= self.max_samples:
+                #     break
         
         z_graph = np.concatenate(z_graph_list, axis = 0)
         x_desc = np.concatenate(x_desc_list, axis = 0)
