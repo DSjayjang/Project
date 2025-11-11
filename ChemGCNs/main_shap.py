@@ -91,7 +91,7 @@ def main():
 
     # SHAP Analysis
     shap = SHAP(final_model)
-    gcn_shap, desc_shap = shap.run(test_data_loader)
+    shap.run(test_data_loader)
     shap.plot_summary()
 
 if __name__ == '__main__':
