@@ -7,7 +7,6 @@ class SHAP:
     def __init__(self, model):
         self.model = model
         self.device = 'cuda'
-        # self.max_samples = max_samples
         self.graph_dim = None
         self.desc_dim = None
         self.X = None
@@ -23,31 +22,36 @@ class SHAP:
         with torch.no_grad():
             for bg, self_feat, target in test_data_loader:
                 bg = bg.to(self.device)
-                self_feat = self_feat.to(self.device)
+                self_feat = self_feat.to(self.device) # [batch x 20]
 
-                # 수정 필요
-                g_emb = self.model.get_graph_embedding(bg)
-                z_graph_list.append(g_emb.cpu().numpy())
-                x_desc_list.append(self_feat.cpu().numpy())
+                g_emb = self.model.get_graph_embedding(bg) # [batch x 20]
+                z_graph_list.append(g_emb.cpu().numpy()) # [g_emb[0], g_emb[1], ...]               
+                x_desc_list.append(self_feat.cpu().numpy()) # [self_feat[0], self_feat[1], ...]
 
-                # n_collected += self_feat.shape[0]
-                # if n_collected >= self.max_samples:
-                #     break
         
         z_graph = np.concatenate(z_graph_list, axis = 0)
         x_desc = np.concatenate(x_desc_list, axis = 0)
 
-        # ✅ Kronecker (outer) product 수행
-        fused_list = []
-        for i in range(len(z_graph)):
-            fused = np.outer(z_graph[i], x_desc[i]).flatten()  # shape: d_g * d_d
-            fused_list.append(fused)
-        fused = np.stack(fused_list, axis=0)  # shape: [N, d_g * d_d]
-        self.X = fused
-        # self.X = np.concatenate([z_graph, x_desc], axis = 1)
+        # # Kronecker (outer) product 수행
+        # fused_list = []
+        # for i in range(len(z_graph)):
+        #     fused = np.outer(z_graph[i], x_desc[i]).flatten()  # shape: d_g * d_d
+        #     fused_list.append(fused)
+        # fused = np.stack(fused_list, axis=0)  # shape: [N, d_g * d_d]
+        # self.X = fused
+        # print('self.X', self.X.shape)
 
-        self.graph_dim = z_graph.shape[1]
-        self.desc_dim = x_desc.shape[1]
+        # Kronecker product
+        z_graph=torch.tensor(z_graph)
+        x_desc=torch.tensor(x_desc)
+
+        fused = torch.bmm(z_graph.unsqueeze(2), x_desc.unsqueeze(1))
+        fused = fused.view(fused.size(0),-1)
+        self.X = fused
+        self.graph_dim = z_graph.shape[1] # 20
+        self.desc_dim = x_desc.shape[1] # 50
+
+        # self.X = np.concatenate([z_graph, x_desc], axis = 1)
 
     def _define_model_wrapper(self): # ?
         """
@@ -61,10 +65,15 @@ class SHAP:
     def run(self, test_data_loader):
         self._extract_embeddings(test_data_loader)
 
-
+        # 이건되는데
+        # model_wrapper = self._define_model_wrapper() # ?
+        # self.explainer = shap.Explainer(model_wrapper) # ?
+        # self.shap_values = self.explainer(self.X, max_evals = 2*self.X.shape[1]+1)
+        background = self.X[:10].numpy()
+        self.X = self.X.numpy()
         model_wrapper = self._define_model_wrapper() # ?
-        self.explainer = shap.Explainer(model_wrapper, self.X) # ?
-        self.shap_values = self.explainer(self.X, max_evals = 2*self.X.shape[1]+1)
+        self.explainer = shap.KernelExplainer(model_wrapper,background) # ?
+        self.shap_values = self.explainer(self.X)
 
         # graph_shap = np.abs(self.shap_values.values[:, :self.graph_dim]).mean()
         # desc_shap = np.abs(self.shap_values.values[:, self.graph_dim:]).mean()
@@ -134,8 +143,8 @@ class SHAP:
         feat_vals = self.X.reshape(n_samples, self.graph_dim, self.desc_dim)
 
         # --- descriptor별 SHAP 및 feature 값 평균 (graph dim 방향) ---
-        desc_shap_vals = shap_vals.mean(axis=1)   # (n_samples, 50)
-        desc_feat_vals = feat_vals.mean(axis=1)   # (n_samples, 50)
+        desc_shap_vals = np.abs(shap_vals).mean(axis=1)   # (n_samples, 50)
+        desc_feat_vals = np.abs(feat_vals).mean(axis=1)   # (n_samples, 50)
 
         # --- summary plot ---
         shap.summary_plot(

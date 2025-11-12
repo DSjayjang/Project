@@ -92,7 +92,7 @@ def main():
     # SHAP Analysis
     shap = SHAP(final_model)
     shap.run(test_data_loader)
-    shap.plot_summary()
+    # shap.plot_summary()
 
 if __name__ == '__main__':
     main()

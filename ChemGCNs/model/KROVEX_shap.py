@@ -256,16 +256,7 @@ class Net(nn.Module):
     #     out = self.fc3(out)
 
     #     return out
-    
-    # def get_graph_embedding(self, g):
-    #     h = F.relu(self.gc1(g, g.ndata['feat']))
-    #     h = F.relu(self.gc2(g, h))
-    #     g.ndata['h'] = h
 
-    #     hg = dgl.mean_nodes(g, 'h')
-
-    #     return hg
-    
 
     def get_graph_embedding(self, g):
         """2-layer GCN 후 그래프 임베딩 반환"""
