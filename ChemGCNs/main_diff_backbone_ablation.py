@@ -10,7 +10,7 @@ from utils.mol_props import dim_atomic_feat
 
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K
 
-backbone = 'GAT' # ['GAT', ]
+backbone = 'GAT' # [GAT, SAGE, GIN]
 
 def main():
     SET_SEED()
@@ -61,7 +61,7 @@ def main():
         model_Fusion = GAT_Fusion.Net(dim_atomic_feat, 1, 4, num_descriptors).to(device)
         
     else:
-        print('다시')
+        print('아직 모델 정의 안됨')
 
 
     # loss function

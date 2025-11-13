@@ -59,22 +59,25 @@ class SHAP:
         """
         def model_wrapper(x_concat):
             x_tensor = torch.tensor(x_concat, dtype=torch.float32).to(self.device)
-            return self.model.forward_fc(x_tensor).detach().cpu().numpy()
+            return self.model.forward(x_tensor).detach().cpu().numpy()
         return model_wrapper
 
     def run(self, test_data_loader):
         self._extract_embeddings(test_data_loader)
 
-        # 이건되는데
+        # 이건되는데 ?>> 안됨...
         # model_wrapper = self._define_model_wrapper() # ?
         # self.explainer = shap.Explainer(model_wrapper) # ?
         # self.shap_values = self.explainer(self.X, max_evals = 2*self.X.shape[1]+1)
+
         background = self.X[:10].numpy()
         self.X = self.X.numpy()
         model_wrapper = self._define_model_wrapper() # ?
         self.explainer = shap.KernelExplainer(model_wrapper,background) # ?
         self.shap_values = self.explainer(self.X)
 
+        # self.explainer = shap.Explainer(model_wrapper) # ?
+        # self.shap_values = self.explainer(self.X, max_evals= 2 * self.X.shape[1] + 1)
         # graph_shap = np.abs(self.shap_values.values[:, :self.graph_dim]).mean()
         # desc_shap = np.abs(self.shap_values.values[:, self.graph_dim:]).mean()
         
@@ -143,8 +146,8 @@ class SHAP:
         feat_vals = self.X.reshape(n_samples, self.graph_dim, self.desc_dim)
 
         # --- descriptor별 SHAP 및 feature 값 평균 (graph dim 방향) ---
-        desc_shap_vals = np.abs(shap_vals).mean(axis=1)   # (n_samples, 50)
-        desc_feat_vals = np.abs(feat_vals).mean(axis=1)   # (n_samples, 50)
+        desc_shap_vals = shap_vals.mean(axis=1)   # (n_samples, 50)
+        desc_feat_vals = feat_vals.mean(axis=1)   # (n_samples, 50)
 
         # --- summary plot ---
         shap.summary_plot(

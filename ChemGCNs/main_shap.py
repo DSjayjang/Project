@@ -16,7 +16,7 @@ from model import KROVEX_shap
 from configs import config
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K
 
-from utils.shap import SHAP # SHAP 분석
+from utils.shap_v2 import SHAP # SHAP 분석
 
 def main():
     SET_SEED()
@@ -46,8 +46,8 @@ def main():
         print('DATASET_NAME: ', DATASET_NAME)
         global BATCH_SIZE
         BATCH_SIZE = 128
-        from utils.ablation import mol_collate_scgas as mcol
-        dataset = mc.read_dataset_esol(DATASET_PATH + '.csv')
+        # from utils.ablation import mol_collate_scgas as mcol
+        dataset = mc.read_dataset_scgas(DATASET_PATH + '.csv')
         num_descriptors = 23
         descriptors = mol_collate.descriptor_selection_scgas
 
@@ -58,8 +58,8 @@ def main():
     model_KROVEX = KROVEX_shap.Net(dim_atomic_feat, 1, num_descriptors).to(device)
 
     # loss function
-    criterion = nn.L1Loss(reduction='sum')
-    # criterion = nn.MSELoss(reduction='sum')
+    # criterion = nn.L1Loss(reduction='sum')
+    criterion = nn.MSELoss(reduction='sum')
 
     val_losses = dict()
 
@@ -69,7 +69,7 @@ def main():
     print('Val loss (KROVEX): ' + str(val_losses['KROVEX']))
 
     final_model = copy.deepcopy(best_model)
-    final_model.apply(weight_reset) # initializing weights
+    # final_model.apply(weight_reset) # initializing weights
 
 
     optimizer = optim.Adam(final_model.parameters(), weight_decay=0.01)
@@ -90,9 +90,9 @@ def main():
     print('test_losse:', test_loss)
 
     # SHAP Analysis
-    shap = SHAP(final_model)
-    shap.run(test_data_loader)
-    # shap.plot_summary()
+    shap_analyzer = SHAP(final_model, device='cuda')
+    shap_analyzer.run(test_data_loader, background_size=50)
+    shap_analyzer.plot_summary()
 
 if __name__ == '__main__':
     main()

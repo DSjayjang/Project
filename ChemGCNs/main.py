@@ -12,7 +12,7 @@ from utils import mol_collate, evaluation
 from utils.utils import weight_reset
 from utils.mol_props import dim_atomic_feat
 
-from model import KROVEX
+from model import KROVEX, Bilinear # bilinear 지우기
 from configs import config
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K
 
@@ -44,8 +44,7 @@ def main():
         print('DATASET_NAME: ', DATASET_NAME)
         global BATCH_SIZE
         BATCH_SIZE = 128
-        from utils.ablation import mol_collate_scgas as mcol
-        dataset = mc.read_dataset_esol(DATASET_PATH + '.csv')
+        dataset = mc.read_dataset_scgas(DATASET_PATH + '.csv')
         num_descriptors = 23
         descriptors = mol_collate.descriptor_selection_scgas
 
@@ -53,7 +52,7 @@ def main():
     train_dataset, test_dataset = train_test_split(dataset, test_size = 0.2, random_state = config.SEED)
 
     # kronecker-product + descriptor selection
-    model_KROVEX = KROVEX.Net(dim_atomic_feat, 1, num_descriptors).to(device)
+    model_KROVEX = Bilinear.bilinear_Net(dim_atomic_feat, 1, num_descriptors).to(device)
 
     # loss function
     criterion = nn.L1Loss(reduction='sum')
