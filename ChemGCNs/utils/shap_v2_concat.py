@@ -39,26 +39,26 @@ class SHAP:
         #     'fr_aryl_methyl', 'NumHDonors', 'fr_imide', 'fr_priamide', 'RingCount', 
         #     'SlogP_VSA8', 'VSA_EState4', 'SMR_VSA5', 'FpDensityMorgan3', 'FractionCSP3'
         # ]
-        # # esol
-        # self.desc_feature_names = ['MolLogP', 'MaxAbsPartialCharge', 'MaxEStateIndex', 'SMR_VSA10', 'Kappa2', 
-        #         'BCUT2D_MWLOW', 'PEOE_VSA13', 'MinAbsPartialCharge', 'BCUT2D_CHGHI', 'PEOE_VSA6', 
-        #         'SlogP_VSA1', 'fr_nitro', 'BalabanJ', 'SMR_VSA9', 'fr_alkyl_halide', 
-        #         'fr_hdrzine', 'PEOE_VSA8', 'fr_Ar_NH', 'fr_imidazole', 'fr_Nhpyrrole', 
-        #         'EState_VSA5', 'PEOE_VSA4', 'fr_ester', 'PEOE_VSA2', 'NumAromaticCarbocycles', 
-        #         'BCUT2D_LOGPHI', 'EState_VSA11', 'fr_furan', 'EState_VSA2', 'fr_benzene', 
-        #         'fr_sulfide', 'fr_aryl_methyl', 'SlogP_VSA10', 'HeavyAtomMolWt', 'fr_nitro_arom_nonortho', 
-        #         'FpDensityMorgan2', 'EState_VSA8', 'fr_bicyclic', 'fr_aniline', 'fr_allylic_oxid', 
-        #         'fr_C_S', 'SlogP_VSA7', 'SlogP_VSA4', 'fr_para_hydroxylation', 'PEOE_VSA7', 
-        #         'fr_Al_OH_noTert', 'fr_pyridine', 'fr_phos_acid', 'fr_phos_ester', 'NumAromaticHeterocycles', 
-        #         'EState_VSA7', 'PEOE_VSA12', 'Ipc', 'FpDensityMorgan1', 'PEOE_VSA14', 
-        #         'fr_guanido', 'fr_benzodiazepine', 'fr_thiophene', 'fr_Ndealkylation1', 'fr_aldehyde', 
-        #         'fr_term_acetylene', 'SMR_VSA2', 'fr_lactone']
-        # scgas
-        self.desc_feature_names =['MolMR', 'TPSA', 'fr_halogen', 'SlogP_VSA12', 'RingCount', 
-                                'Kappa1', 'NumHAcceptors', 'NumHDonors', 'SMR_VSA7', 'SMR_VSA5',
-                                'Chi1', 'Chi3n', 'BertzCT', 'VSA_EState8', 'NumAliphaticCarbocycles',
-                                'HallKierAlpha', 'VSA_EState6', 'NumAromaticRings', 'Chi4n', 'PEOE_VSA7',
-                                'SlogP_VSA5', 'VSA_EState7', 'NOCount']
+        # esol
+        self.desc_feature_names = ['MolLogP', 'MaxAbsPartialCharge', 'MaxEStateIndex', 'SMR_VSA10', 'Kappa2', 
+                'BCUT2D_MWLOW', 'PEOE_VSA13', 'MinAbsPartialCharge', 'BCUT2D_CHGHI', 'PEOE_VSA6', 
+                'SlogP_VSA1', 'fr_nitro', 'BalabanJ', 'SMR_VSA9', 'fr_alkyl_halide', 
+                'fr_hdrzine', 'PEOE_VSA8', 'fr_Ar_NH', 'fr_imidazole', 'fr_Nhpyrrole', 
+                'EState_VSA5', 'PEOE_VSA4', 'fr_ester', 'PEOE_VSA2', 'NumAromaticCarbocycles', 
+                'BCUT2D_LOGPHI', 'EState_VSA11', 'fr_furan', 'EState_VSA2', 'fr_benzene', 
+                'fr_sulfide', 'fr_aryl_methyl', 'SlogP_VSA10', 'HeavyAtomMolWt', 'fr_nitro_arom_nonortho', 
+                'FpDensityMorgan2', 'EState_VSA8', 'fr_bicyclic', 'fr_aniline', 'fr_allylic_oxid', 
+                'fr_C_S', 'SlogP_VSA7', 'SlogP_VSA4', 'fr_para_hydroxylation', 'PEOE_VSA7', 
+                'fr_Al_OH_noTert', 'fr_pyridine', 'fr_phos_acid', 'fr_phos_ester', 'NumAromaticHeterocycles', 
+                'EState_VSA7', 'PEOE_VSA12', 'Ipc', 'FpDensityMorgan1', 'PEOE_VSA14', 
+                'fr_guanido', 'fr_benzodiazepine', 'fr_thiophene', 'fr_Ndealkylation1', 'fr_aldehyde', 
+                'fr_term_acetylene', 'SMR_VSA2', 'fr_lactone']
+        # # scgas
+        # self.desc_feature_names =['MolMR', 'TPSA', 'fr_halogen', 'SlogP_VSA12', 'RingCount', 
+        #                         'Kappa1', 'NumHAcceptors', 'NumHDonors', 'SMR_VSA7', 'SMR_VSA5',
+        #                         'Chi1', 'Chi3n', 'BertzCT', 'VSA_EState8', 'NumAliphaticCarbocycles',
+        #                         'HallKierAlpha', 'VSA_EState6', 'NumAromaticRings', 'Chi4n', 'PEOE_VSA7',
+        #                         'SlogP_VSA5', 'VSA_EState7', 'NOCount']
     # -------------------------------------------------
     # 1) test_data_loader에서 z(graph 임베딩)와 d(descriptor) 추출
     #    그리고 X_concat = [z, d] 생성

@@ -316,20 +316,20 @@ def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epoch
             best_k = k
     print(f'Best Validation Loss: {best_loss}')
 
-    # Plot fold별 loss
-    fig, axes = plt.subplots(1, num_folds, figsize=(5 * num_folds, 5), sharey=True)
-    for k in range(num_folds):
-        epochs = list(range(1, max_epochs + 1))
-        axes[k].plot(epochs, fold_train_losses[k], label="Train Loss")
+    # # Plot fold별 loss
+    # fig, axes = plt.subplots(1, num_folds, figsize=(5 * num_folds, 5), sharey=True)
+    # for k in range(num_folds):
+    #     epochs = list(range(1, max_epochs + 1))
+    #     axes[k].plot(epochs, fold_train_losses[k], label="Train Loss")
 
-        axes[k].set_xlabel("Epoch")
-        axes[k].set_ylabel("Loss")
-        axes[k].legend()
-        axes[k].set_title(f"Fold {k+1}")
+    #     axes[k].set_xlabel("Epoch")
+    #     axes[k].set_ylabel("Loss")
+    #     axes[k].legend()
+    #     axes[k].set_title(f"Fold {k+1}")
 
-    plt.suptitle("Train Loss Across Folds")
-    plt.tight_layout(rect=[0, 0, 1, 0.95])
-    plt.show()
+    # plt.suptitle("Train Loss Across Folds")
+    # plt.tight_layout(rect=[0, 0, 1, 0.95])
+    # plt.show()
 
     Loss_df = pd.DataFrame({'Fold': list(range(1, len(fold_train_losses) + 1)), 'Train Loss': fold_train_losses})
     Loss_df.to_csv(r'.\results\loss.csv', index = False)
