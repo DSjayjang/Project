@@ -4,7 +4,7 @@ DATASET: 'freesolv' # freesolv / esol / lipo / scgas
 # lipo / logvp / VP / vp_unique / logvp_cp / logvp_cp_0927
 
 BATCH_SIZE: 32
-MAX_EPOCHS: 300
-K: 5
+MAX_EPOCHS: 1
+K: 2
 
 R_HOME: 'C:\Programming\R\R-4.4.2'

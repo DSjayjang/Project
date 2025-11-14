@@ -52,7 +52,7 @@ def main():
     print('--------- EGCN ---------')
     test_losses['EGCN'] = trainer.cross_validation(dataset, model_EGCN, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.collate_egcn)
     print('test loss (EGCN): ' + str(test_losses['EGCN']))
-
+    
     print('test_losse:', test_losses)
     print(DATASET_NAME)
 

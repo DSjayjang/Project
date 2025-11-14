@@ -32,7 +32,8 @@ class GCNLayer(nn.Module):
         g.apply_nodes(func = self.apply_mod)
 
         return g.ndata.pop('h')
-    
+
+
 class concat_Net_3(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
         super(concat_Net_3, self).__init__()
@@ -40,7 +41,7 @@ class concat_Net_3(nn.Module):
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
 
-        self.fc1 = nn.Linear(20 + dim_self_feat, 10)
+        self.fc1 = nn.Linear(20 + 3, 10)
         self.fc2 = nn.Linear(10, dim_out)
 
 
@@ -57,7 +58,8 @@ class concat_Net_3(nn.Module):
         out = self.fc2(out)
 
         return out
-    
+
+
 class concat_Net_5(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
         super(concat_Net_5, self).__init__()
@@ -83,6 +85,7 @@ class concat_Net_5(nn.Module):
 
         return out
 
+
 class concat_Net_7(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
         super(concat_Net_7, self).__init__()
@@ -90,7 +93,7 @@ class concat_Net_7(nn.Module):
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
 
-        self.fc1 = nn.Linear(20 + dim_self_feat, 10)
+        self.fc1 = nn.Linear(20 + 7, 10)
         self.fc2 = nn.Linear(10, dim_out)
 
 
@@ -107,7 +110,8 @@ class concat_Net_7(nn.Module):
         out = self.fc2(out)
 
         return out
-    
+
+
 class concat_Net_10(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
         super(concat_Net_10, self).__init__()
@@ -132,7 +136,8 @@ class concat_Net_10(nn.Module):
         out = self.fc2(out)
 
         return out
-    
+
+
 class concat_Net_20(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
         super(concat_Net_20, self).__init__()
@@ -143,9 +148,7 @@ class concat_Net_20(nn.Module):
         self.fc1 = nn.Linear(20 + 20, 10)
         self.fc2 = nn.Linear(10, dim_out)
 
-
     def forward(self, g, self_feat):
-
         h = F.relu(self.gc1(g, g.ndata['feat']))
         h = F.relu(self.gc2(g, h))
         g.ndata['h'] = h
@@ -157,7 +160,8 @@ class concat_Net_20(nn.Module):
         out = self.fc2(out)
 
         return out
-    
+
+
 class concat_Net(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
         super(concat_Net, self).__init__()
@@ -168,9 +172,7 @@ class concat_Net(nn.Module):
         self.fc1 = nn.Linear(20 + dim_self_feat, 10)
         self.fc2 = nn.Linear(10, dim_out)
 
-
     def forward(self, g, self_feat):
-
         h = F.relu(self.gc1(g, g.ndata['feat']))
         h = F.relu(self.gc2(g, h))
         g.ndata['h'] = h
