@@ -100,6 +100,15 @@ def test_model(model, criterion, test_data_loader, accs=None):
 
     return test_loss, preds
 
+# ======
+def clone_model(model):
+    # 모델의 __init__ 인자를 저장해두었다고 가정
+    args = model.init_args
+    new_model = type(model)(*args).to(next(model.parameters()).device)
+    new_model.load_state_dict(model.state_dict())
+    return new_model
+# ======
+
 def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epochs, train, test, collate, accs=None):
     num_data_points = len(dataset)
     size_fold = int(len(dataset) / float(num_folds))
@@ -114,7 +123,8 @@ def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epoch
     folds.append(dataset[(num_folds - 1) * size_fold:num_data_points])
 
     for k in range(0, num_folds):
-        models.append(copy.deepcopy(model))
+        # models.append(copy.deepcopy(model))
+        models.append(clone_model(model))
         optimizers.append(optim.Adam(models[k].parameters(), weight_decay=0.01))
 
     for k in range(0, num_folds):

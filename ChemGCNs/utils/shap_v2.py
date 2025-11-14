@@ -172,6 +172,12 @@ class SHAP:
         graph_shap = mean_abs[:self.graph_dim]        # (g,)
         desc_shap  = mean_abs[self.graph_dim:]        # (D,)
 
+        print('mean_abs.shape::::::', mean_abs.shape)
+        print('graph_shap.shape::::::', graph_shap.shape)
+        print('desc_shap.shape::::::', desc_shap.shape)
+
+
+
         graph_total = graph_shap.sum()
         desc_total  = desc_shap.sum()
         total = graph_total + desc_total

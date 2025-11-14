@@ -33,17 +33,17 @@ def read_dataset(file_name):
     return samples
 
 
-# freesolv
-def read_dataset_freesolv(file_name):
+def read_dataset_freesolv_scaffold(file_name):
     samples = []
     mol_graphs = []
+    smiles_list = []
+
     data_mat = np.array(pd.read_csv(file_name))
     smiles = data_mat[:, 0]
     target = np.array(data_mat[:, 1:3], dtype=float)
 
     for i in range(0, data_mat.shape[0]):
         mol, mol_graph = smiles_to_mol_graph(smiles[i])
-
         if mol is not None and mol_graph is not None:
             # 1
             mol_graph.NHOHCount = dsc.NHOHCount(mol)
@@ -108,7 +108,9 @@ def read_dataset_freesolv(file_name):
 
             samples.append((mol_graph, target[i]))
             mol_graphs.append(mol_graph)
+            smiles_list.append(smiles[i])
 
+    # feature normalization
     for feat in ['NHOHCount', 'SlogP_VSA2', 'SlogP_VSA10', 'NumAromaticRings', 'MaxEStateIndex', 
                 'PEOE_VSA14', 'fr_Ar_NH', 'SMR_VSA3', 'SMR_VSA7', 'SlogP_VSA5', 
                 'VSA_EState8', 'MaxAbsEStateIndex', 'PEOE_VSA2', 'fr_Nhpyrrole', 'fr_amide', 
@@ -121,13 +123,21 @@ def read_dataset_freesolv(file_name):
                 'SlogP_VSA8', 'VSA_EState4', 'SMR_VSA5', 'FpDensityMorgan3', 'FractionCSP3']:
         FeatureNormalization(mol_graphs, feat)
 
-    return samples
+    # 여기서는 DeepChem scaffold split을 위해
+    # samples 대신 아래 3개를 반환하도록 수정가능
+    X = mol_graphs                # 그래프 리스트
+    y = np.array(target)          # (N, 2)
+    ids = np.array(smiles_list)   # SMILES 리스트
+
+    return X, y, ids
 
 
 # esol
-def read_dataset_esol(file_name):
+def read_dataset_esol_scaffold(file_name):
     samples = []
     mol_graphs = []
+    smiles_list = []
+
     data_mat = np.array(pd.read_csv(file_name))
     smiles = data_mat[:, 0]
     target = np.array(data_mat[:, 1:3], dtype=float)
@@ -215,6 +225,7 @@ def read_dataset_esol(file_name):
 
             samples.append((mol_graph, target[i]))
             mol_graphs.append(mol_graph)
+            smiles_list.append(smiles[i])
 
     for feat in ['MolLogP', 'MaxAbsPartialCharge', 'MaxEStateIndex', 'SMR_VSA10', 'Kappa2', 
                 'BCUT2D_MWLOW', 'PEOE_VSA13', 'MinAbsPartialCharge', 'BCUT2D_CHGHI', 'PEOE_VSA6', 
@@ -231,10 +242,17 @@ def read_dataset_esol(file_name):
                 'fr_term_acetylene', 'SMR_VSA2', 'fr_lactone']:
         FeatureNormalization(mol_graphs, feat)
 
-    return samples
+    # 여기서는 DeepChem scaffold split을 위해
+    # samples 대신 아래 3개를 반환하도록 수정가능
+    X = mol_graphs                # 그래프 리스트
+    y = np.array(target)          # (N, 2)
+    ids = np.array(smiles_list)   # SMILES 리스트
+
+    return X, y, ids
+
 
 # lipo
-def read_dataset_lipo(file_name):
+def read_dataset_lipo_scaffold(file_name):
     samples = []
     mol_graphs = []
     data_mat = np.array(pd.read_csv(file_name))
@@ -290,9 +308,11 @@ def read_dataset_lipo(file_name):
 
 
 # Self-Curated Gas
-def read_dataset_scgas(file_name):
+def read_dataset_scgas_scaffold(file_name):
     samples = []
     mol_graphs = []
+    smiles_list = []
+
     data_mat = np.array(pd.read_csv(file_name))
     smiles = data_mat[:, 0]
     target = np.array(data_mat[:, 1:3], dtype=float)
@@ -332,6 +352,7 @@ def read_dataset_scgas(file_name):
 
             samples.append((mol_graph, target[i]))
             mol_graphs.append(mol_graph)
+            smiles_list.append(smiles[i])
 
     for feat in ['MolMR', 'TPSA', 'fr_halogen', 'SlogP_VSA12', 'RingCount', 
                 'Kappa1', 'NumHAcceptors', 'NumHDonors', 'SMR_VSA7', 'SMR_VSA5',
@@ -340,4 +361,11 @@ def read_dataset_scgas(file_name):
                 'SlogP_VSA5', 'VSA_EState7', 'NOCount']:
         FeatureNormalization(mol_graphs, feat)
 
-    return samples
+
+    # 여기서는 DeepChem scaffold split을 위해
+    # samples 대신 아래 3개를 반환하도록 수정가능
+    X = mol_graphs                # 그래프 리스트
+    y = np.array(target)          # (N, 2)
+    ids = np.array(smiles_list)   # SMILES 리스트
+
+    return X, y, ids

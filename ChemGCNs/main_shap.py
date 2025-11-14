@@ -92,7 +92,7 @@ def main():
     # SHAP Analysis
     shap_analyzer = SHAP(final_model, device='cuda')
     shap_analyzer.run(test_data_loader, background_size=50)
-    shap_analyzer.plot_summary()
+    # shap_analyzer.plot_summary()
 
 if __name__ == '__main__':
     main()
