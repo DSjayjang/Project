@@ -56,6 +56,8 @@ def main():
         from utils import mol_collate_gcn
         dataset_backbone = mc.read_dataset(DATASET_PATH + '.csv')
         random.shuffle(dataset_backbone)
+        model_backbone_R = EGAT.Net(dim_atomic_feat, 1, 4, 1).to(device)
+        model_backbone_S = EGAT.Net(dim_atomic_feat, 1, 4, 2).to(device)
         model_backbone = EGAT.Net(dim_atomic_feat, 1, 4, 3).to(device)
 
         # GAT + concatenation + descriptor selection
@@ -87,6 +89,14 @@ def main():
     test_losses = dict()
 
     #------------------------ Backbone ------------------------#
+    print('--------- Backbone with predefined descriptor Ring ---------')
+    test_losses['Backbone_R'] = trainer.cross_validation(dataset_backbone, model_backbone_R, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn_ring)
+    print('test loss (Backbone_R): ' + str(test_losses['Backbone_R']))
+
+    print('--------- Backbone with predefined descriptor Scale ---------')
+    test_losses['Backbone_S'] = trainer.cross_validation(dataset_backbone, model_backbone_S, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn_scale)
+    print('test loss (Backbone_S): ' + str(test_losses['Backbone_S']))
+
     print('--------- Backbone with predefined descriptors ---------')
     test_losses['Backbone'] = trainer.cross_validation(dataset_backbone, model_backbone, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn)
     print('test loss (Backbone): ' + str(test_losses['Backbone']))
