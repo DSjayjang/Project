@@ -10,7 +10,7 @@ from utils.mol_props import dim_atomic_feat
 
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K
 
-backbone = 'GAT' # [GAT, SAGE, GIN]
+backbone = 'GIN' # [GAT, GIN, SAGE]
 
 def main():
     SET_SEED()
@@ -51,14 +51,18 @@ def main():
     random.shuffle(dataset)
 
     if backbone == 'GAT':
-        # EGAT
-        from model import EGAT
+        from model import GAT
         from utils import mol_collate_gcn
         dataset_backbone = mc.read_dataset(DATASET_PATH + '.csv')
         random.shuffle(dataset_backbone)
+
+        model_backbone = GAT.Net(dim_atomic_feat, 1).to(device)
+        
+        # EGAT
+        from model import EGAT
         model_backbone_R = EGAT.Net(dim_atomic_feat, 1, 4, 1).to(device)
         model_backbone_S = EGAT.Net(dim_atomic_feat, 1, 4, 2).to(device)
-        model_backbone = EGAT.Net(dim_atomic_feat, 1, 4, 3).to(device)
+        model_backbone_E = EGAT.Net(dim_atomic_feat, 1, 4, 3).to(device)
 
         # GAT + concatenation + descriptor selection
         from model import GAT_CONCAT_DS
@@ -69,15 +73,46 @@ def main():
         model_concat_20 = GAT_CONCAT_DS.concat_20(dim_atomic_feat, 1, 4, 20).to(device)
         model_concat_ds = GAT_CONCAT_DS.concat_Net(dim_atomic_feat, 1, 4, num_descriptors).to(device)
 
-        # # GAT + kronecker-product + descriptor selection
-        # from model import GAT_Fusion
-        # model_kronecker_3 = GAT_Fusion.kronecker_3(dim_atomic_feat, 1, 4, 3).to(device)
-        # model_kronecker_5 = GAT_Fusion.kronecker_5(dim_atomic_feat, 1, 4, 5).to(device)
-        # model_kronecker_7 = GAT_Fusion.kronecker_7(dim_atomic_feat, 1, 4, 7).to(device)
-        # model_kronecker_10 = GAT_Fusion.kronecker_10(dim_atomic_feat, 1, 4, 10).to(device)
-        # model_kronecker_20 = GAT_Fusion.kronecker_20(dim_atomic_feat, 1, 4, 20).to(device)
-        # model_Fusion = GAT_Fusion.Net(dim_atomic_feat, 1, 4, num_descriptors).to(device)
-        
+        # GAT + kronecker-product + descriptor selection
+        from model import GAT_Fusion
+        model_kronecker_3 = GAT_Fusion.kronecker_3(dim_atomic_feat, 1, 4, 3).to(device)
+        model_kronecker_5 = GAT_Fusion.kronecker_5(dim_atomic_feat, 1, 4, 5).to(device)
+        model_kronecker_7 = GAT_Fusion.kronecker_7(dim_atomic_feat, 1, 4, 7).to(device)
+        model_kronecker_10 = GAT_Fusion.kronecker_10(dim_atomic_feat, 1, 4, 10).to(device)
+        model_kronecker_20 = GAT_Fusion.kronecker_20(dim_atomic_feat, 1, 4, 20).to(device)
+        model_Fusion = GAT_Fusion.Net(dim_atomic_feat, 1, 4, num_descriptors).to(device)
+    
+    elif backbone == 'GIN':
+        from model import GIN
+        from utils import mol_collate_gcn
+        dataset_backbone = mc.read_dataset(DATASET_PATH + '.csv')
+        random.shuffle(dataset_backbone)
+
+        model_backbone = GIN.Net(dim_atomic_feat, 1).to(device)
+
+        # EGIN
+        from model import EGIN
+        model_backbone_R = EGIN.Net(dim_atomic_feat, 1, 1).to(device)
+        model_backbone_S = EGIN.Net(dim_atomic_feat, 1, 2).to(device)
+        model_backbone_E = EGIN.Net(dim_atomic_feat, 1, 3).to(device)
+
+        # GIN + concatenation + descriptor selection
+        from model import GIN_CONCAT_DS
+        model_concat_3 = GIN_CONCAT_DS.concat_Net_3(dim_atomic_feat, 1, 3).to(device)
+        model_concat_5 = GIN_CONCAT_DS.concat_Net_5(dim_atomic_feat, 1, 5).to(device)
+        model_concat_7 = GIN_CONCAT_DS.concat_Net_7(dim_atomic_feat, 1, 7).to(device)
+        model_concat_10 = GIN_CONCAT_DS.concat_Net_10(dim_atomic_feat, 1, 10).to(device)
+        model_concat_20 = GIN_CONCAT_DS.concat_Net_20(dim_atomic_feat, 1, 20).to(device)
+        model_concat_ds = GIN_CONCAT_DS.Net(dim_atomic_feat, 1, num_descriptors).to(device)
+
+        # GIN + kronecker-product + descriptor selection
+        from model import GIN_Fusion
+        model_kronecker_3 = GIN_Fusion.kronecker_Net_3(dim_atomic_feat, 1, 3).to(device)
+        model_kronecker_5 = GIN_Fusion.kronecker_Net_5(dim_atomic_feat, 1, 5).to(device)
+        model_kronecker_7 = GIN_Fusion.kronecker_Net_7(dim_atomic_feat, 1, 7).to(device)
+        model_kronecker_10 = GIN_Fusion.kronecker_Net_10(dim_atomic_feat, 1, 10).to(device)
+        model_kronecker_20 = GIN_Fusion.kronecker_Net_20(dim_atomic_feat, 1, 20).to(device)
+        model_Fusion = GIN_Fusion.Net(dim_atomic_feat, 1, num_descriptors).to(device)
     else:
         print('아직 모델 정의 안됨')
 
@@ -89,6 +124,10 @@ def main():
     test_losses = dict()
 
     #------------------------ Backbone ------------------------#
+    print('--------- Vanilla Backbone ---------')
+    test_losses['Backbone'] = trainer.cross_validation(dataset_backbone, model_backbone, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_gcn, trainer.test_gcn, mol_collate_gcn.collate_gcn)
+    print('test loss (Backbone): ' + str(test_losses['Backbone']))
+
     print('--------- Backbone with predefined descriptor Ring ---------')
     test_losses['Backbone_R'] = trainer.cross_validation(dataset_backbone, model_backbone_R, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn_ring)
     print('test loss (Backbone_R): ' + str(test_losses['Backbone_R']))
@@ -98,8 +137,8 @@ def main():
     print('test loss (Backbone_S): ' + str(test_losses['Backbone_S']))
 
     print('--------- Backbone with predefined descriptors ---------')
-    test_losses['Backbone'] = trainer.cross_validation(dataset_backbone, model_backbone, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn)
-    print('test loss (Backbone): ' + str(test_losses['Backbone']))
+    test_losses['Backbone_E'] = trainer.cross_validation(dataset_backbone, model_backbone_E, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn)
+    print('test loss (Backbone_E): ' + str(test_losses['Backbone_E']))
 
 
     #------------------------ concatenation + descriptor selection ------------------------#
@@ -128,30 +167,30 @@ def main():
     print('test loss (Backbone_concat): ' + str(test_losses['Backbone_concat']))
 
 
-    # #------------------------ kronecker-product + descriptor selection ------------------------#
-    # print('--------- kronecker-product with 3 descriptors ---------')
-    # test_losses['kronecker_3'] = trainer.cross_validation(dataset, model_kronecker_3, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_3)
-    # print('test loss (kronecker_3): ' + str(test_losses['kronecker_3']))
+    #------------------------ kronecker-product + descriptor selection ------------------------#
+    print('--------- kronecker-product with 3 descriptors ---------')
+    test_losses['kronecker_3'] = trainer.cross_validation(dataset, model_kronecker_3, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_3)
+    print('test loss (kronecker_3): ' + str(test_losses['kronecker_3']))
 
-    # print('--------- kronecker-product with 5 descriptors ---------')
-    # test_losses['kronecker_5'] = trainer.cross_validation(dataset, model_kronecker_5, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_5)
-    # print('test loss (kronecker_5): ' + str(test_losses['kronecker_5']))
+    print('--------- kronecker-product with 5 descriptors ---------')
+    test_losses['kronecker_5'] = trainer.cross_validation(dataset, model_kronecker_5, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_5)
+    print('test loss (kronecker_5): ' + str(test_losses['kronecker_5']))
 
-    # print('--------- kronecker-product with 7 descriptors ---------')
-    # test_losses['kronecker_7'] = trainer.cross_validation(dataset, model_kronecker_7, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_7)
-    # print('test loss (kronecker_7): ' + str(test_losses['kronecker_7']))
+    print('--------- kronecker-product with 7 descriptors ---------')
+    test_losses['kronecker_7'] = trainer.cross_validation(dataset, model_kronecker_7, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_7)
+    print('test loss (kronecker_7): ' + str(test_losses['kronecker_7']))
 
-    # print('--------- kronecker-product with 10 descriptors ---------')
-    # test_losses['kronecker_10'] = trainer.cross_validation(dataset, model_kronecker_10, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_10)
-    # print('test loss (kronecker_10): ' + str(test_losses['kronecker_10']))
+    print('--------- kronecker-product with 10 descriptors ---------')
+    test_losses['kronecker_10'] = trainer.cross_validation(dataset, model_kronecker_10, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_10)
+    print('test loss (kronecker_10): ' + str(test_losses['kronecker_10']))
 
-    # print('--------- kronecker-product with 20 descriptors ---------')
-    # test_losses['kronecker_20'] = trainer.cross_validation(dataset, model_kronecker_20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_20)
-    # print('test loss (kronecker_20): ' + str(test_losses['kronecker_20']))
+    print('--------- kronecker-product with 20 descriptors ---------')
+    test_losses['kronecker_20'] = trainer.cross_validation(dataset, model_kronecker_20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_20)
+    print('test loss (kronecker_20): ' + str(test_losses['kronecker_20']))
 
-    # print('--------- kronecker-product with descriptor selection ---------')
-    # test_losses['Backbone_Fusion'] = trainer.cross_validation(dataset, model_Fusion, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, descriptors)
-    # print('test loss (Backbone_Fusion): ' + str(test_losses['Backbone_Fusion']))
+    print('--------- kronecker-product with descriptor selection ---------')
+    test_losses['Backbone_Fusion'] = trainer.cross_validation(dataset, model_Fusion, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, descriptors)
+    print('test loss (Backbone_Fusion): ' + str(test_losses['Backbone_Fusion']))
 
 
     print('test_losse:', test_losses)

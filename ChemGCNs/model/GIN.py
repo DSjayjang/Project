@@ -1,65 +1,55 @@
-# import torch.nn as nn
-# import torch.nn.functional as F
-# from torch_geometric.nn import GINConv
-# from torch_geometric.nn import global_add_pool
-
-
-# class Net(nn.Module):
-#     def __init__(self, num_node_feats, dim_out):
-#         super(Net, self).__init__()
-#         self.gc1 = GINConv(nn.Linear(num_node_feats, 256))
-#         self.bn1 = nn.BatchNorm1d(256)
-#         self.gc2 = GINConv(nn.Linear(256, 256))
-#         self.bn2 = nn.BatchNorm1d(256)
-#         self.gc3 = GINConv(nn.Linear(256, 256))
-#         self.bn3 = nn.BatchNorm1d(256)
-#         self.fc2 = nn.Linear(256, 196)
-#         self.bn4 = nn.BatchNorm1d(196)
-#         self.fc3 = nn.Linear(196, dim_out)
-
-#     def forward(self, g):
-#         h = F.relu(self.bn1(self.gc1(g.x, g.edge_index)))
-#         h = F.relu(self.bn2(self.gc2(h, g.edge_index)))
-#         h = F.relu(self.bn3(self.gc3(h, g.edge_index)))
-#         hg = F.softplus(global_add_pool(h, g.batch))
-#         hg = F.softplus(self.bn4(self.fc2(hg)))
-#         hg = self.fc3(hg)
-#         out = F.normalize(hg)
-
-#         return out
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import dgl
 from dgl.nn.pytorch import GINConv
+import dgl
+
+class MLP(nn.Module):
+    """2-layer MLP for GINConv."""
+    def __init__(self, in_channels, hidden_channels, out_channels):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(in_channels, hidden_channels),
+            nn.BatchNorm1d(hidden_channels),
+            nn.ReLU(),
+            nn.Linear(hidden_channels, out_channels)
+        )
+
+    def forward(self, x):
+        return self.net(x)
 
 
 class Net(nn.Module):
-    def __init__(self, num_node_feats, dim_out):
-        super(Net, self).__init__()
+    def __init__(self, dim_in, dim_out):
+        super().__init__()
 
-        self.gc1 = GINConv(nn.Sequential(nn.Linear(num_node_feats, 256),nn.ReLU(),nn.Linear(256, 256)), 'sum')
-        self.gc2 = GINConv(nn.Sequential(nn.Linear(256, 256),nn.ReLU(),nn.Linear(256, 256)),'sum')
-        self.gc3 = GINConv(nn.Sequential(nn.Linear(256, 256),nn.ReLU(),nn.Linear(256, 256)),'sum')
-        self.fc1 = nn.Linear(256, 196)
-        self.fc2 = nn.Linear(196, dim_out)
+        mlp1 = MLP(dim_in, 100, 100)
+        self.gin1 = GINConv(mlp1)
+        self.bn1 = nn.BatchNorm1d(100)
 
-        self.bn1 = nn.BatchNorm1d(256)
-        self.bn2 = nn.BatchNorm1d(256)
-        self.bn3 = nn.BatchNorm1d(256)
-        self.bn4 = nn.BatchNorm1d(196)
+        mlp2 = MLP(100, 20, 20)
+        self.gin2 = GINConv(mlp2)
+        self.bn2 = nn.BatchNorm1d(20)
+
+        self.fc1 = nn.Linear(20, 10)
+        self.fc2 = nn.Linear(10, dim_out)
 
     def forward(self, g):
-        h = F.relu(self.bn1(self.gc1(g, g.ndata['feat'] )))
-        h = F.relu(self.bn2(self.gc2(g, h)))
-        h = F.relu(self.bn3(self.gc3(g, h)))
+        h = g.ndata['feat']
+
+        h = self.gin1(g, h)
+        h = self.bn1(h)
+        h = F.relu(h)
+
+        h = self.gin2(g, h)
+        h = self.bn2(h)
+        h = F.relu(h)
+
         g.ndata['h'] = h
 
-        hg = dgl.sum_nodes(g, 'h')
+        hg = dgl.mean_nodes(g, 'h')
 
-        hg = F.softplus(self.bn4(self.fc1(hg)))
-        hg = self.fc2(hg)
-
-        out = F.normalize(hg)
+        out = F.relu(self.fc1(hg))
+        out = self.fc2(out)
 
         return out

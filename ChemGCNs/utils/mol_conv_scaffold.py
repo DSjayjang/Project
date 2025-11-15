@@ -8,12 +8,13 @@ from utils.mol_graph import smiles_to_mol_graph
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-def read_dataset(file_name):
+def read_dataset_scaffold(file_name):
     samples = []
     mol_graphs = []
+    smiles_list = []
+
     data_mat = np.array(pd.read_csv(file_name))
     smiles = data_mat[:, 0]
-
     target = np.array(data_mat[:, 1:3], dtype=float)
 
     for i in range(0, data_mat.shape[0]):
@@ -26,11 +27,18 @@ def read_dataset(file_name):
 
             samples.append((mol_graph, target[i]))
             mol_graphs.append(mol_graph)
+            smiles_list.append(smiles[i])
 
     for feat in ['num_atoms', 'weight', 'num_rings']:
         FeatureNormalization(mol_graphs, feat)
 
-    return samples
+    # 여기서는 DeepChem scaffold split을 위해
+    # samples 대신 아래 3개를 반환하도록 수정가능
+    X = mol_graphs                # 그래프 리스트
+    y = np.array(target)          # (N, 2)
+    ids = np.array(smiles_list)   # SMILES 리스트
+
+    return X, y, ids
 
 
 def read_dataset_freesolv_scaffold(file_name):

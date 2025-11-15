@@ -89,8 +89,8 @@ def main():
     ]
 
     # loss function
-    # criterion = nn.L1Loss(reduction='sum')
-    criterion = nn.MSELoss(reduction='sum')
+    criterion = nn.L1Loss(reduction='sum')
+    # criterion = nn.MSELoss(reduction='sum')
 
     val_losses = dict()
 
