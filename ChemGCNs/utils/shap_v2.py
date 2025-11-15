@@ -25,19 +25,19 @@ class SHAP:
         self.shap_values = None
         self.explainer   = None
 
-        # freesolv
-        self.desc_feature_names = [
-            'NHOHCount', 'SlogP_VSA2', 'SlogP_VSA10', 'NumAromaticRings', 'MaxEStateIndex', 
-            'PEOE_VSA14', 'fr_Ar_NH', 'SMR_VSA3', 'SMR_VSA7', 'SlogP_VSA5', 
-            'VSA_EState8', 'MaxAbsEStateIndex', 'PEOE_VSA2', 'fr_Nhpyrrole', 'fr_amide', 
-            'SlogP_VSA3', 'BCUT2D_MRHI', 'fr_nitrile', 'MolLogP', 'PEOE_VSA10', 
-            'MinPartialCharge', 'fr_Al_OH', 'fr_sulfone', 'fr_Al_COO', 'fr_nitro_arom_nonortho', 
-            'fr_imidazole', 'fr_ketone_Topliss', 'PEOE_VSA7', 'fr_alkyl_halide', 'NumSaturatedHeterocycles', 
-            'fr_methoxy', 'fr_phos_acid', 'fr_pyridine', 'MinAbsEStateIndex', 'fr_para_hydroxylation', 
-            'fr_phos_ester', 'NumAromaticHeterocycles', 'PEOE_VSA8', 'fr_Ndealkylation2', 'PEOE_VSA5', 
-            'fr_aryl_methyl', 'NumHDonors', 'fr_imide', 'fr_priamide', 'RingCount', 
-            'SlogP_VSA8', 'VSA_EState4', 'SMR_VSA5', 'FpDensityMorgan3', 'FractionCSP3'
-        ]
+        # # freesolv
+        # self.desc_feature_names = [
+        #     'NHOHCount', 'SlogP_VSA2', 'SlogP_VSA10', 'NumAromaticRings', 'MaxEStateIndex', 
+        #     'PEOE_VSA14', 'fr_Ar_NH', 'SMR_VSA3', 'SMR_VSA7', 'SlogP_VSA5', 
+        #     'VSA_EState8', 'MaxAbsEStateIndex', 'PEOE_VSA2', 'fr_Nhpyrrole', 'fr_amide', 
+        #     'SlogP_VSA3', 'BCUT2D_MRHI', 'fr_nitrile', 'MolLogP', 'PEOE_VSA10', 
+        #     'MinPartialCharge', 'fr_Al_OH', 'fr_sulfone', 'fr_Al_COO', 'fr_nitro_arom_nonortho', 
+        #     'fr_imidazole', 'fr_ketone_Topliss', 'PEOE_VSA7', 'fr_alkyl_halide', 'NumSaturatedHeterocycles', 
+        #     'fr_methoxy', 'fr_phos_acid', 'fr_pyridine', 'MinAbsEStateIndex', 'fr_para_hydroxylation', 
+        #     'fr_phos_ester', 'NumAromaticHeterocycles', 'PEOE_VSA8', 'fr_Ndealkylation2', 'PEOE_VSA5', 
+        #     'fr_aryl_methyl', 'NumHDonors', 'fr_imide', 'fr_priamide', 'RingCount', 
+        #     'SlogP_VSA8', 'VSA_EState4', 'SMR_VSA5', 'FpDensityMorgan3', 'FractionCSP3'
+        # ]
         # # esol
         # self.desc_feature_names = ['MolLogP', 'MaxAbsPartialCharge', 'MaxEStateIndex', 'SMR_VSA10', 'Kappa2', 
         #         'BCUT2D_MWLOW', 'PEOE_VSA13', 'MinAbsPartialCharge', 'BCUT2D_CHGHI', 'PEOE_VSA6', 
@@ -52,12 +52,12 @@ class SHAP:
         #         'EState_VSA7', 'PEOE_VSA12', 'Ipc', 'FpDensityMorgan1', 'PEOE_VSA14', 
         #         'fr_guanido', 'fr_benzodiazepine', 'fr_thiophene', 'fr_Ndealkylation1', 'fr_aldehyde', 
         #         'fr_term_acetylene', 'SMR_VSA2', 'fr_lactone']
-        # # scgas
-        # self.desc_feature_names =['MolMR', 'TPSA', 'fr_halogen', 'SlogP_VSA12', 'RingCount', 
-        #                         'Kappa1', 'NumHAcceptors', 'NumHDonors', 'SMR_VSA7', 'SMR_VSA5',
-        #                         'Chi1', 'Chi3n', 'BertzCT', 'VSA_EState8', 'NumAliphaticCarbocycles',
-        #                         'HallKierAlpha', 'VSA_EState6', 'NumAromaticRings', 'Chi4n', 'PEOE_VSA7',
-        #                         'SlogP_VSA5', 'VSA_EState7', 'NOCount']
+        # scgas
+        self.desc_feature_names =['MolMR', 'TPSA', 'fr_halogen', 'SlogP_VSA12', 'RingCount', 
+                                'Kappa1', 'NumHAcceptors', 'NumHDonors', 'SMR_VSA7', 'SMR_VSA5',
+                                'Chi1', 'Chi3n', 'BertzCT', 'VSA_EState8', 'NumAliphaticCarbocycles',
+                                'HallKierAlpha', 'VSA_EState6', 'NumAromaticRings', 'Chi4n', 'PEOE_VSA7',
+                                'SlogP_VSA5', 'VSA_EState7', 'NOCount']
     # -------------------------------------------------
     # 1) test_data_loader에서 z(graph 임베딩)와 d(descriptor) 추출
     #    그리고 X_concat = [z, d] 생성
@@ -118,9 +118,9 @@ class SHAP:
             z_np = x_concat[:, :graph_dim]   # (N, graph_dim)
             d_np = x_concat[:, graph_dim:]   # (N, desc_dim)
 
-            print('graph_dim.shape::::::', graph_dim)
-            print('z_np.shape::::::', z_np)
-            print('d_np.shape::::::', d_np)
+            # print('graph_dim.shape::::::', graph_dim)
+            # print('z_np.shape::::::', z_np)
+            # print('d_np.shape::::::', d_np)
 
             z = torch.tensor(z_np, dtype=torch.float32, device=device)  # (N, g)
             d = torch.tensor(d_np, dtype=torch.float32, device=device)  # (N, D)
