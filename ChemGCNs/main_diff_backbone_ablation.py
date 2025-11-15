@@ -123,22 +123,22 @@ def main():
 
     test_losses = dict()
 
-    #------------------------ Backbone ------------------------#
-    print('--------- Vanilla Backbone ---------')
-    test_losses['Backbone'] = trainer.cross_validation(dataset_backbone, model_backbone, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_gcn, trainer.test_gcn, mol_collate_gcn.collate_gcn)
-    print('test loss (Backbone): ' + str(test_losses['Backbone']))
+    # #------------------------ Backbone ------------------------#
+    # print('--------- Vanilla Backbone ---------')
+    # test_losses['Backbone'] = trainer.cross_validation(dataset_backbone, model_backbone, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_gcn, trainer.test_gcn, mol_collate_gcn.collate_gcn)
+    # print('test loss (Backbone): ' + str(test_losses['Backbone']))
 
-    print('--------- Backbone with predefined descriptor Ring ---------')
-    test_losses['Backbone_R'] = trainer.cross_validation(dataset_backbone, model_backbone_R, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn_ring)
-    print('test loss (Backbone_R): ' + str(test_losses['Backbone_R']))
+    # print('--------- Backbone with predefined descriptor Ring ---------')
+    # test_losses['Backbone_R'] = trainer.cross_validation(dataset_backbone, model_backbone_R, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn_ring)
+    # print('test loss (Backbone_R): ' + str(test_losses['Backbone_R']))
 
-    print('--------- Backbone with predefined descriptor Scale ---------')
-    test_losses['Backbone_S'] = trainer.cross_validation(dataset_backbone, model_backbone_S, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn_scale)
-    print('test loss (Backbone_S): ' + str(test_losses['Backbone_S']))
+    # print('--------- Backbone with predefined descriptor Scale ---------')
+    # test_losses['Backbone_S'] = trainer.cross_validation(dataset_backbone, model_backbone_S, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn_scale)
+    # print('test loss (Backbone_S): ' + str(test_losses['Backbone_S']))
 
-    print('--------- Backbone with predefined descriptors ---------')
-    test_losses['Backbone_E'] = trainer.cross_validation(dataset_backbone, model_backbone_E, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn)
-    print('test loss (Backbone_E): ' + str(test_losses['Backbone_E']))
+    # print('--------- Backbone with predefined descriptors ---------')
+    # test_losses['Backbone_E'] = trainer.cross_validation(dataset_backbone, model_backbone_E, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn)
+    # print('test loss (Backbone_E): ' + str(test_losses['Backbone_E']))
 
 
     #------------------------ concatenation + descriptor selection ------------------------#
@@ -167,30 +167,30 @@ def main():
     print('test loss (Backbone_concat): ' + str(test_losses['Backbone_concat']))
 
 
-    #------------------------ kronecker-product + descriptor selection ------------------------#
-    print('--------- kronecker-product with 3 descriptors ---------')
-    test_losses['kronecker_3'] = trainer.cross_validation(dataset, model_kronecker_3, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_3)
-    print('test loss (kronecker_3): ' + str(test_losses['kronecker_3']))
+    # #------------------------ kronecker-product + descriptor selection ------------------------#
+    # print('--------- kronecker-product with 3 descriptors ---------')
+    # test_losses['kronecker_3'] = trainer.cross_validation(dataset, model_kronecker_3, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_3)
+    # print('test loss (kronecker_3): ' + str(test_losses['kronecker_3']))
 
-    print('--------- kronecker-product with 5 descriptors ---------')
-    test_losses['kronecker_5'] = trainer.cross_validation(dataset, model_kronecker_5, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_5)
-    print('test loss (kronecker_5): ' + str(test_losses['kronecker_5']))
+    # print('--------- kronecker-product with 5 descriptors ---------')
+    # test_losses['kronecker_5'] = trainer.cross_validation(dataset, model_kronecker_5, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_5)
+    # print('test loss (kronecker_5): ' + str(test_losses['kronecker_5']))
 
-    print('--------- kronecker-product with 7 descriptors ---------')
-    test_losses['kronecker_7'] = trainer.cross_validation(dataset, model_kronecker_7, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_7)
-    print('test loss (kronecker_7): ' + str(test_losses['kronecker_7']))
+    # print('--------- kronecker-product with 7 descriptors ---------')
+    # test_losses['kronecker_7'] = trainer.cross_validation(dataset, model_kronecker_7, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_7)
+    # print('test loss (kronecker_7): ' + str(test_losses['kronecker_7']))
 
-    print('--------- kronecker-product with 10 descriptors ---------')
-    test_losses['kronecker_10'] = trainer.cross_validation(dataset, model_kronecker_10, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_10)
-    print('test loss (kronecker_10): ' + str(test_losses['kronecker_10']))
+    # print('--------- kronecker-product with 10 descriptors ---------')
+    # test_losses['kronecker_10'] = trainer.cross_validation(dataset, model_kronecker_10, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_10)
+    # print('test loss (kronecker_10): ' + str(test_losses['kronecker_10']))
 
-    print('--------- kronecker-product with 20 descriptors ---------')
-    test_losses['kronecker_20'] = trainer.cross_validation(dataset, model_kronecker_20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_20)
-    print('test loss (kronecker_20): ' + str(test_losses['kronecker_20']))
+    # print('--------- kronecker-product with 20 descriptors ---------')
+    # test_losses['kronecker_20'] = trainer.cross_validation(dataset, model_kronecker_20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_20)
+    # print('test loss (kronecker_20): ' + str(test_losses['kronecker_20']))
 
-    print('--------- kronecker-product with descriptor selection ---------')
-    test_losses['Backbone_Fusion'] = trainer.cross_validation(dataset, model_Fusion, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, descriptors)
-    print('test loss (Backbone_Fusion): ' + str(test_losses['Backbone_Fusion']))
+    # print('--------- kronecker-product with descriptor selection ---------')
+    # test_losses['Backbone_Fusion'] = trainer.cross_validation(dataset, model_Fusion, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, descriptors)
+    # print('test loss (Backbone_Fusion): ' + str(test_losses['Backbone_Fusion']))
 
 
     print('test_losse:', test_losses)
