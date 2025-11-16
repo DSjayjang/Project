@@ -8,7 +8,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 
 import utils.mol_conv as mc
-import utils.mol_conv_scaffold as mcsf
+import utils.mol_conv_scaffold_old as mcsf
 
 from utils import mol_collate, evaluation
 from utils.utils import weight_reset

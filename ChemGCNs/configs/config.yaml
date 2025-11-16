@@ -1,9 +1,7 @@
-SEED: 100
-DATASET: 'esol' # freesolv / esol / lipo / scgas
+SEED: 100 # [100, 200, 300]
+DATASET: 'freesolv' # ['freesolv', 'esol', 'lipo', 'scgas']
 
-# lipo / logvp / VP / vp_unique / logvp_cp / logvp_cp_0927
-
-BATCH_SIZE: 32
+BATCH_SIZE: 32 # [scgas: 128, others: 32, esol: 33 when scaffold splits with concat and kronecker]
 MAX_EPOCHS: 300
 K: 5
 

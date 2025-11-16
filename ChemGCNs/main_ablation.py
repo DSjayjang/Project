@@ -8,7 +8,7 @@ from utils import mol_collate
 from utils.mol_props import dim_atomic_feat
 
 from model import CONCAT_DS, Bilinear_Form, Bilinear_Attn, KROVEX
-from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K
+from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
 def main():
     SET_SEED()
@@ -85,7 +85,9 @@ def main():
     # criterion = nn.MSELoss(reduction='sum')
 
     test_losses = dict()
-    
+
+    print(f'{DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
+
     # # ------------------------ concatenation + descriptor selection ------------------------#
     # print('--------- concatenation with 3 descriptors ---------')
     # test_losses['concat_3'] = trainer.cross_validation(dataset, model_concat_3, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_3)
@@ -190,7 +192,7 @@ def main():
     # print('test loss (KROVEX): ' + str(test_losses['KROVEX']))
 
     print('test_losse:', test_losses)
-    print(DATASET_NAME, criterion)
+    print(f'{DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
 
 if __name__ == '__main__':
     main()
