@@ -153,7 +153,7 @@ def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epoch
         df_row.to_csv(csv_path, index=False)  # 첫 줄: header 포함
     else:
         df_row.to_csv(csv_path, mode='a', header=False, index=False)  # 이후: append만
-    
+   
     if accs is None:
         return np.mean(test_losses)
     else:
