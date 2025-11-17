@@ -61,7 +61,7 @@ def main():
     model_concat_5 = CONCAT_DS.concat_Net_5(dim_atomic_feat, 1, 5).to(device)
     model_concat_7 = CONCAT_DS.concat_Net_7(dim_atomic_feat, 1, 7).to(device)
     model_concat_10 = CONCAT_DS.concat_Net_10(dim_atomic_feat, 1, 10).to(device)
-    model_concat_20 = CONCAT_DS.concat_Net_20(dim_atomic_feat, 1, 20).to(device)
+    # model_concat_20 = CONCAT_DS.concat_Net_20(dim_atomic_feat, 1, 20).to(device)
     model_concat_ds = CONCAT_DS.concat_Net(dim_atomic_feat, 1, num_descriptors).to(device)
 
     # kronecker-product + descriptor selection
@@ -69,7 +69,7 @@ def main():
     model_kronecker_5 = KROVEX.kronecker_Net_5(dim_atomic_feat, 1, 5).to(device)
     model_kronecker_7 = KROVEX.kronecker_Net_7(dim_atomic_feat, 1, 7).to(device)
     model_kronecker_10 = KROVEX.kronecker_Net_10(dim_atomic_feat, 1, 10).to(device)
-    model_kronecker_20 = KROVEX.kronecker_Net_20(dim_atomic_feat, 1, 20).to(device)
+    # model_kronecker_20 = KROVEX.kronecker_Net_20(dim_atomic_feat, 1, 20).to(device)
     model_KROVEX = KROVEX.Net(dim_atomic_feat, 1, num_descriptors).to(device)
 
     # # # bilinear + descriptor selection
@@ -89,8 +89,8 @@ def main():
     # model_bilinear_attn_ds = Bilinear_Attn.Net(dim_atomic_feat, 1, num_descriptors).to(device)
 
     # loss function
-    # criterion = nn.L1Loss(reduction='sum')
-    criterion = nn.MSELoss(reduction='sum')
+    criterion = nn.L1Loss(reduction='sum')
+    # criterion = nn.MSELoss(reduction='sum')
 
     test_losses = dict()
 
@@ -113,9 +113,9 @@ def main():
     test_losses['concat_10'] = trainer.cross_validation(dataset, model_concat_10, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_10)
     print('test loss (concat_10): ' + str(test_losses['concat_10']))
 
-    print('--------- concatenation with 20 descriptors ---------')
-    test_losses['concat_20'] = trainer.cross_validation(dataset, model_concat_20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_20)
-    print('test loss (concat_20): ' + str(test_losses['concat_20']))
+    # print('--------- concatenation with 20 descriptors ---------')
+    # test_losses['concat_20'] = trainer.cross_validation(dataset, model_concat_20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_20)
+    # print('test loss (concat_20): ' + str(test_losses['concat_20']))
 
     print('--------- concatenation with descriptor selection ---------')
     test_losses['concat_ds'] = trainer.cross_validation(dataset, model_concat_ds, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, descriptors)
@@ -139,9 +139,9 @@ def main():
     test_losses['kronecker_10'] = trainer.cross_validation(dataset, model_kronecker_10, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_10)
     print('test loss (kronecker_10): ' + str(test_losses['kronecker_10']))
 
-    print('--------- kronecker-product with 20 descriptors ---------')
-    test_losses['kronecker_20'] = trainer.cross_validation(dataset, model_kronecker_20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_20)
-    print('test loss (kronecker_20): ' + str(test_losses['kronecker_20']))
+    # print('--------- kronecker-product with 20 descriptors ---------')
+    # test_losses['kronecker_20'] = trainer.cross_validation(dataset, model_kronecker_20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_20)
+    # print('test loss (kronecker_20): ' + str(test_losses['kronecker_20']))
 
     print('--------- kronecker-product with descriptor selection ---------')
     test_losses['KROVEX'] = trainer.cross_validation(dataset, model_KROVEX, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, descriptors)

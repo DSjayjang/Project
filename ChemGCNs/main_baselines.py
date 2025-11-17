@@ -14,6 +14,7 @@ def main():
     global BATCH_SIZE
     SET_SEED()
     if DATASET_NAME == 'scgas': BATCH_SIZE = 128
+    elif DATASET_NAME == 'solubility': BATCH_SIZE = 256
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(device)
