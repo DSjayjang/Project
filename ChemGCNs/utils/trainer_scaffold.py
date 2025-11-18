@@ -3,7 +3,10 @@ import copy
 import numpy as np
 import torch.optim as optim
 from torch.utils.data import DataLoader
-import utils.mol_conv_scaffold as mc
+
+import os
+import pandas as pd
+from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
 def train_gcn(model, criterion, optimizer, train_data_loader, max_epochs):
     model.train()
@@ -130,6 +133,21 @@ def cross_validation(dataset, model, criterion, folds, num_folds, batch_size, ma
         test_loss, pred = test(models[k], criterion, test_data_loader, accs)
         test_losses.append(test_loss)
 
+    df_row = pd.DataFrame([{
+        'dataset': DATASET_NAME,
+        'epochs': MAX_EPOCHS,
+        'num-folds': K,
+        'SEED': SEED,
+        'criterion': criterion,
+        'test_losses': test_losses,
+    }])
+    csv_path = f'./results./se/scaffold_{DATASET_NAME}_{MAX_EPOCHS}_{K}_{SEED}_{criterion}.csv'
+
+    if not os.path.exists(csv_path):
+        df_row.to_csv(csv_path, index=False)  # 첫 줄: header 포함
+    else:
+        df_row.to_csv(csv_path, mode='a', header=False, index=False)  # 이후: append만
+   
     if accs is None:
         return np.mean(test_losses)
     else:

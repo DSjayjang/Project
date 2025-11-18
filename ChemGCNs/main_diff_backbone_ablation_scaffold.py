@@ -10,7 +10,7 @@ from utils.mol_props import dim_atomic_feat
 
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
-backbone = 'GAT' # [GAT, GIN, SAGE]
+backbone = 'GCN' # [GCN, GAT, GIN, SAGE]
 
 def main():
     SET_SEED()
@@ -50,7 +50,38 @@ def main():
 
     folds = mc.scaffold_kfold_split(smiles_list, K)
 
-    if backbone == 'GAT':
+    if backbone == 'GCN':
+        from model import GCN
+        from utils import mol_collate_gcn
+        dataset_backbone, smiles_list_backbone = mc.read_dataset(DATASET_PATH + '.csv')
+
+        model_backbone = GCN.Net(dim_atomic_feat, 1).to(device)
+        
+        # EGCN
+        from model import EGCN
+        model_backbone_R = EGCN.Net(dim_atomic_feat, 1, 1).to(device)
+        model_backbone_S = EGCN.Net(dim_atomic_feat, 1, 2).to(device)
+        model_backbone_E = EGCN.Net(dim_atomic_feat, 1, 3).to(device)
+
+        # GCN + concatenation + descriptor selection
+        from model import CONCAT_DS
+        model_concat_3 = CONCAT_DS.concat_Net_3(dim_atomic_feat, 1, 3).to(device)
+        model_concat_5 = CONCAT_DS.concat_Net_5(dim_atomic_feat, 1, 5).to(device)
+        model_concat_7 = CONCAT_DS.concat_Net_7(dim_atomic_feat, 1, 7).to(device)
+        model_concat_10 = CONCAT_DS.concat_Net_10(dim_atomic_feat, 1, 10).to(device)
+        model_concat_20 = CONCAT_DS.concat_Net_20(dim_atomic_feat, 1, 20).to(device)
+        model_concat_ds = CONCAT_DS.concat_Net(dim_atomic_feat, 1, num_descriptors).to(device)
+
+        # GCN + kronecker-product + descriptor selection
+        from model import KROVEX
+        model_kronecker_3 = KROVEX.kronecker_Net_3(dim_atomic_feat, 1, 3).to(device)
+        model_kronecker_5 = KROVEX.kronecker_Net_5(dim_atomic_feat, 1, 5).to(device)
+        model_kronecker_7 = KROVEX.kronecker_Net_7(dim_atomic_feat, 1, 7).to(device)
+        model_kronecker_10 = KROVEX.kronecker_Net_10(dim_atomic_feat, 1, 10).to(device)
+        model_kronecker_20 = KROVEX.kronecker_Net_20(dim_atomic_feat, 1, 20).to(device)
+        model_Fusion = KROVEX.Net(dim_atomic_feat, 1, num_descriptors).to(device)
+
+    elif backbone == 'GAT':
         from model import GAT
         from utils import mol_collate_gcn
         dataset_backbone, smiles_list_backbone = mc.read_dataset(DATASET_PATH + '.csv')
