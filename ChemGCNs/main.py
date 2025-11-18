@@ -14,7 +14,7 @@ from utils.mol_props import dim_atomic_feat
 
 from model import KROVEX
 from configs import config
-from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K
+from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
 def main():
     SET_SEED()
@@ -48,6 +48,13 @@ def main():
         num_descriptors = 23
         descriptors = mol_collate.descriptor_selection_scgas
 
+    elif DATASET_NAME == 'solubility':
+        print('DATASET_NAME: ', DATASET_NAME)
+        BATCH_SIZE = 256
+        dataset = mc.read_dataset_solubility(DATASET_PATH + '.csv')
+        num_descriptors = 16
+        descriptors = mol_collate.descriptor_selection_solubility
+
     random.shuffle(dataset)
     train_dataset, test_dataset = train_test_split(dataset, test_size = 0.2, random_state = config.SEED)
 
@@ -55,10 +62,12 @@ def main():
     model_KROVEX = KROVEX.Net(dim_atomic_feat, 1, num_descriptors).to(device)
 
     # loss function
-    criterion = nn.L1Loss(reduction='sum')
-    # criterion = nn.MSELoss(reduction='sum')
+    # criterion = nn.L1Loss(reduction='sum')
+    criterion = nn.MSELoss(reduction='sum')
 
     val_losses = dict()
+
+    print(f'{DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
 
     # evaluation
     print('kronecker-product fusion with descriptor selection')
@@ -84,6 +93,7 @@ def main():
     print('best_k-fold:', best_k)
     print('after k-fold, averaging of val_losses:', val_losses)
     print('test_losse:', test_loss)
+    print(f'{DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
 
 if __name__ == '__main__':
     main()

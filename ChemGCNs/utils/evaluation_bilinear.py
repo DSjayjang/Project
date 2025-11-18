@@ -288,8 +288,8 @@ def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epoch
     folds.append(dataset[(num_folds - 1) * size_fold:num_data_points])
 
     for k in range(0, num_folds):
-        # models.append(copy.deepcopy(model))
-        models.append(clone_model(model))
+        models.append(copy.deepcopy(model))
+        # models.append(clone_model(model))
         optimizers.append(optim.Adam(models[k].parameters(), weight_decay=0.01))
 
     fold_train_losses = []
