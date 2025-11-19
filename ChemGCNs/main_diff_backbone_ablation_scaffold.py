@@ -153,7 +153,7 @@ def main():
 
     test_losses = dict()
 
-    print(f'{DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
+    print(f'{backbone}, {DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
 
     #------------------------ Backbone ------------------------#
     print('--------- Vanilla Backbone ---------')
@@ -226,7 +226,7 @@ def main():
 
 
     print('test_losse:', test_losses)
-    print(f'{DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
+    print(f'{backbone}, {DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
 
 
 if __name__ == '__main__':

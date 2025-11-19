@@ -10,7 +10,7 @@ from utils.mol_props import dim_atomic_feat
 
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
-backbone = 'GIN' # [GCN, GAT, GIN, SAGE]
+backbone = 'GCN' # [GCN, GAT, GIN, SAGE]
 
 def main():
     SET_SEED()
@@ -48,12 +48,12 @@ def main():
         num_descriptors = 23
         descriptors = mol_collate.descriptor_selection_scgas
 
-    elif DATASET_NAME == 'solubility':
+    elif DATASET_NAME == 'solubility_cherry2':
         print('DATASET_NAME: ', DATASET_NAME)
         BATCH_SIZE = 256
         from utils.ablation import mol_collate_solubility as mcol
         dataset = mc.read_dataset_solubility(DATASET_PATH + '.csv')
-        num_descriptors = 16
+        num_descriptors = 18
         descriptors = mol_collate.descriptor_selection_solubility
 
     random.shuffle(dataset)
@@ -158,8 +158,8 @@ def main():
 
 
     # loss function
-    criterion = nn.L1Loss(reduction='sum')
-    # criterion = nn.MSELoss(reduction='sum')
+    # criterion = nn.L1Loss(reduction='sum')
+    criterion = nn.MSELoss(reduction='sum')
 
     test_losses = dict()
 
@@ -200,9 +200,9 @@ def main():
     test_losses['concat_10'] = trainer.cross_validation(dataset, model_concat_10, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_10)
     print('test loss (concat_10): ' + str(test_losses['concat_10']))
 
-    print('--------- concatenation with 20 descriptors ---------')
-    test_losses['concat_20'] = trainer.cross_validation(dataset, model_concat_20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_20)
-    print('test loss (concat_20): ' + str(test_losses['concat_20']))
+    # print('--------- concatenation with 20 descriptors ---------')
+    # test_losses['concat_20'] = trainer.cross_validation(dataset, model_concat_20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_20)
+    # print('test loss (concat_20): ' + str(test_losses['concat_20']))
 
     print('--------- concatenation with descriptor selection ---------')
     test_losses['Backbone_concat'] = trainer.cross_validation(dataset, model_concat_ds, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, descriptors)
@@ -226,9 +226,9 @@ def main():
     test_losses['kronecker_10'] = trainer.cross_validation(dataset, model_kronecker_10, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_10)
     print('test loss (kronecker_10): ' + str(test_losses['kronecker_10']))
 
-    print('--------- kronecker-product with 20 descriptors ---------')
-    test_losses['kronecker_20'] = trainer.cross_validation(dataset, model_kronecker_20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_20)
-    print('test loss (kronecker_20): ' + str(test_losses['kronecker_20']))
+    # print('--------- kronecker-product with 20 descriptors ---------')
+    # test_losses['kronecker_20'] = trainer.cross_validation(dataset, model_kronecker_20, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_20)
+    # print('test loss (kronecker_20): ' + str(test_losses['kronecker_20']))
 
     print('--------- kronecker-product with descriptor selection ---------')
     test_losses['Backbone_Fusion'] = trainer.cross_validation(dataset, model_Fusion, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, descriptors)
