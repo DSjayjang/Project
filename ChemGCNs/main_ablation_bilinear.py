@@ -3,11 +3,11 @@ import torch
 import torch.nn as nn
 
 import utils.mol_conv as mc
-from utils import trainer, trainer_bilinear
-from utils import mol_collate_bilinear
+from utils import trainer_bilinear_time_check
+from utils import mol_collate
 from utils.mol_props import dim_atomic_feat
 
-from model import Bilinear_Attn, KROVEX, CONCAT_DS
+from model import Bilinear_Attn
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
 def main():
@@ -19,9 +19,9 @@ def main():
     if DATASET_NAME == 'freesolv':
         print('DATASET_NAME: ', DATASET_NAME)
         from utils.ablation import mol_collate_freesolv as mcol
-        dataset = mol_collate_bilinear.read_dataset_freesolv_bilinear(DATASET_PATH + '.csv')
-        num_descriptors = 208
-        descriptors = mol_collate_bilinear.descriptor_selection_freesolv_bilinear
+        dataset = mc.read_dataset_freesolv(DATASET_PATH + '.csv')
+        num_descriptors = 50
+        descriptors = mol_collate.descriptor_selection_freesolv
 
     elif DATASET_NAME == 'esol':
         print('DATASET_NAME: ', DATASET_NAME)
@@ -94,23 +94,11 @@ def main():
     # print('test loss (bilinear_attn_20): ' + str(test_losses['bilinear_attn_20']))
 
     print('--------- bilinear attention with descriptor selection ---------')
-    test_losses['bilinear_attn_ds'] = trainer_bilinear.cross_validation(dataset, model_bilinear_attn_ds, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_bilinear.train_model, trainer_bilinear.test_model, descriptors)
+    test_losses['bilinear_attn_ds'] = trainer_bilinear_time_check.cross_validation(dataset, model_bilinear_attn_ds, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_bilinear_time_check.train_model, trainer_bilinear_time_check.test_model, descriptors)
     print('test loss (bilinear_attn_ds): ' + str(test_losses['bilinear_attn_ds']))
 
     total_params = sum(p.numel() for p in model_bilinear_attn_ds.parameters() if p.requires_grad)
     print(f"bilinear attn 총 학습 가능한 파라미터 수: {total_params:,}")
-
-    model_concat_ds = CONCAT_DS.concat_Net(dim_atomic_feat, 1, num_descriptors).to(device)
-    model_KROVEX = KROVEX.Net(dim_atomic_feat, 1, num_descriptors).to(device)
-
-    total_params = sum(p.numel() for p in model_concat_ds.parameters() if p.requires_grad)
-    print(f"concat ds 총 학습 가능한 파라미터 수: {total_params:,}")
-    total_params = sum(p.numel() for p in model_KROVEX.parameters() if p.requires_grad)
-    print(f"krovex 총 학습 가능한 파라미터 수: {total_params:,}")
-
-    print('--------- bilinear attention with descriptor selection ---------')
-    test_losses['model_KROVEX'] = trainer.cross_validation(dataset, model_KROVEX, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, descriptors)
-    print('test loss (model_KROVEX): ' + str(test_losses['model_KROVEX']))
 
     print('test_losse:', test_losses)
     print(f'{DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
