@@ -357,34 +357,35 @@ def read_dataset_solubility(file_name):
         if mol is not None and mol_graph is not None:
             # 1
             mol_graph.Chi1 = dsc.Chi1(mol)
-            mol_graph.MolLogP = dsc.MolLogP(mol)
-            mol_graph.SlogP_VSA2 = dsc.SlogP_VSA2(mol)
-            mol_graph.Kappa1 = dsc.Kappa1(mol)
             mol_graph.PEOE_VSA6 = dsc.PEOE_VSA6(mol)
+            mol_graph.Kappa1 = dsc.Kappa1(mol)
+            mol_graph.SlogP_VSA2 = dsc.SlogP_VSA2(mol)
+            mol_graph.MolLogP = dsc.MolLogP(mol)
             # 6
-            mol_graph.HeavyAtomMolWt = dsc.HeavyAtomMolWt(mol)
-            mol_graph.TPSA = dsc.TPSA(mol)
-            mol_graph.VSA_EState6 = dsc.VSA_EState6(mol)
-            mol_graph.NOCount = dsc.NOCount(mol)
-            mol_graph.fr_benzene = dsc.fr_benzene(mol)
-            # 11
-            mol_graph.Chi1v = dsc.Chi1v(mol)
-            mol_graph.Chi3n = dsc.Chi3n(mol)
-            mol_graph.Chi0n = dsc.Chi0n(mol)
-            mol_graph.fr_quatN = dsc.fr_quatN(mol)
-            mol_graph.SlogP_VSA6 = dsc.SlogP_VSA6(mol)
-            # 16
+            mol_graph.SMR_VSA10 = dsc.SMR_VSA10(mol)
+            mol_graph.HallKierAlpha = dsc.HallKierAlpha(mol)
             mol_graph.PEOE_VSA7 = dsc.PEOE_VSA7(mol)
+            mol_graph.SlogP_VSA6 = dsc.SlogP_VSA6(mol)
+            mol_graph.VSA_EState6 = dsc.VSA_EState6(mol)
+            # 11
+            mol_graph.fr_benzene = dsc.fr_benzene(mol)
+            mol_graph.BertzCT = dsc.BertzCT(mol)
+            mol_graph.fr_quatN = dsc.fr_quatN(mol)
+            mol_graph.NumHDonors = dsc.NumHDonors(mol)
+            mol_graph.fr_C_O = dsc.fr_C_O(mol)
+            # 16
+            mol_graph.TPSA = dsc.TPSA(mol)
+            mol_graph.SMR_VSA1 = dsc.SMR_VSA1(mol)
             mol_graph.SMR_VSA7 = dsc.SMR_VSA7(mol)
-            mol_graph.NumHAcceptors = dsc.NumHAcceptors(mol)
+            mol_graph.Chi3n = dsc.Chi3n(mol)
 
             samples.append((mol_graph, target[i]))
             mol_graphs.append(mol_graph)
 
-    for feat in ['Chi1', 'MolLogP', 'SlogP_VSA2', 'Kappa1', 'PEOE_VSA6',
-       'HeavyAtomMolWt', 'TPSA', 'VSA_EState6', 'NOCount', 'fr_benzene',
-       'Chi1v', 'Chi3n', 'Chi0n', 'fr_quatN', 'SlogP_VSA6', 'PEOE_VSA7',
-       'SMR_VSA7', 'NumHAcceptors']:
+    for feat in ['Chi1', 'PEOE_VSA6', 'Kappa1', 'SlogP_VSA2', 'MolLogP', 'SMR_VSA10',
+       'HallKierAlpha', 'PEOE_VSA7', 'SlogP_VSA6', 'VSA_EState6', 'fr_benzene',
+       'BertzCT', 'fr_quatN', 'NumHDonors', 'fr_C_O', 'TPSA', 'SMR_VSA1',
+       'SMR_VSA7', 'Chi3n']:
         FeatureNormalization(mol_graphs, feat)
 
     return samples

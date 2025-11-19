@@ -12,8 +12,8 @@ def descriptor_selection_3(samples):
         mol_graph = samples[i][0]
         # 1
         self_feats[i, 0] = mol_graph.Chi1
-        self_feats[i, 1] = mol_graph.MolLogP
-        self_feats[i, 2] = mol_graph.SlogP_VSA2
+        self_feats[i, 1] = mol_graph.PEOE_VSA6
+        self_feats[i, 2] = mol_graph.Kappa1
 
     graphs, labels = map(list, zip(*samples))
     batched_graph = dgl.batch(graphs)
@@ -27,10 +27,10 @@ def descriptor_selection_5(samples):
         mol_graph = samples[i][0]
         # 1
         self_feats[i, 0] = mol_graph.Chi1
-        self_feats[i, 1] = mol_graph.MolLogP
-        self_feats[i, 2] = mol_graph.SlogP_VSA2
-        self_feats[i, 3] = mol_graph.Kappa1
-        self_feats[i, 4] = mol_graph.PEOE_VSA6
+        self_feats[i, 1] = mol_graph.PEOE_VSA6
+        self_feats[i, 2] = mol_graph.Kappa1
+        self_feats[i, 3] = mol_graph.SlogP_VSA2
+        self_feats[i, 4] = mol_graph.MolLogP
 
     graphs, labels = map(list, zip(*samples))
     batched_graph = dgl.batch(graphs)
@@ -44,13 +44,13 @@ def descriptor_selection_7(samples):
         mol_graph = samples[i][0]
         # 1
         self_feats[i, 0] = mol_graph.Chi1
-        self_feats[i, 1] = mol_graph.MolLogP
-        self_feats[i, 2] = mol_graph.SlogP_VSA2
-        self_feats[i, 3] = mol_graph.Kappa1
-        self_feats[i, 4] = mol_graph.PEOE_VSA6
+        self_feats[i, 1] = mol_graph.PEOE_VSA6
+        self_feats[i, 2] = mol_graph.Kappa1
+        self_feats[i, 3] = mol_graph.SlogP_VSA2
+        self_feats[i, 4] = mol_graph.MolLogP
         # 6
-        self_feats[i, 5] = mol_graph.HeavyAtomMolWt
-        self_feats[i, 6] = mol_graph.TPSA
+        self_feats[i, 5] = mol_graph.SMR_VSA10
+        self_feats[i, 6] = mol_graph.HallKierAlpha
 
     graphs, labels = map(list, zip(*samples))
     batched_graph = dgl.batch(graphs)
@@ -64,16 +64,16 @@ def descriptor_selection_10(samples):
         mol_graph = samples[i][0]
         # 1
         self_feats[i, 0] = mol_graph.Chi1
-        self_feats[i, 1] = mol_graph.MolLogP
-        self_feats[i, 2] = mol_graph.SlogP_VSA2
-        self_feats[i, 3] = mol_graph.Kappa1
-        self_feats[i, 4] = mol_graph.PEOE_VSA6
+        self_feats[i, 1] = mol_graph.PEOE_VSA6
+        self_feats[i, 2] = mol_graph.Kappa1
+        self_feats[i, 3] = mol_graph.SlogP_VSA2
+        self_feats[i, 4] = mol_graph.MolLogP
         # 6
-        self_feats[i, 5] = mol_graph.HeavyAtomMolWt
-        self_feats[i, 6] = mol_graph.TPSA
-        self_feats[i, 7] = mol_graph.VSA_EState6
-        self_feats[i, 8] = mol_graph.NOCount
-        self_feats[i, 9] = mol_graph.fr_benzene
+        self_feats[i, 5] = mol_graph.SMR_VSA10
+        self_feats[i, 6] = mol_graph.HallKierAlpha
+        self_feats[i, 7] = mol_graph.PEOE_VSA7
+        self_feats[i, 8] = mol_graph.SlogP_VSA6
+        self_feats[i, 9] = mol_graph.VSA_EState6
 
     graphs, labels = map(list, zip(*samples))
     batched_graph = dgl.batch(graphs)

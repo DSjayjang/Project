@@ -48,7 +48,7 @@ def main():
         num_descriptors = 23
         descriptors = mol_collate.descriptor_selection_scgas
 
-    elif DATASET_NAME == 'solubility':
+    elif DATASET_NAME == 'solubility_cherry2':
         print('DATASET_NAME: ', DATASET_NAME)
         BATCH_SIZE = 256
         dataset = mc.read_dataset_solubility(DATASET_PATH + '.csv')
