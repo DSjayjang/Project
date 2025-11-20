@@ -356,40 +356,52 @@ def read_dataset_solubility(file_name):
 
         if mol is not None and mol_graph is not None:
             # 1
+            mol_graph.Chi1v = dsc.Chi1v(mol)
             mol_graph.Chi1 = dsc.Chi1(mol)
-            mol_graph.PEOE_VSA6 = dsc.PEOE_VSA6(mol)
-            mol_graph.Kappa1 = dsc.Kappa1(mol)
             mol_graph.SlogP_VSA2 = dsc.SlogP_VSA2(mol)
-            mol_graph.MolLogP = dsc.MolLogP(mol)
-            # 6
-            mol_graph.SMR_VSA10 = dsc.SMR_VSA10(mol)
             mol_graph.HallKierAlpha = dsc.HallKierAlpha(mol)
-            mol_graph.PEOE_VSA7 = dsc.PEOE_VSA7(mol)
-            mol_graph.SlogP_VSA6 = dsc.SlogP_VSA6(mol)
-            mol_graph.VSA_EState6 = dsc.VSA_EState6(mol)
-            # 11
+            mol_graph.PEOE_VSA6 = dsc.PEOE_VSA6(mol)
+            # 6
             mol_graph.fr_benzene = dsc.fr_benzene(mol)
             mol_graph.BertzCT = dsc.BertzCT(mol)
-            mol_graph.fr_quatN = dsc.fr_quatN(mol)
-            mol_graph.NumHDonors = dsc.NumHDonors(mol)
-            mol_graph.fr_C_O = dsc.fr_C_O(mol)
-            # 16
-            mol_graph.TPSA = dsc.TPSA(mol)
-            mol_graph.SMR_VSA1 = dsc.SMR_VSA1(mol)
+            mol_graph.VSA_EState6 = dsc.VSA_EState6(mol)
             mol_graph.SMR_VSA7 = dsc.SMR_VSA7(mol)
             mol_graph.Chi3n = dsc.Chi3n(mol)
+            # 11
+            mol_graph.HeavyAtomMolWt = dsc.HeavyAtomMolWt(mol)
+            mol_graph.SMR_VSA10 = dsc.SMR_VSA10(mol)
+            mol_graph.Kappa1 = dsc.Kappa1(mol)
+            mol_graph.fr_quatN = dsc.fr_quatN(mol)
+            mol_graph.PEOE_VSA7 = dsc.PEOE_VSA7(mol)
+            # 16
+            mol_graph.NumHDonors = dsc.NumHDonors(mol)
+            mol_graph.MinEStateIndex = dsc.MinEStateIndex(mol)
+            mol_graph.fr_C_O_noCOO = dsc.fr_C_O_noCOO(mol)
+            mol_graph.EState_VSA1 = dsc.EState_VSA1(mol)
+            mol_graph.MolLogP = dsc.MolLogP(mol)
+            # 21
+            mol_graph.fr_halogen = dsc.fr_halogen(mol)
+            mol_graph.SlogP_VSA3 = dsc.SlogP_VSA3(mol)
+            mol_graph.SlogP_VSA5 = dsc.SlogP_VSA5(mol)
+            mol_graph.SlogP_VSA1 = dsc.SlogP_VSA1(mol)
+            mol_graph.SlogP_VSA12 = dsc.SlogP_VSA12(mol)
+            # 26
+            mol_graph.VSA_EState10 = dsc.VSA_EState10(mol)
+            mol_graph.MinPartialCharge = dsc.MinPartialCharge(mol)
+            mol_graph.Kappa2 = dsc.Kappa2(mol)
+            mol_graph.NHOHCount = dsc.NHOHCount(mol)
+            mol_graph.SlogP_VSA6 = dsc.SlogP_VSA6(mol)
 
             samples.append((mol_graph, target[i]))
             mol_graphs.append(mol_graph)
 
-    for feat in ['Chi1v', 'Kappa1', 'PEOE_VSA6', 'SlogP_VSA5', 'SlogP_VSA2',
-       'HallKierAlpha', 'SMR_VSA10', 'VSA_EState6', 'fr_quatN', 'fr_benzene',
-       'fr_ether', 'PEOE_VSA7', 'FpDensityMorgan1', 'SlogP_VSA10',
-       'NumRotatableBonds', 'MinEStateIndex', 'FpDensityMorgan3',
-       'VSA_EState10', 'MinPartialCharge', 'fr_halogen', 'SlogP_VSA1',
-       'fr_C_O_noCOO', 'NHOHCount', 'NumAliphaticRings', 'SlogP_VSA4',
-       'Kappa2', 'BCUT2D_LOGPHI', 'PEOE_VSA1', 'fr_COO', 'SlogP_VSA11',
-       'fr_Ar_OH', 'MolLogP']:
+    for feat in ['Chi1v', 'Chi1', 'SlogP_VSA2', 'HallKierAlpha', 'PEOE_VSA6',
+       'fr_benzene', 'BertzCT', 'VSA_EState6', 'SMR_VSA7', 'Chi3n',
+       'HeavyAtomMolWt', 'SMR_VSA10', 'Kappa1', 'fr_quatN', 'PEOE_VSA7',
+       'NumHDonors', 'MinEStateIndex', 'fr_C_O_noCOO', 'EState_VSA1',
+       'MolLogP', 'fr_halogen', 'SlogP_VSA3', 'SlogP_VSA5', 'SlogP_VSA1',
+       'SlogP_VSA12', 'VSA_EState10', 'MinPartialCharge', 'Kappa2',
+       'NHOHCount', 'SlogP_VSA6']:
         FeatureNormalization(mol_graphs, feat)
 
     return samples
