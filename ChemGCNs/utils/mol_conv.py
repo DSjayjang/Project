@@ -382,10 +382,14 @@ def read_dataset_solubility(file_name):
             samples.append((mol_graph, target[i]))
             mol_graphs.append(mol_graph)
 
-    for feat in ['Chi1', 'PEOE_VSA6', 'Kappa1', 'SlogP_VSA2', 'MolLogP', 'SMR_VSA10',
-       'HallKierAlpha', 'PEOE_VSA7', 'SlogP_VSA6', 'VSA_EState6', 'fr_benzene',
-       'BertzCT', 'fr_quatN', 'NumHDonors', 'fr_C_O', 'TPSA', 'SMR_VSA1',
-       'SMR_VSA7', 'Chi3n']:
+    for feat in ['Chi1v', 'Kappa1', 'PEOE_VSA6', 'SlogP_VSA5', 'SlogP_VSA2',
+       'HallKierAlpha', 'SMR_VSA10', 'VSA_EState6', 'fr_quatN', 'fr_benzene',
+       'fr_ether', 'PEOE_VSA7', 'FpDensityMorgan1', 'SlogP_VSA10',
+       'NumRotatableBonds', 'MinEStateIndex', 'FpDensityMorgan3',
+       'VSA_EState10', 'MinPartialCharge', 'fr_halogen', 'SlogP_VSA1',
+       'fr_C_O_noCOO', 'NHOHCount', 'NumAliphaticRings', 'SlogP_VSA4',
+       'Kappa2', 'BCUT2D_LOGPHI', 'PEOE_VSA1', 'fr_COO', 'SlogP_VSA11',
+       'fr_Ar_OH', 'MolLogP']:
         FeatureNormalization(mol_graphs, feat)
 
     return samples

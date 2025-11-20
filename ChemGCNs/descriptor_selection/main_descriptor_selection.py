@@ -275,6 +275,6 @@ def exec_reg(elastic_list, df):
 
 # 출력
 mol_conv_upper(selected_features_elastic, X_train_None0)
-mol_conv_under(selected_features_elastic, X_train_None0)
+# mol_conv_under(selected_features_elastic, X_train_None0)
 exec_reg(selected_features_elastic, X_train_None0)
 print(X_train_None0.columns)
