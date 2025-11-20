@@ -165,13 +165,16 @@ def main():
 
     print(f'{backbone}, {DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
 
-    #------------------------ Backbone ------------------------#
-    print('--------- Vanilla Backbone ---------')
-    test_losses['Backbone'] = trainer_time_check.cross_validation(dataset_backbone, model_backbone, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_time_check.train_gcn, trainer_time_check.test_gcn, mol_collate_gcn.collate_gcn)
-    print('test loss (Backbone): ' + str(test_losses['Backbone']))
+    # #------------------------ Backbone ------------------------#
+    # print('--------- Vanilla Backbone ---------')
+    # test_losses['Backbone'] = trainer_time_check.cross_validation(dataset_backbone, model_backbone, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_time_check.train_gcn, trainer_time_check.test_gcn, mol_collate_gcn.collate_gcn)
+    # print('test loss (Backbone): ' + str(test_losses['Backbone']))
 
-    total_params = sum(p.numel() for p in model_backbone.parameters() if p.requires_grad)
-    print(f"GCN 총 학습 가능한 파라미터 수: {total_params:,}")
+    # total_params = sum(p.numel() for p in model_backbone.parameters() if p.requires_grad)
+    # print(f"GCN 총 학습 가능한 파라미터 수: {total_params:,}")
+
+    # total_params = sum(p.numel() for p in model_backbone.gc1.parameters() if p.requires_grad)
+    # print(f"GCN 레이어당 학습 가능한 파라미터 수: {total_params:,}")
 
     # print('--------- Backbone with predefined descriptor Ring ---------')
     # test_losses['Backbone_R'] = trainer.cross_validation(dataset_backbone, model_backbone_R, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn_ring)

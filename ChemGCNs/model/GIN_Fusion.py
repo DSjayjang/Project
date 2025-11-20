@@ -12,7 +12,7 @@ class MLP(nn.Module):
         super().__init__()
         self.net = nn.Sequential(
             nn.Linear(in_channels, hidden_channels),
-            nn.BatchNorm1d(hidden_channels),
+            # nn.BatchNorm1d(hidden_channels),
             nn.ReLU(),
             nn.Linear(hidden_channels, out_channels)
         )

@@ -1,2 +1,0 @@
-dataset,epochs,num-folds,SEED,criterion,test_losses
-freesolv,2,2,100,L1Loss(),"[3.9518651214886606, 3.8355602741241457]"

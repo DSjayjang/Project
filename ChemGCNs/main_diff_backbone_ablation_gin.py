@@ -10,7 +10,7 @@ from utils.mol_props import dim_atomic_feat
 
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
-backbone = 'GAT' # [GCN, GAT, GIN, SAGE]
+backbone = 'GIN' # [GCN, GAT, GIN, SAGE]
 
 def main():
     SET_SEED()
@@ -165,22 +165,22 @@ def main():
 
     print(f'{backbone}, {DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
 
-    #------------------------ Backbone ------------------------#
-    print('--------- Vanilla Backbone ---------')
-    test_losses['Backbone'] = trainer.cross_validation(dataset_backbone, model_backbone, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_gcn, trainer.test_gcn, mol_collate_gcn.collate_gcn)
-    print('test loss (Backbone): ' + str(test_losses['Backbone']))
+    # #------------------------ Backbone ------------------------#
+    # print('--------- Vanilla Backbone ---------')
+    # test_losses['Backbone'] = trainer.cross_validation(dataset_backbone, model_backbone, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_gcn, trainer.test_gcn, mol_collate_gcn.collate_gcn)
+    # print('test loss (Backbone): ' + str(test_losses['Backbone']))
 
-    print('--------- Backbone with predefined descriptor Ring ---------')
-    test_losses['Backbone_R'] = trainer.cross_validation(dataset_backbone, model_backbone_R, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn_ring)
-    print('test loss (Backbone_R): ' + str(test_losses['Backbone_R']))
+    # print('--------- Backbone with predefined descriptor Ring ---------')
+    # test_losses['Backbone_R'] = trainer.cross_validation(dataset_backbone, model_backbone_R, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn_ring)
+    # print('test loss (Backbone_R): ' + str(test_losses['Backbone_R']))
 
-    print('--------- Backbone with predefined descriptor Scale ---------')
-    test_losses['Backbone_S'] = trainer.cross_validation(dataset_backbone, model_backbone_S, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn_scale)
-    print('test loss (Backbone_S): ' + str(test_losses['Backbone_S']))
+    # print('--------- Backbone with predefined descriptor Scale ---------')
+    # test_losses['Backbone_S'] = trainer.cross_validation(dataset_backbone, model_backbone_S, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn_scale)
+    # print('test loss (Backbone_S): ' + str(test_losses['Backbone_S']))
 
-    print('--------- Backbone with predefined descriptors ---------')
-    test_losses['Backbone_E'] = trainer.cross_validation(dataset_backbone, model_backbone_E, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn)
-    print('test loss (Backbone_E): ' + str(test_losses['Backbone_E']))
+    # print('--------- Backbone with predefined descriptors ---------')
+    # test_losses['Backbone_E'] = trainer.cross_validation(dataset_backbone, model_backbone_E, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mol_collate_gcn.collate_egcn)
+    # print('test loss (Backbone_E): ' + str(test_losses['Backbone_E']))
 
 
     #------------------------ concatenation + descriptor selection ------------------------#
