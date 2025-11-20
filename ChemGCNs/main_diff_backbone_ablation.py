@@ -10,7 +10,7 @@ from utils.mol_props import dim_atomic_feat
 
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
-backbone = 'GAT' # [GCN, GAT, GIN, SAGE]
+backbone = 'GCN' # [GCN, GAT, GIN, SAGE]
 
 def main():
     SET_SEED()

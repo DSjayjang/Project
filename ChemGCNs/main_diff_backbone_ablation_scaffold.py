@@ -156,8 +156,8 @@ def main():
     folds_backbone = mc.scaffold_kfold_split(smiles_list_backbone, K)
 
     # loss function
-    criterion = nn.L1Loss(reduction='sum')
-    # criterion = nn.MSELoss(reduction='sum')
+    # criterion = nn.L1Loss(reduction='sum')
+    criterion = nn.MSELoss(reduction='sum')
 
     test_losses = dict()
 
