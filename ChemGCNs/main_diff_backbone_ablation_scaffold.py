@@ -10,7 +10,7 @@ from utils.mol_props import dim_atomic_feat
 
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
-backbone = 'GCN' # [GCN, GAT, GIN, SAGE]
+backbone = 'GAT' # [GCN, GAT, GIN, SAGE]
 
 def main():
     SET_SEED()
@@ -50,7 +50,7 @@ def main():
 
     elif DATASET_NAME == 'solubility_only3':
         print('DATASET_NAME: ', DATASET_NAME)
-        BATCH_SIZE = 256
+        BATCH_SIZE = 512
         from utils.ablation import mol_collate_solubility as mcol
         dataset, smiles_list = mc.read_dataset_solubility(DATASET_PATH + '.csv')
         num_descriptors = 30
@@ -156,8 +156,8 @@ def main():
     folds_backbone = mc.scaffold_kfold_split(smiles_list_backbone, K)
 
     # loss function
-    # criterion = nn.L1Loss(reduction='sum')
-    criterion = nn.MSELoss(reduction='sum')
+    criterion = nn.L1Loss(reduction='sum')
+    # criterion = nn.MSELoss(reduction='sum')
 
     test_losses = dict()
 

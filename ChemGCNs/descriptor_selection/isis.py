@@ -15,7 +15,7 @@ hyperparams
 """
 
 nfolds = FloatVector([10])[0]
-nsis = FloatVector([35])[0] # [30 for scgas: 23 descriptors, and solubility: 16 descriptors]
+nsis = FloatVector([35])[0] # [30 for scgas: 23 descriptors, 35 for solubility: 30 descriptors]
 seed = FloatVector([SEED])[0]
 
 family: str = 'gaussian' # gaussian / binomial / poisson / cox
