@@ -1,0 +1,3 @@
+dataset,epochs,num-folds,SEED,criterion,test_losses
+freesolv,1,2,100,MSELoss(),"[28.4512166468701, 27.915103912353516]"
+freesolv,1,2,100,MSELoss(),"[27.893723443010384, 27.040765953063964]"

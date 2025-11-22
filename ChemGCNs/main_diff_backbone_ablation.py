@@ -10,7 +10,7 @@ from utils.mol_props import dim_atomic_feat
 
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
-backbone = 'GAT' # [GCN, GAT, GIN, SAGE]
+backbone = 'GIN' # [GCN, GAT, GIN, SAGE]
 
 def main():
     SET_SEED()
@@ -42,7 +42,7 @@ def main():
     elif DATASET_NAME == 'scgas':
         print('DATASET_NAME: ', DATASET_NAME)
         global BATCH_SIZE
-        BATCH_SIZE = 128
+        BATCH_SIZE = 256
         from utils.ablation import mol_collate_scgas as mcol
         dataset = mc.read_dataset_scgas(DATASET_PATH + '.csv')
         num_descriptors = 23
@@ -158,8 +158,8 @@ def main():
 
 
     # loss function
-    # criterion = nn.L1Loss(reduction='sum')
-    criterion = nn.MSELoss(reduction='sum')
+    criterion = nn.L1Loss(reduction='sum')
+    # criterion = nn.MSELoss(reduction='sum')
 
     test_losses = dict()
 

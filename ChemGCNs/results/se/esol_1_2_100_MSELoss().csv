@@ -1,0 +1,2 @@
+dataset,epochs,num-folds,SEED,criterion,test_losses
+esol,1,2,100,MSELoss(),"[13.08584036412078, 11.783576640676944]"

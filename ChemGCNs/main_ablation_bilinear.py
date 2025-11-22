@@ -4,7 +4,7 @@ import torch.nn as nn
 
 import utils.mol_conv as mc
 from utils import trainer_bilinear_time_check
-from utils import mol_collate as mcc
+from utils import mol_collate_bilinear as mcc
 from utils.mol_props import dim_atomic_feat
 
 from model import Bilinear_Attn
@@ -19,8 +19,8 @@ def main():
     if DATASET_NAME == 'freesolv':
         print('DATASET_NAME: ', DATASET_NAME)
         from utils.ablation import mol_collate_freesolv as mcol
-        dataset = mc.read_dataset_freesolv(DATASET_PATH + '.csv')
-        num_descriptors = 50
+        dataset = mcc.read_dataset_freesolv(DATASET_PATH + '.csv')
+        num_descriptors = 208
         descriptors = mcc.descriptor_selection_freesolv
 
     elif DATASET_NAME == 'esol':
@@ -62,7 +62,7 @@ def main():
     # model_bilinear_attn_7 = Bilinear_Attn.Net(dim_atomic_feat, 1, 7).to(device)
     # model_bilinear_attn_10 = Bilinear_Attn.Net(dim_atomic_feat, 1, 10).to(device)
     # model_bilinear_attn_20 = Bilinear_Attn.Net(dim_atomic_feat, 1, 20).to(device)
-    model_bilinear_attn_ds = Bilinear_Attn.Net(dim_atomic_feat, 1, num_descriptors).to(device)
+    model_bilinear_attn_ds = Bilinear_Attn.Net_New(dim_atomic_feat, 1, num_descriptors).to(device)
 
     # loss function
     # criterion = nn.L1Loss(reduction='sum')

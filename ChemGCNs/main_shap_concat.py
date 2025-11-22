@@ -51,6 +51,14 @@ def main():
         num_descriptors = 23
         descriptors = mol_collate.descriptor_selection_scgas
 
+    elif DATASET_NAME == 'solubility_only3':
+        print('DATASET_NAME: ', DATASET_NAME)
+        BATCH_SIZE = 256
+        # from utils.ablation import mol_collate_scgas as mcol
+        dataset = mc.read_dataset_solubility(DATASET_PATH + '.csv')
+        num_descriptors = 30
+        descriptors = mol_collate.descriptor_selection_solubility
+
     random.shuffle(dataset)
     train_dataset, test_dataset = train_test_split(dataset, test_size = 0.2, random_state = config.SEED)
 
