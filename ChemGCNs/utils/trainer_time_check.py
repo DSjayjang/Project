@@ -54,7 +54,7 @@ def train_model(model, criterion, optimizer, train_data_loader, max_epochs):
         epoch_time = time.time() - start_time # 끝
         epoch_times.append(epoch_time)
 
-        print('Epoch {}, train loss {:.4f}'.format(epoch + 1, train_loss))
+        print('Epoch {}, train loss {:.4f}, epoch time {:.4f}'.format(epoch + 1, train_loss, epoch_time))
 
     return epoch_times
 

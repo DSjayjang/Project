@@ -284,7 +284,7 @@ class MLPDecoder(nn.Module):
 
 # Bilinear Attn
 class Net_New(nn.Module):
-    def __init__(self, dim_in, dim_out, dim_self_feat, hidden_in = 128, hidden_out = 256):
+    def __init__(self, dim_in, dim_out, dim_self_feat, hidden_in = 256, hidden_out = 512):
         super(Net_New, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
@@ -302,7 +302,7 @@ class Net_New(nn.Module):
 
         self.bn1 = nn.BatchNorm1d(128)
         self.bn2 = nn.BatchNorm1d(32)
-        # self.dropout = nn.Dropout(0.3)
+        self.dropout = nn.Dropout(0.3)
 
     def forward(self, g, self_feat):
         h = F.relu(self.gc1(g, g.ndata['feat']))
@@ -331,12 +331,9 @@ class Net_New(nn.Module):
         z = torch.cat([z, q], dim=1)
 
         # fully connected networks
-        # out = F.relu(self.bn1(self.fc1(z)))
-        # out = self.dropout(out)
-        # out = F.relu(self.bn2(self.fc2(out)))
-
-        out = F.relu(self.fc1(z))
-        out = F.relu(self.fc2(out))
+        out = F.relu(self.bn1(self.fc1(z)))
+        out = self.dropout(out)
+        out = F.relu(self.bn2(self.fc2(out)))
 
         out = self.fc3(out)
 

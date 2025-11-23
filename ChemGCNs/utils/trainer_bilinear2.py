@@ -51,7 +51,7 @@ def train_model(model, criterion, optimizer, train_data_loader, max_epochs):
 
         print('Epoch {}, train loss {:.4f}, epoch time {:.4f}'.format(epoch + 1, train_loss, epoch_time))
 
-        return epoch_times
+    return epoch_times
 
 def test_gcn(model, criterion, test_data_loader, accs=None):
     preds = None
