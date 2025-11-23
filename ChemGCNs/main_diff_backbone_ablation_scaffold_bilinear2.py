@@ -48,7 +48,7 @@ def main():
         BATCH_SIZE = 256
         from utils.ablation import mol_collate_scgas as mcol
         dataset, smiles_list = mc.read_dataset_scgas(DATASET_PATH + '.csv')
-        num_descriptors = 208
+        num_descriptors = 196
         descriptors = mol_collate_bilinear.descriptor_selection_scgas
 
     elif DATASET_NAME == 'solubility_only3':
@@ -56,7 +56,7 @@ def main():
         BATCH_SIZE = 512
         from utils.ablation import mol_collate_solubility as mcol
         dataset, smiles_list = mc.read_dataset_solubility(DATASET_PATH + '.csv')
-        num_descriptors = 208
+        num_descriptors = 196
         descriptors = mol_collate_bilinear.descriptor_selection_solubility
 
     folds = mc.scaffold_kfold_split(smiles_list, K)

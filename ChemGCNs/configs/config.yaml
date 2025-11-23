@@ -1,5 +1,5 @@
 SEED: 100 # [100, 200, 300]
-DATASET: 'solubility_only3' # ['freesolv', 'esol', 'lipo', 'scgas', 'solubility', 'solubility_only3']
+DATASET: 'scgas' # ['freesolv', 'esol', 'lipo', 'scgas', 'solubility', 'solubility_only3']
 
 BATCH_SIZE: 32 # [scgas: 128, others: 32, esol: 33 when scaffold splits with concat and kronecker]
 MAX_EPOCHS: 1
