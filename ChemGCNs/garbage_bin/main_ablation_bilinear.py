@@ -2,9 +2,9 @@ import random
 import torch
 import torch.nn as nn
 
-import utils.mol_conv as mc
+import utils.mol_conv_bilinear as mc
 from utils import trainer_bilinear_time_check
-from utils import mol_collate_bilinear as mcc
+from utils import mol_collate_bilinear
 from utils.mol_props import dim_atomic_feat
 
 from model import Bilinear_Attn
@@ -19,9 +19,9 @@ def main():
     if DATASET_NAME == 'freesolv':
         print('DATASET_NAME: ', DATASET_NAME)
         from utils.ablation import mol_collate_freesolv as mcol
-        dataset = mcc.read_dataset_freesolv(DATASET_PATH + '.csv')
+        dataset = mc.read_dataset_freesolv(DATASET_PATH + '.csv')
         num_descriptors = 208
-        descriptors = mcc.descriptor_selection_freesolv
+        descriptors = mol_collate_bilinear.descriptor_selection_freesolv
 
     elif DATASET_NAME == 'esol':
         print('DATASET_NAME: ', DATASET_NAME)
@@ -97,8 +97,8 @@ def main():
     test_losses['bilinear_attn_ds'] = trainer_bilinear_time_check.cross_validation(dataset, model_bilinear_attn_ds, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_bilinear_time_check.train_model, trainer_bilinear_time_check.test_model, descriptors)
     print('test loss (bilinear_attn_ds): ' + str(test_losses['bilinear_attn_ds']))
 
-    total_params = sum(p.numel() for p in model_bilinear_attn_ds.ban.parameters() if p.requires_grad)
-    print(f"bilinear attn MAP 학습 가능한 파라미터 수: {total_params:,}")
+    # total_params = sum(p.numel() for p in model_bilinear_attn_ds.ban.parameters() if p.requires_grad)
+    # print(f"bilinear attn MAP 학습 가능한 파라미터 수: {total_params:,}")
 
     total_params = sum(p.numel() for p in model_bilinear_attn_ds.parameters() if p.requires_grad)
     print(f"bilinear attn 총 학습 가능한 파라미터 수: {total_params:,}")

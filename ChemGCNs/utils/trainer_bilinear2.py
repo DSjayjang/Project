@@ -1,3 +1,4 @@
+import time
 import torch
 import copy
 import numpy as np
@@ -29,9 +30,11 @@ def train_gcn(model, criterion, optimizer, train_data_loader, max_epochs):
 
 def train_model(model, criterion, optimizer, train_data_loader, max_epochs):
     model.train()
+    epoch_times = []
 
     for epoch in range(0, max_epochs):
         train_loss = 0
+        start_time = time.time() # 시작
 
         for bg, self_feat, target in train_data_loader:
             pred = model(bg, self_feat)
@@ -43,8 +46,12 @@ def train_model(model, criterion, optimizer, train_data_loader, max_epochs):
 
         train_loss /= len(train_data_loader.dataset)
 
-        print('Epoch {}, train loss {:.4f}'.format(epoch + 1, train_loss))
+        epoch_time = time.time() - start_time # 끝
+        epoch_times.append(epoch_time)
 
+        print('Epoch {}, train loss {:.4f}, epoch time {:.4f}'.format(epoch + 1, train_loss, epoch_time))
+
+        return epoch_times
 
 def test_gcn(model, criterion, test_data_loader, accs=None):
     preds = None
@@ -121,6 +128,8 @@ def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epoch
     optimizers = []
     test_losses = []
 
+    all_epoch_times = [] 
+
     for k in range(0, num_folds - 1):
         folds.append(dataset[k * size_fold:(k + 1) * size_fold])
 
@@ -144,10 +153,15 @@ def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epoch
         train_data_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate)
         test_data_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate)
 
-        train(models[k], criterion, optimizers[k], train_data_loader, max_epochs)
+        # train(models[k], criterion, optimizers[k], train_data_loader, max_epochs)
+        epoch_times = train(models[k], criterion, optimizers[k], train_data_loader, max_epochs)
         test_loss, pred = test(models[k], criterion, test_data_loader, accs)
 
         test_losses.append(test_loss)
+        all_epoch_times.extend(epoch_times)
+
+    avg_epoch_time = sum(all_epoch_times) / len(all_epoch_times)
+    print(f"\n epoch 평균 시간: {avg_epoch_time:.4f} 초\n")
 
     df_row = pd.DataFrame([{
         'dataset': DATASET_NAME,
