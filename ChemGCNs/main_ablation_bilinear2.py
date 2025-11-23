@@ -19,7 +19,7 @@ def main():
 
     if DATASET_NAME == 'freesolv':
         print('DATASET_NAME: ', DATASET_NAME)
-        BATCH_SIZE = 64
+        BATCH_SIZE = 32
         from utils.ablation import mol_collate_freesolv as mcol
         dataset = mc.read_dataset_freesolv(DATASET_PATH + '.csv')
         num_descriptors = 208
@@ -91,8 +91,8 @@ def main():
     # model_bilinear_attn_ds = Bilinear_Attn.Net(dim_atomic_feat, 1, num_descriptors).to(device)
 
     # loss function
-    criterion = nn.L1Loss(reduction='sum')
-    # criterion = nn.MSELoss(reduction='sum')
+    # criterion = nn.L1Loss(reduction='sum')
+    criterion = nn.MSELoss(reduction='sum')
 
     test_losses = dict()
 
@@ -149,8 +149,8 @@ def main():
     test_losses['KROVEX'] = trainer_bilinear2.cross_validation(dataset, model_KROVEX, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_bilinear2.train_model, trainer_bilinear2.test_model, descriptors)
     print('test loss (KROVEX): ' + str(test_losses['KROVEX']))
 
-    total_params = sum(p.numel() for p in model_KROVEX.ban.parameters() if p.requires_grad)
-    print(f"bilinear attn MAP 학습 가능한 파라미터 수: {total_params:,}")
+    # total_params = sum(p.numel() for p in model_KROVEX.ban.parameters() if p.requires_grad)
+    # print(f"bilinear attn MAP 학습 가능한 파라미터 수: {total_params:,}")
 
     total_params = sum(p.numel() for p in model_KROVEX.parameters() if p.requires_grad)
     print(f"bilinear attn 총 학습 가능한 파라미터 수: {total_params:,}")

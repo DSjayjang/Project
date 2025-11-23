@@ -212,71 +212,132 @@ class MLPDecoder(nn.Module):
 #         return out
 
 
+# class Net_New(nn.Module):
+#     def __init__(self, dim_in, dim_out, dim_self_feat, g_hidden=100, g_emb_dim=20,
+#                 h_dim=20, h_out=1, k=3):
+#         """
+#         dim_in       : 노드 피처 차원 (GCN 입력)
+#         dim_out      : 최종 출력 차원 (예: 1 for 회귀)
+#         dim_self_feat: descriptor 차원
+#         g_hidden     : 첫 번째 GCN hidden dim
+#         g_emb_dim    : graph embedding dim (두 번째 GCN 출력)
+#         h_dim        : BANLayer 내부 hidden dim (= logits dimension)
+#         h_out        : BAN multi-head (glimpse) 개수
+#         k            : BAN factorization rank
+#         """
+#         super(Net_New, self).__init__()
+
+
+#         self.gc1 = GCNLayer(dim_in, 100)
+#         self.gc2 = GCNLayer(g_hidden, g_emb_dim)
+
+#         self.init_args = (dim_in, dim_out, dim_self_feat, g_hidden, g_emb_dim, h_dim, h_out, k)
+
+#         # 그래프 임베딩 dim = g_emb_dim 이므로 BAN의 v_dim = g_emb_dim
+#         self.ban = BANLayer(
+#             v_dim = g_emb_dim,
+#             q_dim = dim_self_feat,
+#             h_dim = h_dim,
+#             h_out = h_out,
+#             act = 'ReLU',
+#             dropout = 0.2,
+#             k = k
+#         )
+
+#         self.mlp = MLPDecoder(dim_in = h_dim, dim_out = dim_out)
+#         self.last_att_maps = None
+
+#     def forward(self, g, self_feat):
+#         """
+#         g         : DGLGraph (batched)
+#         self_feat : (B, dim_self_feat) descriptor
+#         """
+#         # graph convolutional networks
+#         h = F.relu(self.gc1(g, g.ndata['feat']))
+#         h = F.relu(self.gc2(g, h))
+#         g.ndata['h'] = h
+
+#         # graph embedding
+#         # hg = dgl.mean_nodes(g, 'h')
+
+#         # reshape
+#         # v: (B, 1, g_emb_dim)
+#         # q: (B, 1, dim_self_feat)
+#         graphs = dgl.unbatch(g)
+#         node_embeds = [graph.ndata['h'] for graph in graphs]
+#         # print('node_embeds.shape',node_embeds[0].shape)
+#         v = torch.nn.utils.rnn.pad_sequence(node_embeds, batch_first=True)  # (B, N, node_dim)
+#         # print('v', v.shape)
+#         q = self_feat.unsqueeze(1)
+
+#         # bilinear attention fusion
+#         fused, att_maps = self.ban(v, q, softmax=False)
+#         self.last_att_maps = att_maps
+
+#         # fully connected networks
+#         out = self.mlp(fused)
+
+#         # print(f"GPU 메모리 사용량: {torch.cuda.memory_allocated() / 1024**2:.2f} MB")
+#         # print(f"GPU 예약 메모리:    {torch.cuda.memory_reserved() / 1024**2:.2f} MB")
+#         return out
+
+
+# Bilinear Attn
 class Net_New(nn.Module):
-    def __init__(self, dim_in, dim_out, dim_self_feat, g_hidden=100, g_emb_dim=20,
-                h_dim=20, h_out=1, k=3):
-        """
-        dim_in       : 노드 피처 차원 (GCN 입력)
-        dim_out      : 최종 출력 차원 (예: 1 for 회귀)
-        dim_self_feat: descriptor 차원
-        g_hidden     : 첫 번째 GCN hidden dim
-        g_emb_dim    : graph embedding dim (두 번째 GCN 출력)
-        h_dim        : BANLayer 내부 hidden dim (= logits dimension)
-        h_out        : BAN multi-head (glimpse) 개수
-        k            : BAN factorization rank
-        """
+    def __init__(self, dim_in, dim_out, dim_self_feat, hidden_in = 128, hidden_out = 256):
         super(Net_New, self).__init__()
 
-
         self.gc1 = GCNLayer(dim_in, 100)
-        self.gc2 = GCNLayer(g_hidden, g_emb_dim)
+        self.gc2 = GCNLayer(100, 20)
 
-        self.init_args = (dim_in, dim_out, dim_self_feat, g_hidden, g_emb_dim, h_dim, h_out, k)
+        self.W = nn.Parameter(torch.randn(hidden_in, hidden_out))
 
-        # 그래프 임베딩 dim = g_emb_dim 이므로 BAN의 v_dim = g_emb_dim
-        self.ban = BANLayer(
-            v_dim = g_emb_dim,
-            q_dim = dim_self_feat,
-            h_dim = h_dim,
-            h_out = h_out,
-            act = 'ReLU',
-            dropout = 0.2,
-            k = k
-        )
+        self.W_q = nn.Parameter(torch.randn(hidden_in, dim_self_feat)) # descriptor
+        self.W_k = nn.Parameter(torch.randn(hidden_out, 20)) # graph emb
+        self.W_v = nn.Parameter(torch.randn(hidden_out, 20)) # graph emb
 
-        self.mlp = MLPDecoder(dim_in = h_dim, dim_out = dim_out)
-        self.last_att_maps = None
+        self.fc1 = nn.Linear(hidden_in + hidden_out, 128)
+        self.fc2 = nn.Linear(128, 32)
+        self.fc3 = nn.Linear(32, dim_out)
+
+        self.bn1 = nn.BatchNorm1d(128)
+        self.bn2 = nn.BatchNorm1d(32)
+        # self.dropout = nn.Dropout(0.3)
 
     def forward(self, g, self_feat):
-        """
-        g         : DGLGraph (batched)
-        self_feat : (B, dim_self_feat) descriptor
-        """
-        # graph convolutional networks
         h = F.relu(self.gc1(g, g.ndata['feat']))
         h = F.relu(self.gc2(g, h))
         g.ndata['h'] = h
 
+        hg = dgl.mean_nodes(g, 'h')
+
+        # query, key, value
+
+        # descriptor
+        q = self_feat @ self.W_q.T # (B, dim_self_feat) x (dim_self_feat, hidden_in) = (B, hidden_in)
+
         # graph embedding
-        # hg = dgl.mean_nodes(g, 'h')
+        k = hg @ self.W_k.T # (B, 20) x (20, hidden_out) = (B, hidden_out)
 
-        # reshape
-        # v: (B, 1, g_emb_dim)
-        # q: (B, 1, dim_self_feat)
-        graphs = dgl.unbatch(g)
-        node_embeds = [graph.ndata['h'] for graph in graphs]
-        # print('node_embeds.shape',node_embeds[0].shape)
-        v = torch.nn.utils.rnn.pad_sequence(node_embeds, batch_first=True)  # (B, N, node_dim)
-        # print('v', v.shape)
-        q = self_feat.unsqueeze(1)
+        # graph embedding
+        v = hg @ self.W_v.T # (B, 20) x (20, hidden_out) = (B, hidden_out)
 
-        # bilinear attention fusion
-        fused, att_maps = self.ban(v, q, softmax=False)
-        self.last_att_maps = att_maps
+        # attention score
+        Wk = self.W @ k.T # (hidden_in, hidden_out) x (hidden_out, B)
+        bilinear = torch.sum(q * Wk.T, dim = 1, keepdim = True) # (B, hidden_in) * (B, hidden_out) = (B, hidden_in or out)
+        alpha = torch.sigmoid(bilinear)
+        # print(alpha)
+        z = alpha * v
+        z = torch.cat([z, q], dim=1)
 
         # fully connected networks
-        out = self.mlp(fused)
+        # out = F.relu(self.bn1(self.fc1(z)))
+        # out = self.dropout(out)
+        # out = F.relu(self.bn2(self.fc2(out)))
 
-        # print(f"GPU 메모리 사용량: {torch.cuda.memory_allocated() / 1024**2:.2f} MB")
-        # print(f"GPU 예약 메모리:    {torch.cuda.memory_reserved() / 1024**2:.2f} MB")
+        out = F.relu(self.fc1(z))
+        out = F.relu(self.fc2(out))
+
+        out = self.fc3(out)
+
         return out
