@@ -2,9 +2,9 @@ import random
 import torch
 import torch.nn as nn
 
-import utils.mol_conv_bilinear as mc
+import utils.mol_conv_bilinear_nan as mc
 from utils import trainer_bilinear2
-from utils import mol_collate_bilinear
+from utils import mol_collate_bilinear_nan
 from utils.mol_props import dim_atomic_feat
 
 from model import CONCAT_DS, Bilinear_Form, Bilinear_Attn, KROVEX
@@ -44,16 +44,16 @@ def main():
         print('DATASET_NAME: ', DATASET_NAME)
         BATCH_SIZE = 256
         from utils.ablation import mol_collate_scgas as mcol
-        dataset = mc.read_dataset_scgas(DATASET_PATH + '.csv')
+        dataset = mc.read_dataset_scgas_clear(DATASET_PATH + '.csv')
         num_descriptors = 196
-        descriptors = mol_collate_bilinear.descriptor_selection_scgas
+        descriptors = mol_collate_bilinear_nan.descriptor_selection_scgas_clear
 
     elif DATASET_NAME == 'solubility_only3':
         print('DATASET_NAME: ', DATASET_NAME)
         BATCH_SIZE = 512
         from utils.ablation import mol_collate_solubility as mcol
         dataset = mc.read_dataset_solubility(DATASET_PATH + '.csv')
-        num_descriptors = 196
+        num_descriptors = 1
         descriptors = mol_collate_bilinear.descriptor_selection_solubility
 
     random.shuffle(dataset)

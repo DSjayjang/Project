@@ -1,2 +1,10 @@
 dataset,epochs,num-folds,SEED,criterion,test_losses
 scgas,1,2,100,MSELoss(),"[nan, nan]"
+scgas,1,2,100,MSELoss(),"[nan, nan]"
+scgas,1,2,100,MSELoss(),"[nan, nan]"
+scgas,1,2,100,MSELoss(),"[nan, nan]"
+scgas,1,2,100,MSELoss(),"[nan, nan]"
+scgas,1,2,100,MSELoss(),"[nan, nan]"
+scgas,1,2,100,MSELoss(),"[nan, 2.5098074082760076]"
+scgas,1,2,100,MSELoss(),"[2.9251140958601507, 2.8399887818086613]"
+scgas,1,2,100,MSELoss(),"[2.9251140958601507, 2.8399887818086613]"
