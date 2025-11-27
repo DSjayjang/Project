@@ -155,6 +155,9 @@ def main():
     total_params = sum(p.numel() for p in model_KROVEX.parameters() if p.requires_grad)
     print(f"bilinear attn 총 학습 가능한 파라미터 수: {total_params:,}")
 
+    param_mem = sum(p.numel() for p in model_KROVEX.parameters()) * 4 / 1024**2
+    print(f"Model parameter memory: {param_mem:.2f} MB")    
+
     # # ------------------------ bilinear form + descriptor selection ------------------------#
     # print('--------- bilinear form with 3 descriptors ---------')
     # test_losses['bilinear_3'] = trainer.cross_validation(dataset, model_bilinear_3, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer.train_model, trainer.test_model, mcol.descriptor_selection_3)

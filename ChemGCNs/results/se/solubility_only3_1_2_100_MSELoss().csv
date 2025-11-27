@@ -1,3 +1,4 @@
 dataset,epochs,num-folds,SEED,criterion,test_losses
 solubility_only3,1,2,100,MSELoss(),"[nan, nan]"
 solubility_only3,1,2,100,MSELoss(),"[4.866240065388775, 4.520579198485161]"
+solubility_only3,1,2,100,MSELoss(),"[4.863570083034494, 4.514448590086501]"

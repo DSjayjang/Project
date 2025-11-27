@@ -53,7 +53,7 @@ def main():
 
     elif DATASET_NAME == 'solubility_only3':
         print('DATASET_NAME: ', DATASET_NAME)
-        BATCH_SIZE = 512
+        BATCH_SIZE = 256
         from utils.ablation import mol_collate_solubility as mcol
         dataset, smiles_list = mc.read_dataset_solubility(DATASET_PATH + '.csv')
         num_descriptors = 196
