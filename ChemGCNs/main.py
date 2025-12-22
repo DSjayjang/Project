@@ -18,6 +18,7 @@ from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX
 
 def main():
     SET_SEED()
+    global BATCH_SIZE
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(device)
@@ -42,17 +43,16 @@ def main():
 
     elif DATASET_NAME == 'scgas':
         print('DATASET_NAME: ', DATASET_NAME)
-        global BATCH_SIZE
         BATCH_SIZE = 128
         dataset = mc.read_dataset_scgas(DATASET_PATH + '.csv')
         num_descriptors = 23
         descriptors = mol_collate.descriptor_selection_scgas
 
-    elif DATASET_NAME == 'solubility_cherry3':
+    elif DATASET_NAME == 'solubility':
         print('DATASET_NAME: ', DATASET_NAME)
         BATCH_SIZE = 256
         dataset = mc.read_dataset_solubility(DATASET_PATH + '.csv')
-        num_descriptors = 19
+        num_descriptors = 30
         descriptors = mol_collate.descriptor_selection_solubility
 
     random.shuffle(dataset)

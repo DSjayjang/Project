@@ -2,8 +2,9 @@ import random
 import torch
 import torch.nn as nn
 
+from garbage_bin import trainer_bilinear
 import utils.mol_conv as mc
-from utils import trainer, trainer_bilinear
+from utils import trainer
 from utils import mol_collate
 from utils.mol_props import dim_atomic_feat
 

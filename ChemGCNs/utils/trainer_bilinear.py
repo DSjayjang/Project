@@ -1,8 +1,13 @@
+import time
 import torch
 import copy
 import numpy as np
 import torch.optim as optim
 from torch.utils.data import DataLoader
+
+import os
+import pandas as pd
+from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
 def train_gcn(model, criterion, optimizer, train_data_loader, max_epochs):
     model.train()
@@ -25,9 +30,11 @@ def train_gcn(model, criterion, optimizer, train_data_loader, max_epochs):
 
 def train_model(model, criterion, optimizer, train_data_loader, max_epochs):
     model.train()
+    epoch_times = []
 
     for epoch in range(0, max_epochs):
         train_loss = 0
+        start_time = time.time() # 시작
 
         for bg, self_feat, target in train_data_loader:
             pred = model(bg, self_feat)
@@ -39,8 +46,12 @@ def train_model(model, criterion, optimizer, train_data_loader, max_epochs):
 
         train_loss /= len(train_data_loader.dataset)
 
-        print('Epoch {}, train loss {:.4f}'.format(epoch + 1, train_loss))
+        epoch_time = time.time() - start_time # 끝
+        epoch_times.append(epoch_time)
 
+        print('Epoch {}, train loss {:.4f}, epoch time {:.4f}'.format(epoch + 1, train_loss, epoch_time))
+
+    return epoch_times
 
 def test_gcn(model, criterion, test_data_loader, accs=None):
     preds = None
@@ -100,14 +111,14 @@ def test_model(model, criterion, test_data_loader, accs=None):
 
     return test_loss, preds
 
-# ======
-def clone_model(model):
-    # 모델의 __init__ 인자를 저장해두었다고 가정
-    args = model.init_args
-    new_model = type(model)(*args).to(next(model.parameters()).device)
-    new_model.load_state_dict(model.state_dict())
-    return new_model
-# ======
+# # ======
+# def clone_model(model):
+#     # 모델의 __init__ 인자를 저장해두었다고 가정
+#     args = model.init_args
+#     new_model = type(model)(*args).to(next(model.parameters()).device)
+#     new_model.load_state_dict(model.state_dict())
+#     return new_model
+# # ======
 
 def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epochs, train, test, collate, accs=None):
     num_data_points = len(dataset)
@@ -117,14 +128,16 @@ def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epoch
     optimizers = []
     test_losses = []
 
+    all_epoch_times = [] 
+
     for k in range(0, num_folds - 1):
         folds.append(dataset[k * size_fold:(k + 1) * size_fold])
 
     folds.append(dataset[(num_folds - 1) * size_fold:num_data_points])
 
     for k in range(0, num_folds):
-        # models.append(copy.deepcopy(model))
-        models.append(clone_model(model))
+        models.append(copy.deepcopy(model))
+        # models.append(clone_model(model))
         optimizers.append(optim.Adam(models[k].parameters(), weight_decay=0.01))
 
     for k in range(0, num_folds):
@@ -140,10 +153,31 @@ def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epoch
         train_data_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate)
         test_data_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate)
 
-        train(models[k], criterion, optimizers[k], train_data_loader, max_epochs)
+        # train(models[k], criterion, optimizers[k], train_data_loader, max_epochs)
+        epoch_times = train(models[k], criterion, optimizers[k], train_data_loader, max_epochs)
         test_loss, pred = test(models[k], criterion, test_data_loader, accs)
-        test_losses.append(test_loss)
 
+        test_losses.append(test_loss)
+        all_epoch_times.extend(epoch_times)
+
+    avg_epoch_time = sum(all_epoch_times) / len(all_epoch_times)
+    print(f"\n epoch 평균 시간: {avg_epoch_time:.4f} 초\n")
+
+    df_row = pd.DataFrame([{
+        'dataset': DATASET_NAME,
+        'epochs': MAX_EPOCHS,
+        'num-folds': K,
+        'SEED': SEED,
+        'criterion': criterion,
+        'test_losses': test_losses,
+    }])
+    csv_path = f'./results./se/{DATASET_NAME}_{MAX_EPOCHS}_{K}_{SEED}_{criterion}.csv'
+
+    if not os.path.exists(csv_path):
+        df_row.to_csv(csv_path, index=False)  # 첫 줄: header 포함
+    else:
+        df_row.to_csv(csv_path, mode='a', header=False, index=False)  # 이후: append만
+   
     if accs is None:
         return np.mean(test_losses)
     else:

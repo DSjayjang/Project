@@ -79,7 +79,8 @@ class BANLayer(nn.Module):
 
 
 class FCNet(nn.Module):
-    """Simple class for non-linear fully connect network
+    """
+    Simple class for non-linear fully connect network
     """
     def __init__(self, dims, act='ReLU', dropout=0):
         super(FCNet, self).__init__()
@@ -144,143 +145,6 @@ class MLPDecoder(nn.Module):
         out = self.fc2(out)
 
         return out
-
-
-# class Net(nn.Module):
-#     def __init__(self, dim_in, dim_out, dim_self_feat, g_hidden=100, g_emb_dim=20,
-#                 h_dim=20, h_out=1, k=3):
-#         """
-#         dim_in       : 노드 피처 차원 (GCN 입력)
-#         dim_out      : 최종 출력 차원 (예: 1 for 회귀)
-#         dim_self_feat: descriptor 차원
-#         g_hidden     : 첫 번째 GCN hidden dim
-#         g_emb_dim    : graph embedding dim (두 번째 GCN 출력)
-#         h_dim        : BANLayer 내부 hidden dim (= logits dimension)
-#         h_out        : BAN multi-head (glimpse) 개수
-#         k            : BAN factorization rank
-#         """
-#         super(Net, self).__init__()
-
-
-#         self.gc1 = GCNLayer(dim_in, g_hidden)
-#         self.gc2 = GCNLayer(g_hidden, g_emb_dim)
-
-#         self.init_args = (dim_in, dim_out, dim_self_feat, g_hidden, g_emb_dim, h_dim, h_out, k)
-
-#         # 그래프 임베딩 dim = g_emb_dim 이므로 BAN의 v_dim = g_emb_dim
-#         self.ban = BANLayer(
-#             v_dim = g_emb_dim,
-#             q_dim = dim_self_feat,
-#             h_dim = h_dim,
-#             h_out = h_out,
-#             act = 'ReLU',
-#             dropout = 0.2,
-#             k = k
-#         )
-
-#         self.mlp = MLPDecoder(dim_in = h_dim, dim_out = dim_out)
-#         self.last_att_maps = None
-
-#     def forward(self, g, self_feat):
-#         """
-#         g         : DGLGraph (batched)
-#         self_feat : (B, dim_self_feat) descriptor
-#         """
-#         # graph convolutional networks
-#         h = F.relu(self.gc1(g, g.ndata['feat']))
-#         h = F.relu(self.gc2(g, h))
-#         g.ndata['h'] = h
-
-#         # graph embedding
-#         hg = dgl.mean_nodes(g, 'h')
-
-#         # reshape
-#         # v: (B, 1, g_emb_dim)
-#         # q: (B, 1, dim_self_feat)
-#         v = hg.unsqueeze(1)
-#         q = self_feat.unsqueeze(1)
-
-#         # bilinear attention fusion
-#         fused, att_maps = self.ban(v, q, softmax=False)
-#         self.last_att_maps = att_maps
-
-#         # fully connected networks
-#         out = self.mlp(fused)
-
-#         # print(f"GPU 메모리 사용량: {torch.cuda.memory_allocated() / 1024**2:.2f} MB")
-#         # print(f"GPU 예약 메모리:    {torch.cuda.memory_reserved() / 1024**2:.2f} MB")
-#         return out
-
-
-# class Net_New(nn.Module):
-#     def __init__(self, dim_in, dim_out, dim_self_feat, g_hidden=100, g_emb_dim=20,
-#                 h_dim=20, h_out=1, k=3):
-#         """
-#         dim_in       : 노드 피처 차원 (GCN 입력)
-#         dim_out      : 최종 출력 차원 (예: 1 for 회귀)
-#         dim_self_feat: descriptor 차원
-#         g_hidden     : 첫 번째 GCN hidden dim
-#         g_emb_dim    : graph embedding dim (두 번째 GCN 출력)
-#         h_dim        : BANLayer 내부 hidden dim (= logits dimension)
-#         h_out        : BAN multi-head (glimpse) 개수
-#         k            : BAN factorization rank
-#         """
-#         super(Net_New, self).__init__()
-
-
-#         self.gc1 = GCNLayer(dim_in, 100)
-#         self.gc2 = GCNLayer(g_hidden, g_emb_dim)
-
-#         self.init_args = (dim_in, dim_out, dim_self_feat, g_hidden, g_emb_dim, h_dim, h_out, k)
-
-#         # 그래프 임베딩 dim = g_emb_dim 이므로 BAN의 v_dim = g_emb_dim
-#         self.ban = BANLayer(
-#             v_dim = g_emb_dim,
-#             q_dim = dim_self_feat,
-#             h_dim = h_dim,
-#             h_out = h_out,
-#             act = 'ReLU',
-#             dropout = 0.2,
-#             k = k
-#         )
-
-#         self.mlp = MLPDecoder(dim_in = h_dim, dim_out = dim_out)
-#         self.last_att_maps = None
-
-#     def forward(self, g, self_feat):
-#         """
-#         g         : DGLGraph (batched)
-#         self_feat : (B, dim_self_feat) descriptor
-#         """
-#         # graph convolutional networks
-#         h = F.relu(self.gc1(g, g.ndata['feat']))
-#         h = F.relu(self.gc2(g, h))
-#         g.ndata['h'] = h
-
-#         # graph embedding
-#         # hg = dgl.mean_nodes(g, 'h')
-
-#         # reshape
-#         # v: (B, 1, g_emb_dim)
-#         # q: (B, 1, dim_self_feat)
-#         graphs = dgl.unbatch(g)
-#         node_embeds = [graph.ndata['h'] for graph in graphs]
-#         # print('node_embeds.shape',node_embeds[0].shape)
-#         v = torch.nn.utils.rnn.pad_sequence(node_embeds, batch_first=True)  # (B, N, node_dim)
-#         # print('v', v.shape)
-#         q = self_feat.unsqueeze(1)
-
-#         # bilinear attention fusion
-#         fused, att_maps = self.ban(v, q, softmax=False)
-#         self.last_att_maps = att_maps
-
-#         # fully connected networks
-#         out = self.mlp(fused)
-
-#         # print(f"GPU 메모리 사용량: {torch.cuda.memory_allocated() / 1024**2:.2f} MB")
-#         # print(f"GPU 예약 메모리:    {torch.cuda.memory_reserved() / 1024**2:.2f} MB")
-#         return out
-
 
 # Bilinear Attn
 class Net_New(nn.Module):

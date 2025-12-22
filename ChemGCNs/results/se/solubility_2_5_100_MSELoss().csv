@@ -1,0 +1,2 @@
+dataset,epochs,num-folds,SEED,criterion,test_losses
+solubility,2,5,100,MSELoss(),"[4.941157523922168, 4.323570047377454, 4.156532144302255, 4.486711739815292, 4.490464411883715]"

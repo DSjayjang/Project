@@ -9,6 +9,8 @@ with open('configs\config.yaml', 'r') as f:
     cfg = yaml.safe_load(f)
 
 SEED = cfg['SEED']
+BACKBONE = cfg['BACKBONE']
+# SPLIT = cfg['SPLIT']
 DATASET_NAME = cfg['DATASET']
 DATASET_PATH = os.path.join("datasets", DATASET_NAME)
 BATCH_SIZE = cfg['BATCH_SIZE']

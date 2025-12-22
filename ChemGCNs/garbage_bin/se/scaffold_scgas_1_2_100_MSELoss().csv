@@ -1,0 +1,3 @@
+dataset,epochs,num-folds,SEED,criterion,test_losses
+scgas,1,2,100,MSELoss(),"[1.755740429526218, 4.085388566860037]"
+scgas,1,2,100,MSELoss(),"[1.75567649633406, 4.085419611429307]"

@@ -657,238 +657,228 @@ def read_dataset_scgas(file_name):
             mol_graph.NumValenceElectrons = dsc.NumValenceElectrons(mol)
             mol_graph.NumRadicalElectrons = dsc.NumRadicalElectrons(mol)
             # 11
-
-
-
-
             mol_graph.FpDensityMorgan1 = dsc.FpDensityMorgan1(mol)
-            # 16
             mol_graph.FpDensityMorgan2 = dsc.FpDensityMorgan2(mol)
             mol_graph.FpDensityMorgan3 = dsc.FpDensityMorgan3(mol)
-
-
-
-
-
-            # 26
             mol_graph.BalabanJ = dsc.BalabanJ(mol)
             mol_graph.BertzCT = dsc.BertzCT(mol)
+            # 16
             mol_graph.Chi0 = dsc.Chi0(mol)
             mol_graph.Chi0n = dsc.Chi0n(mol)
             mol_graph.Chi0v = dsc.Chi0v(mol)
-            # 31
             mol_graph.Chi1 = dsc.Chi1(mol)
             mol_graph.Chi1n = dsc.Chi1n(mol)
+            # 20
             mol_graph.Chi1v = dsc.Chi1v(mol)
             mol_graph.Chi2n = dsc.Chi2n(mol)
             mol_graph.Chi2v = dsc.Chi2v(mol)
-            # 36
             mol_graph.Chi3n = dsc.Chi3n(mol)
             mol_graph.Chi3v = dsc.Chi3v(mol)
+
             mol_graph.Chi4n = dsc.Chi4n(mol)
             mol_graph.Chi4v = dsc.Chi4v(mol)
             mol_graph.HallKierAlpha = dsc.HallKierAlpha(mol)
-            # 41
             mol_graph.Ipc = dsc.Ipc(mol)
             mol_graph.Kappa1 = dsc.Kappa1(mol)
+            # 30
             mol_graph.Kappa2 = dsc.Kappa2(mol)
             mol_graph.Kappa3 = dsc.Kappa3(mol)
             mol_graph.LabuteASA = dsc.LabuteASA(mol)
-            # 46
             mol_graph.PEOE_VSA1 = dsc.PEOE_VSA1(mol)
             mol_graph.PEOE_VSA10 = dsc.PEOE_VSA10(mol)
+
             mol_graph.PEOE_VSA11 = dsc.PEOE_VSA11(mol)
             mol_graph.PEOE_VSA12 = dsc.PEOE_VSA12(mol)
             mol_graph.PEOE_VSA13 = dsc.PEOE_VSA13(mol)
-            # 51
             mol_graph.PEOE_VSA14 = dsc.PEOE_VSA14(mol)
             mol_graph.PEOE_VSA2 = dsc.PEOE_VSA2(mol)
+            # 40
             mol_graph.PEOE_VSA3 = dsc.PEOE_VSA3(mol)
             mol_graph.PEOE_VSA4 = dsc.PEOE_VSA4(mol)
             mol_graph.PEOE_VSA5 = dsc.PEOE_VSA5(mol)
-            # 56
             mol_graph.PEOE_VSA6 = dsc.PEOE_VSA6(mol)
             mol_graph.PEOE_VSA7 = dsc.PEOE_VSA7(mol)
+
             mol_graph.PEOE_VSA8 = dsc.PEOE_VSA8(mol)
             mol_graph.PEOE_VSA9 = dsc.PEOE_VSA9(mol)
             mol_graph.SMR_VSA1 = dsc.SMR_VSA1(mol)
-            # 61
             mol_graph.SMR_VSA10 = dsc.SMR_VSA10(mol)
             mol_graph.SMR_VSA2 = dsc.SMR_VSA2(mol)
+            # 50
             mol_graph.SMR_VSA3 = dsc.SMR_VSA3(mol)
             mol_graph.SMR_VSA4 = dsc.SMR_VSA4(mol)
             mol_graph.SMR_VSA5 = dsc.SMR_VSA5(mol)
-            # 66
             mol_graph.SMR_VSA6 = dsc.SMR_VSA6(mol)
             mol_graph.SMR_VSA7 = dsc.SMR_VSA7(mol)
+
             mol_graph.SMR_VSA8 = dsc.SMR_VSA8(mol)
             mol_graph.SMR_VSA9 = dsc.SMR_VSA9(mol)
             mol_graph.SlogP_VSA1 = dsc.SlogP_VSA1(mol)
-            # 71
             mol_graph.SlogP_VSA10 = dsc.SlogP_VSA10(mol)
             mol_graph.SlogP_VSA11 = dsc.SlogP_VSA11(mol)
+            # 60
             mol_graph.SlogP_VSA12 = dsc.SlogP_VSA12(mol)
             mol_graph.SlogP_VSA2 = dsc.SlogP_VSA2(mol)
             mol_graph.SlogP_VSA3 = dsc.SlogP_VSA3(mol)
-            # 76
             mol_graph.SlogP_VSA4 = dsc.SlogP_VSA4(mol)
             mol_graph.SlogP_VSA5 = dsc.SlogP_VSA5(mol)
+
             mol_graph.SlogP_VSA6 = dsc.SlogP_VSA6(mol)
             mol_graph.SlogP_VSA7 = dsc.SlogP_VSA7(mol)
             mol_graph.SlogP_VSA8 = dsc.SlogP_VSA8(mol)
-            # 81
             mol_graph.SlogP_VSA9 = dsc.SlogP_VSA9(mol)
             mol_graph.TPSA = dsc.TPSA(mol)
+            # 70
             mol_graph.EState_VSA1 = dsc.EState_VSA1(mol)
             mol_graph.EState_VSA10 = dsc.EState_VSA10(mol)
             mol_graph.EState_VSA11 = dsc.EState_VSA11(mol)
-            # 86
             mol_graph.EState_VSA2 = dsc.EState_VSA2(mol)
             mol_graph.EState_VSA3 = dsc.EState_VSA3(mol)
+
             mol_graph.EState_VSA4 = dsc.EState_VSA4(mol)
             mol_graph.EState_VSA5 = dsc.EState_VSA5(mol)
             mol_graph.EState_VSA6 = dsc.EState_VSA6(mol)
-            # 91
             mol_graph.EState_VSA7 = dsc.EState_VSA7(mol)
             mol_graph.EState_VSA8 = dsc.EState_VSA8(mol)
+            # 80
             mol_graph.EState_VSA9 = dsc.EState_VSA9(mol)
             mol_graph.VSA_EState1 = dsc.VSA_EState1(mol)
             mol_graph.VSA_EState10 = dsc.VSA_EState10(mol)
-            # 96
             mol_graph.VSA_EState2 = dsc.VSA_EState2(mol)
             mol_graph.VSA_EState3 = dsc.VSA_EState3(mol)
+
             mol_graph.VSA_EState4 = dsc.VSA_EState4(mol)
             mol_graph.VSA_EState5 = dsc.VSA_EState5(mol)
             mol_graph.VSA_EState6 = dsc.VSA_EState6(mol)
-            # 101
             mol_graph.VSA_EState7 = dsc.VSA_EState7(mol)
             mol_graph.VSA_EState8 = dsc.VSA_EState8(mol)
+            # 90
             mol_graph.VSA_EState9 = dsc.VSA_EState9(mol)
             mol_graph.FractionCSP3 = dsc.FractionCSP3(mol)
             mol_graph.HeavyAtomCount = dsc.HeavyAtomCount(mol)
-            # 106
             mol_graph.NHOHCount = dsc.NHOHCount(mol)
             mol_graph.NOCount = dsc.NOCount(mol)
+
             mol_graph.NumAliphaticCarbocycles = dsc.NumAliphaticCarbocycles(mol)
             mol_graph.NumAliphaticHeterocycles = dsc.NumAliphaticHeterocycles(mol)
             mol_graph.NumAliphaticRings = dsc.NumAliphaticRings(mol)
-            # 111
             mol_graph.NumAromaticCarbocycles = dsc.NumAromaticCarbocycles(mol)
             mol_graph.NumAromaticHeterocycles = dsc.NumAromaticHeterocycles(mol)
+            # 100
             mol_graph.NumAromaticRings = dsc.NumAromaticRings(mol)
             mol_graph.NumHAcceptors = dsc.NumHAcceptors(mol)
             mol_graph.NumHDonors = dsc.NumHDonors(mol)
-            # 116
             mol_graph.NumHeteroatoms = dsc.NumHeteroatoms(mol)
             mol_graph.NumRotatableBonds = dsc.NumRotatableBonds(mol)
+
             mol_graph.NumSaturatedCarbocycles = dsc.NumSaturatedCarbocycles(mol)
             mol_graph.NumSaturatedHeterocycles = dsc.NumSaturatedHeterocycles(mol)
             mol_graph.NumSaturatedRings = dsc.NumSaturatedRings(mol)
-            # 121
             mol_graph.RingCount = dsc.RingCount(mol)
             mol_graph.MolLogP = dsc.MolLogP(mol)
+            # 110
             mol_graph.MolMR = dsc.MolMR(mol)
             mol_graph.fr_Al_COO = dsc.fr_Al_COO(mol)
             mol_graph.fr_Al_OH = dsc.fr_Al_OH(mol)
-            # 126
             mol_graph.fr_Al_OH_noTert = dsc.fr_Al_OH_noTert(mol)
             mol_graph.fr_ArN = dsc.fr_ArN(mol)
+
             mol_graph.fr_Ar_COO = dsc.fr_Ar_COO(mol)
             mol_graph.fr_Ar_N = dsc.fr_Ar_N(mol)
             mol_graph.fr_Ar_NH = dsc.fr_Ar_NH(mol)
-            # 131
             mol_graph.fr_Ar_OH = dsc.fr_Ar_OH(mol)
             mol_graph.fr_COO = dsc.fr_COO(mol)
+            # 120
             mol_graph.fr_COO2 = dsc.fr_COO2(mol)
             mol_graph.fr_C_O = dsc.fr_C_O(mol)
             mol_graph.fr_C_O_noCOO = dsc.fr_C_O_noCOO(mol)
-            # 136
             mol_graph.fr_C_S = dsc.fr_C_S(mol)
             mol_graph.fr_HOCCN = dsc.fr_HOCCN(mol)
+
             mol_graph.fr_Imine = dsc.fr_Imine(mol)
             mol_graph.fr_NH0 = dsc.fr_NH0(mol)
             mol_graph.fr_NH1 = dsc.fr_NH1(mol)
-            # 141
             mol_graph.fr_NH2 = dsc.fr_NH2(mol)
             mol_graph.fr_N_O = dsc.fr_N_O(mol)
+            # 130
             mol_graph.fr_Ndealkylation1 = dsc.fr_Ndealkylation1(mol)
             mol_graph.fr_Ndealkylation2 = dsc.fr_Ndealkylation2(mol)
             mol_graph.fr_Nhpyrrole = dsc.fr_Nhpyrrole(mol)
-            # 146
             mol_graph.fr_SH = dsc.fr_SH(mol)
             mol_graph.fr_aldehyde = dsc.fr_aldehyde(mol)
+
             mol_graph.fr_alkyl_carbamate = dsc.fr_alkyl_carbamate(mol)
             mol_graph.fr_alkyl_halide = dsc.fr_alkyl_halide(mol)
             mol_graph.fr_allylic_oxid = dsc.fr_allylic_oxid(mol)
-            # 151
             mol_graph.fr_amide = dsc.fr_amide(mol)
             mol_graph.fr_amidine = dsc.fr_amidine(mol)
+            # 140
             mol_graph.fr_aniline = dsc.fr_aniline(mol)
             mol_graph.fr_aryl_methyl = dsc.fr_aryl_methyl(mol)
             mol_graph.fr_azide = dsc.fr_azide(mol)
-            # 156
             mol_graph.fr_azo = dsc.fr_azo(mol)
             mol_graph.fr_barbitur = dsc.fr_barbitur(mol)
+
             mol_graph.fr_benzene = dsc.fr_benzene(mol)
             mol_graph.fr_benzodiazepine = dsc.fr_benzodiazepine(mol)
             mol_graph.fr_bicyclic = dsc.fr_bicyclic(mol)
-            # 161
             mol_graph.fr_diazo = dsc.fr_diazo(mol)
             mol_graph.fr_dihydropyridine = dsc.fr_dihydropyridine(mol)
+            # 150
             mol_graph.fr_epoxide = dsc.fr_epoxide(mol)
             mol_graph.fr_ester = dsc.fr_ester(mol)
             mol_graph.fr_ether = dsc.fr_ether(mol)
-            # 166
             mol_graph.fr_furan = dsc.fr_furan(mol)
             mol_graph.fr_guanido = dsc.fr_guanido(mol)
+
             mol_graph.fr_halogen = dsc.fr_halogen(mol)
             mol_graph.fr_hdrzine = dsc.fr_hdrzine(mol)
             mol_graph.fr_hdrzone = dsc.fr_hdrzone(mol)
-            # 171
             mol_graph.fr_imidazole = dsc.fr_imidazole(mol)
             mol_graph.fr_imide = dsc.fr_imide(mol)
+            # 160
             mol_graph.fr_isocyan = dsc.fr_isocyan(mol)
             mol_graph.fr_isothiocyan = dsc.fr_isothiocyan(mol)
             mol_graph.fr_ketone = dsc.fr_ketone(mol)
-            # 176
             mol_graph.fr_ketone_Topliss = dsc.fr_ketone_Topliss(mol)
             mol_graph.fr_lactam = dsc.fr_lactam(mol)
+
             mol_graph.fr_lactone = dsc.fr_lactone(mol)
             mol_graph.fr_methoxy = dsc.fr_methoxy(mol)
             mol_graph.fr_morpholine = dsc.fr_morpholine(mol)
-            # 181
             mol_graph.fr_nitrile = dsc.fr_nitrile(mol)
             mol_graph.fr_nitro = dsc.fr_nitro(mol)
+            # 170
             mol_graph.fr_nitro_arom = dsc.fr_nitro_arom(mol)
             mol_graph.fr_nitro_arom_nonortho = dsc.fr_nitro_arom_nonortho(mol)
             mol_graph.fr_nitroso = dsc.fr_nitroso(mol)
-            # 186
             mol_graph.fr_oxazole = dsc.fr_oxazole(mol)
             mol_graph.fr_oxime = dsc.fr_oxime(mol)
+
             mol_graph.fr_para_hydroxylation = dsc.fr_para_hydroxylation(mol)
             mol_graph.fr_phenol = dsc.fr_phenol(mol)
             mol_graph.fr_phenol_noOrthoHbond = dsc.fr_phenol_noOrthoHbond(mol)
-            # 191
             mol_graph.fr_phos_acid = dsc.fr_phos_acid(mol)
             mol_graph.fr_phos_ester = dsc.fr_phos_ester(mol)
+            # 180
             mol_graph.fr_piperdine = dsc.fr_piperdine(mol)
             mol_graph.fr_piperzine = dsc.fr_piperzine(mol)
             mol_graph.fr_priamide = dsc.fr_priamide(mol)
-            # 196
             mol_graph.fr_prisulfonamd = dsc.fr_prisulfonamd(mol)
             mol_graph.fr_pyridine = dsc.fr_pyridine(mol)
+
             mol_graph.fr_quatN = dsc.fr_quatN(mol)
             mol_graph.fr_sulfide = dsc.fr_sulfide(mol)
             mol_graph.fr_sulfonamd = dsc.fr_sulfonamd(mol)
-            # 201
             mol_graph.fr_sulfone = dsc.fr_sulfone(mol)
             mol_graph.fr_term_acetylene = dsc.fr_term_acetylene(mol)
+            # 190
             mol_graph.fr_tetrazole = dsc.fr_tetrazole(mol)
             mol_graph.fr_thiazole = dsc.fr_thiazole(mol)
             mol_graph.fr_thiocyan = dsc.fr_thiocyan(mol)
-            # 206
             mol_graph.fr_thiophene = dsc.fr_thiophene(mol)
             mol_graph.fr_unbrch_alkane = dsc.fr_unbrch_alkane(mol)
+            # 196
             mol_graph.fr_urea = dsc.fr_urea(mol)
 
             samples.append((mol_graph, target[i]))
@@ -925,238 +915,228 @@ def read_dataset_solubility(file_name):
             mol_graph.NumValenceElectrons = dsc.NumValenceElectrons(mol)
             mol_graph.NumRadicalElectrons = dsc.NumRadicalElectrons(mol)
             # 11
-
-
-
-
             mol_graph.FpDensityMorgan1 = dsc.FpDensityMorgan1(mol)
-            # 16
             mol_graph.FpDensityMorgan2 = dsc.FpDensityMorgan2(mol)
             mol_graph.FpDensityMorgan3 = dsc.FpDensityMorgan3(mol)
-
-
-
-
-
-            # 26
             mol_graph.BalabanJ = dsc.BalabanJ(mol)
             mol_graph.BertzCT = dsc.BertzCT(mol)
+            # 16
             mol_graph.Chi0 = dsc.Chi0(mol)
             mol_graph.Chi0n = dsc.Chi0n(mol)
             mol_graph.Chi0v = dsc.Chi0v(mol)
-            # 31
             mol_graph.Chi1 = dsc.Chi1(mol)
             mol_graph.Chi1n = dsc.Chi1n(mol)
+            # 20
             mol_graph.Chi1v = dsc.Chi1v(mol)
             mol_graph.Chi2n = dsc.Chi2n(mol)
             mol_graph.Chi2v = dsc.Chi2v(mol)
-            # 36
             mol_graph.Chi3n = dsc.Chi3n(mol)
             mol_graph.Chi3v = dsc.Chi3v(mol)
+
             mol_graph.Chi4n = dsc.Chi4n(mol)
             mol_graph.Chi4v = dsc.Chi4v(mol)
             mol_graph.HallKierAlpha = dsc.HallKierAlpha(mol)
-            # 41
             mol_graph.Ipc = dsc.Ipc(mol)
             mol_graph.Kappa1 = dsc.Kappa1(mol)
+            # 30
             mol_graph.Kappa2 = dsc.Kappa2(mol)
             mol_graph.Kappa3 = dsc.Kappa3(mol)
             mol_graph.LabuteASA = dsc.LabuteASA(mol)
-            # 46
             mol_graph.PEOE_VSA1 = dsc.PEOE_VSA1(mol)
             mol_graph.PEOE_VSA10 = dsc.PEOE_VSA10(mol)
+
             mol_graph.PEOE_VSA11 = dsc.PEOE_VSA11(mol)
             mol_graph.PEOE_VSA12 = dsc.PEOE_VSA12(mol)
             mol_graph.PEOE_VSA13 = dsc.PEOE_VSA13(mol)
-            # 51
             mol_graph.PEOE_VSA14 = dsc.PEOE_VSA14(mol)
             mol_graph.PEOE_VSA2 = dsc.PEOE_VSA2(mol)
+            # 40
             mol_graph.PEOE_VSA3 = dsc.PEOE_VSA3(mol)
             mol_graph.PEOE_VSA4 = dsc.PEOE_VSA4(mol)
             mol_graph.PEOE_VSA5 = dsc.PEOE_VSA5(mol)
-            # 56
             mol_graph.PEOE_VSA6 = dsc.PEOE_VSA6(mol)
             mol_graph.PEOE_VSA7 = dsc.PEOE_VSA7(mol)
+
             mol_graph.PEOE_VSA8 = dsc.PEOE_VSA8(mol)
             mol_graph.PEOE_VSA9 = dsc.PEOE_VSA9(mol)
             mol_graph.SMR_VSA1 = dsc.SMR_VSA1(mol)
-            # 61
             mol_graph.SMR_VSA10 = dsc.SMR_VSA10(mol)
             mol_graph.SMR_VSA2 = dsc.SMR_VSA2(mol)
+            # 50
             mol_graph.SMR_VSA3 = dsc.SMR_VSA3(mol)
             mol_graph.SMR_VSA4 = dsc.SMR_VSA4(mol)
             mol_graph.SMR_VSA5 = dsc.SMR_VSA5(mol)
-            # 66
             mol_graph.SMR_VSA6 = dsc.SMR_VSA6(mol)
             mol_graph.SMR_VSA7 = dsc.SMR_VSA7(mol)
+
             mol_graph.SMR_VSA8 = dsc.SMR_VSA8(mol)
             mol_graph.SMR_VSA9 = dsc.SMR_VSA9(mol)
             mol_graph.SlogP_VSA1 = dsc.SlogP_VSA1(mol)
-            # 71
             mol_graph.SlogP_VSA10 = dsc.SlogP_VSA10(mol)
             mol_graph.SlogP_VSA11 = dsc.SlogP_VSA11(mol)
+            # 60
             mol_graph.SlogP_VSA12 = dsc.SlogP_VSA12(mol)
             mol_graph.SlogP_VSA2 = dsc.SlogP_VSA2(mol)
             mol_graph.SlogP_VSA3 = dsc.SlogP_VSA3(mol)
-            # 76
             mol_graph.SlogP_VSA4 = dsc.SlogP_VSA4(mol)
             mol_graph.SlogP_VSA5 = dsc.SlogP_VSA5(mol)
+
             mol_graph.SlogP_VSA6 = dsc.SlogP_VSA6(mol)
             mol_graph.SlogP_VSA7 = dsc.SlogP_VSA7(mol)
             mol_graph.SlogP_VSA8 = dsc.SlogP_VSA8(mol)
-            # 81
             mol_graph.SlogP_VSA9 = dsc.SlogP_VSA9(mol)
             mol_graph.TPSA = dsc.TPSA(mol)
+            # 70
             mol_graph.EState_VSA1 = dsc.EState_VSA1(mol)
             mol_graph.EState_VSA10 = dsc.EState_VSA10(mol)
             mol_graph.EState_VSA11 = dsc.EState_VSA11(mol)
-            # 86
             mol_graph.EState_VSA2 = dsc.EState_VSA2(mol)
             mol_graph.EState_VSA3 = dsc.EState_VSA3(mol)
+
             mol_graph.EState_VSA4 = dsc.EState_VSA4(mol)
             mol_graph.EState_VSA5 = dsc.EState_VSA5(mol)
             mol_graph.EState_VSA6 = dsc.EState_VSA6(mol)
-            # 91
             mol_graph.EState_VSA7 = dsc.EState_VSA7(mol)
             mol_graph.EState_VSA8 = dsc.EState_VSA8(mol)
+            # 80
             mol_graph.EState_VSA9 = dsc.EState_VSA9(mol)
             mol_graph.VSA_EState1 = dsc.VSA_EState1(mol)
             mol_graph.VSA_EState10 = dsc.VSA_EState10(mol)
-            # 96
             mol_graph.VSA_EState2 = dsc.VSA_EState2(mol)
             mol_graph.VSA_EState3 = dsc.VSA_EState3(mol)
+
             mol_graph.VSA_EState4 = dsc.VSA_EState4(mol)
             mol_graph.VSA_EState5 = dsc.VSA_EState5(mol)
             mol_graph.VSA_EState6 = dsc.VSA_EState6(mol)
-            # 101
             mol_graph.VSA_EState7 = dsc.VSA_EState7(mol)
             mol_graph.VSA_EState8 = dsc.VSA_EState8(mol)
+            # 90
             mol_graph.VSA_EState9 = dsc.VSA_EState9(mol)
             mol_graph.FractionCSP3 = dsc.FractionCSP3(mol)
             mol_graph.HeavyAtomCount = dsc.HeavyAtomCount(mol)
-            # 106
             mol_graph.NHOHCount = dsc.NHOHCount(mol)
             mol_graph.NOCount = dsc.NOCount(mol)
+
             mol_graph.NumAliphaticCarbocycles = dsc.NumAliphaticCarbocycles(mol)
             mol_graph.NumAliphaticHeterocycles = dsc.NumAliphaticHeterocycles(mol)
             mol_graph.NumAliphaticRings = dsc.NumAliphaticRings(mol)
-            # 111
             mol_graph.NumAromaticCarbocycles = dsc.NumAromaticCarbocycles(mol)
             mol_graph.NumAromaticHeterocycles = dsc.NumAromaticHeterocycles(mol)
+            # 100
             mol_graph.NumAromaticRings = dsc.NumAromaticRings(mol)
             mol_graph.NumHAcceptors = dsc.NumHAcceptors(mol)
             mol_graph.NumHDonors = dsc.NumHDonors(mol)
-            # 116
             mol_graph.NumHeteroatoms = dsc.NumHeteroatoms(mol)
             mol_graph.NumRotatableBonds = dsc.NumRotatableBonds(mol)
+
             mol_graph.NumSaturatedCarbocycles = dsc.NumSaturatedCarbocycles(mol)
             mol_graph.NumSaturatedHeterocycles = dsc.NumSaturatedHeterocycles(mol)
             mol_graph.NumSaturatedRings = dsc.NumSaturatedRings(mol)
-            # 121
             mol_graph.RingCount = dsc.RingCount(mol)
             mol_graph.MolLogP = dsc.MolLogP(mol)
+            # 110
             mol_graph.MolMR = dsc.MolMR(mol)
             mol_graph.fr_Al_COO = dsc.fr_Al_COO(mol)
             mol_graph.fr_Al_OH = dsc.fr_Al_OH(mol)
-            # 126
             mol_graph.fr_Al_OH_noTert = dsc.fr_Al_OH_noTert(mol)
             mol_graph.fr_ArN = dsc.fr_ArN(mol)
+
             mol_graph.fr_Ar_COO = dsc.fr_Ar_COO(mol)
             mol_graph.fr_Ar_N = dsc.fr_Ar_N(mol)
             mol_graph.fr_Ar_NH = dsc.fr_Ar_NH(mol)
-            # 131
             mol_graph.fr_Ar_OH = dsc.fr_Ar_OH(mol)
             mol_graph.fr_COO = dsc.fr_COO(mol)
+            # 120
             mol_graph.fr_COO2 = dsc.fr_COO2(mol)
             mol_graph.fr_C_O = dsc.fr_C_O(mol)
             mol_graph.fr_C_O_noCOO = dsc.fr_C_O_noCOO(mol)
-            # 136
             mol_graph.fr_C_S = dsc.fr_C_S(mol)
             mol_graph.fr_HOCCN = dsc.fr_HOCCN(mol)
+
             mol_graph.fr_Imine = dsc.fr_Imine(mol)
             mol_graph.fr_NH0 = dsc.fr_NH0(mol)
             mol_graph.fr_NH1 = dsc.fr_NH1(mol)
-            # 141
             mol_graph.fr_NH2 = dsc.fr_NH2(mol)
             mol_graph.fr_N_O = dsc.fr_N_O(mol)
+            # 130
             mol_graph.fr_Ndealkylation1 = dsc.fr_Ndealkylation1(mol)
             mol_graph.fr_Ndealkylation2 = dsc.fr_Ndealkylation2(mol)
             mol_graph.fr_Nhpyrrole = dsc.fr_Nhpyrrole(mol)
-            # 146
             mol_graph.fr_SH = dsc.fr_SH(mol)
             mol_graph.fr_aldehyde = dsc.fr_aldehyde(mol)
+
             mol_graph.fr_alkyl_carbamate = dsc.fr_alkyl_carbamate(mol)
             mol_graph.fr_alkyl_halide = dsc.fr_alkyl_halide(mol)
             mol_graph.fr_allylic_oxid = dsc.fr_allylic_oxid(mol)
-            # 151
             mol_graph.fr_amide = dsc.fr_amide(mol)
             mol_graph.fr_amidine = dsc.fr_amidine(mol)
+            # 140
             mol_graph.fr_aniline = dsc.fr_aniline(mol)
             mol_graph.fr_aryl_methyl = dsc.fr_aryl_methyl(mol)
             mol_graph.fr_azide = dsc.fr_azide(mol)
-            # 156
             mol_graph.fr_azo = dsc.fr_azo(mol)
             mol_graph.fr_barbitur = dsc.fr_barbitur(mol)
+
             mol_graph.fr_benzene = dsc.fr_benzene(mol)
             mol_graph.fr_benzodiazepine = dsc.fr_benzodiazepine(mol)
             mol_graph.fr_bicyclic = dsc.fr_bicyclic(mol)
-            # 161
             mol_graph.fr_diazo = dsc.fr_diazo(mol)
             mol_graph.fr_dihydropyridine = dsc.fr_dihydropyridine(mol)
+            # 150
             mol_graph.fr_epoxide = dsc.fr_epoxide(mol)
             mol_graph.fr_ester = dsc.fr_ester(mol)
             mol_graph.fr_ether = dsc.fr_ether(mol)
-            # 166
             mol_graph.fr_furan = dsc.fr_furan(mol)
             mol_graph.fr_guanido = dsc.fr_guanido(mol)
+
             mol_graph.fr_halogen = dsc.fr_halogen(mol)
             mol_graph.fr_hdrzine = dsc.fr_hdrzine(mol)
             mol_graph.fr_hdrzone = dsc.fr_hdrzone(mol)
-            # 171
             mol_graph.fr_imidazole = dsc.fr_imidazole(mol)
             mol_graph.fr_imide = dsc.fr_imide(mol)
+            # 160
             mol_graph.fr_isocyan = dsc.fr_isocyan(mol)
             mol_graph.fr_isothiocyan = dsc.fr_isothiocyan(mol)
             mol_graph.fr_ketone = dsc.fr_ketone(mol)
-            # 176
             mol_graph.fr_ketone_Topliss = dsc.fr_ketone_Topliss(mol)
             mol_graph.fr_lactam = dsc.fr_lactam(mol)
+
             mol_graph.fr_lactone = dsc.fr_lactone(mol)
             mol_graph.fr_methoxy = dsc.fr_methoxy(mol)
             mol_graph.fr_morpholine = dsc.fr_morpholine(mol)
-            # 181
             mol_graph.fr_nitrile = dsc.fr_nitrile(mol)
             mol_graph.fr_nitro = dsc.fr_nitro(mol)
+            # 170
             mol_graph.fr_nitro_arom = dsc.fr_nitro_arom(mol)
             mol_graph.fr_nitro_arom_nonortho = dsc.fr_nitro_arom_nonortho(mol)
             mol_graph.fr_nitroso = dsc.fr_nitroso(mol)
-            # 186
             mol_graph.fr_oxazole = dsc.fr_oxazole(mol)
             mol_graph.fr_oxime = dsc.fr_oxime(mol)
+
             mol_graph.fr_para_hydroxylation = dsc.fr_para_hydroxylation(mol)
             mol_graph.fr_phenol = dsc.fr_phenol(mol)
             mol_graph.fr_phenol_noOrthoHbond = dsc.fr_phenol_noOrthoHbond(mol)
-            # 191
             mol_graph.fr_phos_acid = dsc.fr_phos_acid(mol)
             mol_graph.fr_phos_ester = dsc.fr_phos_ester(mol)
+            # 180
             mol_graph.fr_piperdine = dsc.fr_piperdine(mol)
             mol_graph.fr_piperzine = dsc.fr_piperzine(mol)
             mol_graph.fr_priamide = dsc.fr_priamide(mol)
-            # 196
             mol_graph.fr_prisulfonamd = dsc.fr_prisulfonamd(mol)
             mol_graph.fr_pyridine = dsc.fr_pyridine(mol)
+
             mol_graph.fr_quatN = dsc.fr_quatN(mol)
             mol_graph.fr_sulfide = dsc.fr_sulfide(mol)
             mol_graph.fr_sulfonamd = dsc.fr_sulfonamd(mol)
-            # 201
             mol_graph.fr_sulfone = dsc.fr_sulfone(mol)
             mol_graph.fr_term_acetylene = dsc.fr_term_acetylene(mol)
+            # 190
             mol_graph.fr_tetrazole = dsc.fr_tetrazole(mol)
             mol_graph.fr_thiazole = dsc.fr_thiazole(mol)
             mol_graph.fr_thiocyan = dsc.fr_thiocyan(mol)
-            # 206
             mol_graph.fr_thiophene = dsc.fr_thiophene(mol)
             mol_graph.fr_unbrch_alkane = dsc.fr_unbrch_alkane(mol)
+            # 196
             mol_graph.fr_urea = dsc.fr_urea(mol)
 
             samples.append((mol_graph, target[i]))

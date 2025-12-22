@@ -16,8 +16,6 @@ target = df.iloc[:,-1]
 print(smiles_list[:5])
 print(target[:5])
 
-
-
 # 분자 특성 추출 및 데이터프레임 정의
 extractor = MolecularFeatureExtractor()
 df_all_features = extractor.extract_molecular_features(smiles_list)
