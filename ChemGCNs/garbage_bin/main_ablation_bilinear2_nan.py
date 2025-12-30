@@ -7,7 +7,7 @@ from utils import trainer_bilinear
 from someday_useful import mol_collate_bilinear_nan
 from utils.mol_props import dim_atomic_feat
 
-from model import CONCAT_DS, Bilinear_Form, Bilinear_Attn, KROVEX
+from model import EGCN_DS, Bilinear_Form, Bilinear_Attn, KROVEX
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
 def main():

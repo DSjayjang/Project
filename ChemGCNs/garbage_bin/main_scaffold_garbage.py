@@ -14,7 +14,7 @@ from utils import mol_collate, evaluation
 from utils.utils import weight_reset
 from utils.mol_props import dim_atomic_feat
 
-from model import CONCAT_DS, KROVEX
+from model import EGCN_DS, KROVEX
 from configs import config
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K
 
@@ -73,12 +73,12 @@ def main():
 
     # kronecker-product + descriptor selection
     model_list = [
-    ('Concat_3', CONCAT_DS.concat_Net_3(dim_atomic_feat, 1, 3).to(device), mcol.descriptor_selection_3),
-    ('Concat_5', CONCAT_DS.concat_Net_5(dim_atomic_feat, 1, 5).to(device), mcol.descriptor_selection_5),
-    ('Concat_7', CONCAT_DS.concat_Net_7(dim_atomic_feat, 1, 7).to(device),  mcol.descriptor_selection_7),
-    ('Concat_10', CONCAT_DS.concat_Net_10(dim_atomic_feat, 1, 10).to(device), mcol.descriptor_selection_10),
-    ('Concat_20', CONCAT_DS.concat_Net_20(dim_atomic_feat, 1, 20).to(device), mcol.descriptor_selection_20),
-    ('model_Concat', CONCAT_DS.concat_Net(dim_atomic_feat, 1, num_descriptors).to(device), descriptors),
+    ('Concat_3', EGCN_DS.concat_Net_3(dim_atomic_feat, 1, 3).to(device), mcol.descriptor_selection_3),
+    ('Concat_5', EGCN_DS.concat_Net_5(dim_atomic_feat, 1, 5).to(device), mcol.descriptor_selection_5),
+    ('Concat_7', EGCN_DS.concat_Net_7(dim_atomic_feat, 1, 7).to(device),  mcol.descriptor_selection_7),
+    ('Concat_10', EGCN_DS.concat_Net_10(dim_atomic_feat, 1, 10).to(device), mcol.descriptor_selection_10),
+    ('Concat_20', EGCN_DS.concat_Net_20(dim_atomic_feat, 1, 20).to(device), mcol.descriptor_selection_20),
+    ('model_Concat', EGCN_DS.concat_Net(dim_atomic_feat, 1, num_descriptors).to(device), descriptors),
 
     ('KROVEX_3', KROVEX.kronecker_Net_3(dim_atomic_feat, 1, 3).to(device), mcol.descriptor_selection_3),
     ('KROVEX_5', KROVEX.kronecker_Net_5(dim_atomic_feat, 1, 5).to(device), mcol.descriptor_selection_5),

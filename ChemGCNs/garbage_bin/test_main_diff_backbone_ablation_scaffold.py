@@ -72,13 +72,13 @@ def main():
         model_backbone_E = EGCN.Net(dim_atomic_feat, 1, 3).to(device)
 
         # GCN + concatenation + descriptor selection
-        from model import CONCAT_DS
-        model_concat_3 = CONCAT_DS.concat_Net_3(dim_atomic_feat, 1, 3).to(device)
-        model_concat_5 = CONCAT_DS.concat_Net_5(dim_atomic_feat, 1, 5).to(device)
-        model_concat_7 = CONCAT_DS.concat_Net_7(dim_atomic_feat, 1, 7).to(device)
-        model_concat_10 = CONCAT_DS.concat_Net_10(dim_atomic_feat, 1, 10).to(device)
-        model_concat_20 = CONCAT_DS.concat_Net_20(dim_atomic_feat, 1, 20).to(device)
-        model_concat_ds = CONCAT_DS.concat_Net(dim_atomic_feat, 1, num_descriptors).to(device)
+        from model import EGCN_DS
+        model_concat_3 = EGCN_DS.concat_Net_3(dim_atomic_feat, 1, 3).to(device)
+        model_concat_5 = EGCN_DS.concat_Net_5(dim_atomic_feat, 1, 5).to(device)
+        model_concat_7 = EGCN_DS.concat_Net_7(dim_atomic_feat, 1, 7).to(device)
+        model_concat_10 = EGCN_DS.concat_Net_10(dim_atomic_feat, 1, 10).to(device)
+        model_concat_20 = EGCN_DS.concat_Net_20(dim_atomic_feat, 1, 20).to(device)
+        model_concat_ds = EGCN_DS.concat_Net(dim_atomic_feat, 1, num_descriptors).to(device)
 
         # GCN + kronecker-product + descriptor selection
         from model import KROVEX

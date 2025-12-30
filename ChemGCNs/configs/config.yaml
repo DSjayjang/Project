@@ -1,12 +1,12 @@
 SEED: 100 # [100, 200, 300]
 
-BACKBONE: 'GIN' # ['GCN', 'GAT', 'GIN']
+BACKBONE: 'GCN' # ['GCN', 'GAT', 'GIN']
 # SPLIT: 'random' # ['random', 'scaffold']
 
-DATASET: 'solubility' # ['freesolv', 'esol', 'lipo', 'scgas', 'solubility']
+DATASET: 'freesolv' # ['freesolv', 'esol', 'lipo', 'scgas', 'solubility']
 
 BATCH_SIZE: 32 # [scgas: 128, others: 32, esol: 33 when scaffold splits with concat and kronecker]
-MAX_EPOCHS: 2
-K: 5
+MAX_EPOCHS: 1
+K: 2
 
 R_HOME: 'C:\Programming\R\R-4.4.2'
