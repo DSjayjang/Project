@@ -219,8 +219,7 @@ class kronecker_Net_20(nn.Module):
         return out
 
 
-# KROVEX
-# concat임
+# 그냥 concat임
 # class Net(nn.Module):
 #     def __init__(self, dim_in, dim_out, dim_self_feat, dim_3d_feat):
 #         super(Net, self).__init__()
@@ -259,7 +258,7 @@ class kronecker_Net_20(nn.Module):
 
 #         return out
 
-# KROVEX
+# 3d descriptor concat 후 kronecker
 class Net(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat, dim_3d_feat):
         super(Net, self).__init__()

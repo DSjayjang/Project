@@ -67,3 +67,31 @@ def weight_reset(m):
     """
     if hasattr(m, 'reset_parameters'):
         m.reset_parameters()
+
+
+def Z_Score_new(X):
+    """
+    z-score 표준화 함수
+    1차원 또는 2차원 배열에 대해 평균 0, 표준편차 1로 변환
+    표준편차가 0인 경우 0으로 처리
+    """
+    if len(X.shape) == 1:
+        means = np.nanmean(X)
+        stds = np.nanstd(X)
+
+        for i in range(0, X.shape[0]):
+            if stds == 0 or np.isnan(stds) or np.isnan(X[i]):
+                X[i] = 0
+            else:
+                X[i] = (X[i] - means) / stds
+    else:
+        means = np.nanmean(X, axis=0)
+        stds = np.nanstd(X, axis=0)
+
+        for i in range(0, X.shape[0]):
+            for j in range(0, X.shape[1]):
+                if stds[j] == 0 or np.isnan(stds[j]) or np.isnan(X[i,j]):
+                    X[i, j] = 0
+                else:
+                    X[i, j] = (X[i, j] - means[j]) / stds[j]
+    return X
