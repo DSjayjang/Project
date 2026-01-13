@@ -31,7 +31,15 @@ print(df_all_features.isna().any(axis = 0))
 print('결측치가 포함된 행 개수:', df_all_features.isna().any(axis = 1).sum(), '\n')
 print(df_all_features.isna().any(axis = 1))
 
+# NA handling
+na_per_col = df_all_features.isna().sum()[df_all_features.isna().sum() > 0].sort_values(ascending=False).reset_index()
+na_per_col.columns = ['column', 'na_count']
+drop_col = na_per_col['column'][:6]
+df_all_features = df_all_features.drop(columns = drop_col)
 df_removed_features = df_all_features.dropna()
+
+
+
 print('dropna 후 shape:', df_removed_features.shape)
 # 결측치가 포함된 feature 제거
 # df_removed_features = df_all_features.dropna(axis = 1)
@@ -211,7 +219,9 @@ final_selected_features_index = final_selected_features.index
 
 X_train_None0 = X_train_None0.iloc[:, final_selected_features_index]
 print('X_train_None0:', X_train_None0)
-print('Selected descriptors:', X_train_None0.columns)
+pd.set_option('display.max_rows', None)
+print('Selected descriptors:', list(X_train_None0.columns))
+pd.reset_option('display.max_rows')
 
 
 """
@@ -266,7 +276,9 @@ def exec_reg(elastic_list, df):
         n += 1
 
 # 출력
-mol_conv_upper(selected_features_elastic, X_train_None0)
+# mol_conv_upper(selected_features_elastic, X_train_None0)
 # mol_conv_under(selected_features_elastic, X_train_None0)
-exec_reg(selected_features_elastic, X_train_None0)
-print(X_train_None0.columns)
+# exec_reg(selected_features_elastic, X_train_None0)
+# pd.set_option('display.max_rows', None)
+# print(X_train_None0.columns)
+# pd.reset_option('display.max_rows')

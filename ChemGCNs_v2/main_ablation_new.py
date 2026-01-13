@@ -63,16 +63,17 @@ def main():
         descriptors = mol_collate.descriptor_selection_solubility
 
     random.shuffle(dataset)
-    # random.shuffle(dataset_new)
+    random.shuffle(dataset_new)
 
     if BACKBONE == 'GCN':
         # GCN + kronecker-product + descriptor selection
-        from model import KROVEX, KROVEX_new, TFN, Trilinear_Attn
+        from model import KROVEX, KROVEX_new, TFN, Trilinear_Attn, Cross_Attn
         
-        model_Fusion = KROVEX.Net(dim_atomic_feat, 1, num_descriptors).to(device)
+        # model_Fusion = KROVEX.Net(dim_atomic_feat, 1, num_descriptors).to(device)
         model_Fusion_new = KROVEX_new.Net(dim_atomic_feat, 1, num_descriptors, num_descriptors_3d).to(device)
         model_TFN = TFN.Net(dim_atomic_feat, 1, num_descriptors, num_descriptors_3d).to(device)
-        model_TA = Trilinear_Attn.KROVEX_LowRankTFN_TwoLevelAttn(dim_atomic_feat, 1, num_descriptors, num_descriptors_3d).to(device)
+        model_CA = Cross_Attn.Net(dim_atomic_feat, 1, num_descriptors, num_descriptors_3d).to(device)
+        # model_TA = Trilinear_Attn.KROVEX_LowRankTFN_TwoLevelAttn(dim_atomic_feat, 1, num_descriptors, num_descriptors_3d).to(device)
     
     elif BACKBONE == 'GAT':
         from model import GAT
@@ -157,9 +158,13 @@ def main():
     # test_losses['Backbone_Fusion_new'] = trainer_new.cross_validation(dataset_new, model_Fusion_new, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_new.train_model, trainer_new.test_model, collate_fn)
     # print('test loss (Backbone_Fusion_new): ' + str(test_losses['Backbone_Fusion_new']))
 
-    # tensor fusion
-    test_losses['Backbone_Tensor_Fusion'] = trainer_new.cross_validation(dataset_new, model_TFN, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_new.train_model, trainer_new.test_model, collate_fn)
-    print('test loss (Backbone_Tensor_Fusion): ' + str(test_losses['Backbone_Tensor_Fusion']))
+    # # tensor fusion
+    # test_losses['Backbone_Tensor_Fusion'] = trainer_new.cross_validation(dataset_new, model_TFN, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_new.train_model, trainer_new.test_model, collate_fn)
+    # print('test loss (Backbone_Tensor_Fusion): ' + str(test_losses['Backbone_Tensor_Fusion']))
+
+    # cross attention
+    test_losses['Backbone_Cross_Attn'] = trainer_new.cross_validation(dataset_new, model_CA, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_new.train_model, trainer_new.test_model, collate_fn)
+    print('test loss (Backbone_Cross_Attn): ' + str(test_losses['Backbone_Cross_Attn']))
 
     # # Trilinear Attn
     # test_losses['Backbone_Trilinear_Attn'] = trainer_new.cross_validation(dataset_new, model_TA, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_new.train_model, trainer_new.test_model, collate_fn)
