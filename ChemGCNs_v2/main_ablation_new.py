@@ -67,14 +67,16 @@ def main():
 
     if BACKBONE == 'GCN':
         # GCN + kronecker-product + descriptor selection
-        from model import KROVEX, KROVEX_new, TFN, Trilinear_Attn, Cross_Attn
+        from model import KROVEX, KROVEX_new, TFN, Cross_Attn_TFN, Cross_Attn_TFN2, Cross_Attn_TFN3, Cross_Attn_TFN4
         
-        # model_Fusion = KROVEX.Net(dim_atomic_feat, 1, num_descriptors).to(device)
+        model_Fusion = KROVEX.Net(dim_atomic_feat, 1, num_descriptors).to(device)
         model_Fusion_new = KROVEX_new.Net(dim_atomic_feat, 1, num_descriptors, num_descriptors_3d).to(device)
         model_TFN = TFN.Net(dim_atomic_feat, 1, num_descriptors, num_descriptors_3d).to(device)
-        model_CA = Cross_Attn.Net(dim_atomic_feat, 1, num_descriptors, num_descriptors_3d).to(device)
-        # model_TA = Trilinear_Attn.KROVEX_LowRankTFN_TwoLevelAttn(dim_atomic_feat, 1, num_descriptors, num_descriptors_3d).to(device)
-    
+        model_CATFN = Cross_Attn_TFN.Net(dim_atomic_feat, 1, num_descriptors, num_descriptors_3d).to(device)
+        model_CATFN2 = Cross_Attn_TFN2.Net(dim_atomic_feat, 1, num_descriptors, num_descriptors_3d).to(device)
+        model_CATFN3 = Cross_Attn_TFN3.Net(dim_atomic_feat, 1, num_descriptors, num_descriptors_3d).to(device)
+        model_CATFN4 = Cross_Attn_TFN4.Net(dim_atomic_feat, 1, num_descriptors, num_descriptors_3d).to(device)
+      
     elif BACKBONE == 'GAT':
         from model import GAT
         from utils import mol_collate_vanilla
@@ -162,14 +164,21 @@ def main():
     # test_losses['Backbone_Tensor_Fusion'] = trainer_new.cross_validation(dataset_new, model_TFN, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_new.train_model, trainer_new.test_model, collate_fn)
     # print('test loss (Backbone_Tensor_Fusion): ' + str(test_losses['Backbone_Tensor_Fusion']))
 
-    # cross attention
-    test_losses['Backbone_Cross_Attn'] = trainer_new.cross_validation(dataset_new, model_CA, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_new.train_model, trainer_new.test_model, collate_fn)
-    print('test loss (Backbone_Cross_Attn): ' + str(test_losses['Backbone_Cross_Attn']))
+    # # cross attention + TFN
+    # test_losses['Backbone_Cross_Attn_TFN'] = trainer_new.cross_validation(dataset_new, model_CATFN, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_new.train_model, trainer_new.test_model, collate_fn)
+    # print('test loss (Backbone_Cross_Attn_TFN): ' + str(test_losses['Backbone_Cross_Attn_TFN']))
 
-    # # Trilinear Attn
-    # test_losses['Backbone_Trilinear_Attn'] = trainer_new.cross_validation(dataset_new, model_TA, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_new.train_model, trainer_new.test_model, collate_fn)
-    # print('test loss (Backbone_Trilinear_Attn): ' + str(test_losses['Backbone_Trilinear_Attn']))
+    # # cross attention + TFN2
+    # test_losses['Backbone_Cross_Attn_TFN2'] = trainer_new.cross_validation(dataset_new, model_CATFN2, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_new.train_model, trainer_new.test_model, collate_fn)
+    # print('test loss (Backbone_Cross_Attn_TFN2): ' + str(test_losses['Backbone_Cross_Attn_TFN2']))
 
+    # cross attention + TFN3
+    test_losses['Backbone_Cross_Attn_TFN3'] = trainer_new.cross_validation(dataset_new, model_CATFN3, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_new.train_model, trainer_new.test_model, collate_fn)
+    print('test loss (Backbone_Cross_Attn_TFN3): ' + str(test_losses['Backbone_Cross_Attn_TFN3']))
+
+    # cross attention + TFN4
+    test_losses['Backbone_Cross_Attn_TFN4'] = trainer_new.cross_validation(dataset_new, model_CATFN4, criterion, K, BATCH_SIZE, MAX_EPOCHS, trainer_new.train_model, trainer_new.test_model, collate_fn)
+    print('test loss (Backbone_Cross_Attn_TFN4): ' + str(test_losses['Backbone_Cross_Attn_TFN4']))
 
     print('test_losse:', test_losses)
     print(f'{BACKBONE}, {DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
