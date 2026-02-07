@@ -6,6 +6,8 @@ from torch.utils.data import DataLoader
 
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
+
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
 def train_gcn(model, criterion, optimizer, train_data_loader, max_epochs):
@@ -28,6 +30,7 @@ def train_gcn(model, criterion, optimizer, train_data_loader, max_epochs):
 
 
 def train_model(model, criterion, optimizer, train_data_loader, max_epochs):
+    train_losses = []
     model.train()
 
     for epoch in range(0, max_epochs):
@@ -42,9 +45,11 @@ def train_model(model, criterion, optimizer, train_data_loader, max_epochs):
             train_loss += loss.detach().item()
 
         train_loss /= len(train_data_loader.dataset)
-
+        train_losses.append(train_loss)
+        
         print('Epoch {}, train loss {:.4f}'.format(epoch + 1, train_loss))
 
+    return train_losses
 
 def test_gcn(model, criterion, test_data_loader, accs=None):
     preds = None
@@ -104,14 +109,15 @@ def test_model(model, criterion, test_data_loader, accs=None):
 
     return test_loss, preds
 
-def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epochs, train, test, collate, accs=None):
+def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epochs, train, test, collate, model_name, accs=None):
     num_data_points = len(dataset)
     size_fold = int(len(dataset) / float(num_folds))
     folds = []
     models = []
     optimizers = []
     test_losses = []
-
+    # LR = 0.001
+    
     for k in range(0, num_folds - 1):
         folds.append(dataset[k * size_fold:(k + 1) * size_fold])
 
@@ -120,6 +126,9 @@ def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epoch
     for k in range(0, num_folds):
         models.append(copy.deepcopy(model))
         optimizers.append(optim.Adam(models[k].parameters(), weight_decay=0.01))
+
+    fold_train_losses = []
+    fold_valid_losses = []
 
     for k in range(0, num_folds):
         print('--------------- fold {} ---------------'.format(k + 1))
@@ -134,10 +143,31 @@ def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epoch
         train_data_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate)
         test_data_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate)
 
-        train(models[k], criterion, optimizers[k], train_data_loader, max_epochs)
+        train_losses = train(models[k], criterion, optimizers[k], train_data_loader, max_epochs)
+        fold_train_losses.append(train_losses)
+
         test_loss, pred = test(models[k], criterion, test_data_loader, accs)
 
         test_losses.append(test_loss)
+
+    # Plot fold별 loss
+    save_path = f'./results/loss/{DATASET_NAME}_{model_name}_{MAX_EPOCHS}_{SEED}_{criterion}.png'
+    fig, axes = plt.subplots(1, num_folds, figsize=(5 * num_folds, 5), sharey=True)
+    for k in range(num_folds):
+        epochs = list(range(1, max_epochs + 1))
+        axes[k].plot(epochs, fold_train_losses[k], label="Train Loss")
+
+        axes[k].set_xlabel("Epoch")
+        axes[k].set_ylabel("Loss")
+        axes[k].legend()
+        axes[k].set_title(f"Fold {k+1}")
+
+    plt.suptitle("Train Loss Across Folds")
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    # plt.show()
+    # save
+    plt.savefig(save_path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
 
     df_row = pd.DataFrame([{
         'dataset': DATASET_NAME,

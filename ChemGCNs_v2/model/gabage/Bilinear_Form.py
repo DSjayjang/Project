@@ -34,14 +34,16 @@ class GCNLayer(nn.Module):
         return g.ndata.pop('h')
     
 
-class kronecker_Net_3(nn.Module):
+class bilinear_Net_3(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(kronecker_Net_3, self).__init__()
+        super(bilinear_Net_3, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
 
-        self.fc1 = nn.Linear(20 * 3, 32)
+        self.W = nn.Parameter(torch.randn(20, dim_self_feat))
+
+        self.fc1 = nn.Linear(dim_self_feat, 32)
         self.fc2 = nn.Linear(32, 8)
         self.fc3 = nn.Linear(8, dim_out)
 
@@ -56,10 +58,9 @@ class kronecker_Net_3(nn.Module):
 
         hg = dgl.mean_nodes(g, 'h')
 
-        hg = hg.unsqueeze(2)
-        self_feat = self_feat.unsqueeze(1)
-        hg = torch.bmm(hg, self_feat)
-        hg = hg.view(hg.size(0), -1)
+        # bilinear form
+        A = hg @ self.W
+        hg = A * self_feat
 
         # fully connected networks
         out = F.relu(self.bn1(self.fc1(hg)))
@@ -71,14 +72,16 @@ class kronecker_Net_3(nn.Module):
         return out
     
     
-class kronecker_Net_5(nn.Module):
+class bilinear_Net_5(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(kronecker_Net_5, self).__init__()
+        super(bilinear_Net_5, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
 
-        self.fc1 = nn.Linear(20 * 5, 32)
+        self.W = nn.Parameter(torch.randn(20, dim_self_feat))
+
+        self.fc1 = nn.Linear(dim_self_feat, 32)
         self.fc2 = nn.Linear(32, 8)
         self.fc3 = nn.Linear(8, dim_out)
 
@@ -93,10 +96,9 @@ class kronecker_Net_5(nn.Module):
 
         hg = dgl.mean_nodes(g, 'h')
 
-        hg = hg.unsqueeze(2)
-        self_feat = self_feat.unsqueeze(1)
-        hg = torch.bmm(hg, self_feat)
-        hg = hg.view(hg.size(0), -1)
+        # bilinear form
+        A = hg @ self.W
+        hg = A * self_feat
 
         # fully connected networks
         out = F.relu(self.bn1(self.fc1(hg)))
@@ -108,14 +110,16 @@ class kronecker_Net_5(nn.Module):
         return out
     
 
-class kronecker_Net_7(nn.Module):
+class bilinear_Net_7(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(kronecker_Net_7, self).__init__()
+        super(bilinear_Net_7, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
 
-        self.fc1 = nn.Linear(20 * 7, 64)
+        self.W = nn.Parameter(torch.randn(20, dim_self_feat))
+
+        self.fc1 = nn.Linear(dim_self_feat, 64)
         self.fc2 = nn.Linear(64, 16)
         self.fc3 = nn.Linear(16, dim_out)
 
@@ -130,10 +134,9 @@ class kronecker_Net_7(nn.Module):
 
         hg = dgl.mean_nodes(g, 'h')
 
-        hg = hg.unsqueeze(2)
-        self_feat = self_feat.unsqueeze(1)
-        hg = torch.bmm(hg, self_feat)
-        hg = hg.view(hg.size(0), -1)
+        # bilinear form
+        A = hg @ self.W
+        hg = A * self_feat
 
         # fully connected networks
         out = F.relu(self.bn1(self.fc1(hg)))
@@ -145,14 +148,16 @@ class kronecker_Net_7(nn.Module):
         return out
     
 
-class kronecker_Net_10(nn.Module):
+class bilinear_Net_10(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(kronecker_Net_10, self).__init__()
+        super(bilinear_Net_10, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
 
-        self.fc1 = nn.Linear(20 * 10, 64)
+        self.W = nn.Parameter(torch.randn(20, dim_self_feat))
+
+        self.fc1 = nn.Linear(dim_self_feat, 64)
         self.fc2 = nn.Linear(64, 16)
         self.fc3 = nn.Linear(16, dim_out)
 
@@ -167,10 +172,9 @@ class kronecker_Net_10(nn.Module):
 
         hg = dgl.mean_nodes(g, 'h')
 
-        hg = hg.unsqueeze(2)
-        self_feat = self_feat.unsqueeze(1)
-        hg = torch.bmm(hg, self_feat)
-        hg = hg.view(hg.size(0), -1)
+        # bilinear form
+        A = hg @ self.W
+        hg = A * self_feat
 
         # fully connected networks
         out = F.relu(self.bn1(self.fc1(hg)))
@@ -182,14 +186,16 @@ class kronecker_Net_10(nn.Module):
         return out
     
 
-class kronecker_Net_20(nn.Module):
+class bilinear_Net_20(nn.Module):
     def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(kronecker_Net_20, self).__init__()
+        super(bilinear_Net_20, self).__init__()
 
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
 
-        self.fc1 = nn.Linear(20 * dim_self_feat, 256) 
+        self.W = nn.Parameter(torch.randn(20, dim_self_feat))
+
+        self.fc1 = nn.Linear(dim_self_feat, 256) 
         self.fc2 = nn.Linear(256, 32)
         self.fc3 = nn.Linear(32, dim_out)
 
@@ -204,10 +210,9 @@ class kronecker_Net_20(nn.Module):
 
         hg = dgl.mean_nodes(g, 'h')
 
-        hg = hg.unsqueeze(2)
-        self_feat = self_feat.unsqueeze(1)
-        hg = torch.bmm(hg, self_feat)
-        hg = hg.view(hg.size(0), -1)
+        # bilinear form
+        A = hg @ self.W
+        hg = A * self_feat
 
         # fully connected networks
         out = F.relu(self.bn1(self.fc1(hg)))
@@ -219,38 +224,40 @@ class kronecker_Net_20(nn.Module):
         return out
 
 
-# KROVEX
-class Net(nn.Module):
-    def __init__(self, dim_in, dim_out, dim_self_feat):
-        super(Net, self).__init__()
+# Bilinear Form
+class bilinear_Net(nn.Module):
+    def __init__(self, dim_in, dim_self_feat, feat_3d):
+        super(bilinear_Net, self).__init__()
 
+        dim_out = 1
         self.gc1 = GCNLayer(dim_in, 100)
         self.gc2 = GCNLayer(100, 20)
 
-        self.fc1 = nn.Linear(20 * dim_self_feat, 128)
+        self.W = nn.Parameter(torch.randn(20, dim_self_feat))
+
+        self.fc1 = nn.Linear(dim_self_feat, 128)
         self.fc2 = nn.Linear(128, 32)
         self.fc3 = nn.Linear(32, dim_out)
 
         self.bn1 = nn.BatchNorm1d(128)
         self.bn2 = nn.BatchNorm1d(32)
         self.bn3 = nn.BatchNorm1d(8)
-        self.dropout = nn.Dropout(0.3)
+        # self.dropout = nn.Dropout(0.3)
 
-    def forward(self, g, self_feat):
+    def forward(self, g, self_feat, feat_3d):
         h = F.relu(self.gc1(g, g.ndata['feat']))
         h = F.relu(self.gc2(g, h))
         g.ndata['h'] = h
 
         hg = dgl.mean_nodes(g, 'h')
 
-        hg = hg.unsqueeze(2)
-        self_feat = self_feat.unsqueeze(1)
-        hg = torch.bmm(hg, self_feat)
-        hg = hg.view(hg.size(0), -1)
+        # bilinear form
+        A = hg @ self.W
+        hg = A * self_feat
 
         # fully connected networks
         out = F.relu(self.bn1(self.fc1(hg)))
-        out = self.dropout(out)
+        # out = self.dropout(out)
         out = F.relu(self.bn2(self.fc2(out)))
 
         out = self.fc3(out)

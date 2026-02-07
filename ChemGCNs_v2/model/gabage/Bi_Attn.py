@@ -60,7 +60,7 @@ class Descriptor_Tokenizer(nn.Module):
         return desc_tks
 
 
-class CrossAttn_GraphQuery(nn.Module):
+class BilinearAttn_GraphQuery(nn.Module):
     """
     Graph embedding (pooled) as a single Query token.
     Descriptors (2D or 3D) are tokenized as feature-tokens and used as K/V.
@@ -73,8 +73,7 @@ class CrossAttn_GraphQuery(nn.Module):
             self, d_g: int, 
             d_desc: int, 
             d_t: int = 32, # dim of token
-            d_k: int = 32,  # dim of attenion weight
-            dropout: float = 0.0
+            d_k: int = 32  # dim of attenion weight
             ):
         super().__init__()
         self.d_g = d_g
@@ -89,9 +88,9 @@ class CrossAttn_GraphQuery(nn.Module):
         self.Wv = nn.Linear(d_t, d_k) # token -> V
         self.Wo = nn.Linear(d_k, d_g) # context -> delta hg
 
-        self.Wb = nn.Parameter(torch.empty(d_k, d_k))
+        # bilinear weight matrix
+        self.Wb = nn.Parameter(torch.empty(d_k, d_k)) # (d_k, d_k)
         nn.init.xavier_uniform_(self.Wb)
-        self.attn_drop = nn.Dropout(dropout)
 
         self.ln = nn.LayerNorm(d_g)
 
@@ -115,13 +114,18 @@ class CrossAttn_GraphQuery(nn.Module):
         K = self.Wk(desc_tks)
         V = self.Wv(desc_tks)
 
-        scores = torch.matmul(Q, K.transpose(1,2)) / (self.d_k ** 0.5) # (bs, 1, d_desc)
+        # Bilinear Score Q @ Wb @ K^T
+        QW = torch.matmul(Q, self.Wb) # (bs, 1, d_k)
+        # scores = torch.matmul(QW, K.transpose(1,2)) # (bs, 1, d_desc)
+        scores = torch.matmul(QW, K.transpose(1,2)) / (self.d_k ** 0.5) # (bs, 1, d_desc)
+
         A = torch.softmax(scores, dim=-1) # A: (bs, 1, d_desc)
 
         Z = torch.matmul(A, V) # (bs, 1, d_k)
-        Z = self.Wo(Z).squeeze(1) # (bs, 1, d_k) -> (bs, 1, d_g) -> (bs, d_g)
 
+        Z = self.Wo(Z).squeeze(1) # (bs, 1, d_k) -> (bs, 1, d_g) -> (bs, d_g)
         hg_attn = self.ln(hg + Z) # (bs, d_g)
+        # hg_attn = self.ln(Z) # (bs, d_g)
 
         return hg_attn, A.squeeze(1)
 
@@ -129,7 +133,6 @@ class CrossAttn_GraphQuery(nn.Module):
 class Net(nn.Module):
     """
     hg1 = LN(hg + Attn_2d(hg))
-    hg2 = LN(hg + Attn_3d(hg))
     """
     def __init__(self, dim_in, dim_out, dim_2d_desc, dim_3d_desc):
         super(Net, self).__init__()
@@ -143,17 +146,17 @@ class Net(nn.Module):
         self.gc2 = GCNLayer(100, self.d_g)
 
         # cross-attention blocks
-        self.attn_2d = CrossAttn_GraphQuery(d_g=self.d_g, d_desc=dim_2d_desc)
-        self.attn_3d = CrossAttn_GraphQuery(d_g=self.d_g, d_desc=dim_3d_desc)
+        self.attn_2d = BilinearAttn_GraphQuery(d_g=self.d_g, d_desc=dim_2d_desc)
+        self.attn_3d = BilinearAttn_GraphQuery(d_g=self.d_g, d_desc=dim_3d_desc)
 
-        self.fc1 = nn.Linear((self.d_g+1) * (self.d_g+1) * (self.d_g+1), 128)
-        self.fc2 = nn.Linear(128, 32)
-        self.fc3 = nn.Linear(32, dim_out)
+        self.fc1 = nn.Linear(20, 128)
+        self.fc2 = nn.Linear(128, 64)
+        self.fc3 = nn.Linear(64, dim_out)
 
         self.bn1 = nn.BatchNorm1d(128)
-        self.bn2 = nn.BatchNorm1d(32)
-        self.bn3 = nn.BatchNorm1d(8)
+        self.bn2 = nn.BatchNorm1d(64)
         self.dropout = nn.Dropout(0.3)
+
 
     def forward(self, g, desc_2d, desc_3d, return_attn=False):
         """
@@ -168,28 +171,30 @@ class Net(nn.Module):
         hg = dgl.mean_nodes(g, 'h')  # (bs, d_g)
         batch_size = hg.size(0)
 
-        # Cross Attention
+        # Bilinear Attention
         # hg1, hg2: (bs, d_g)
         hg1, attn2d = self.attn_2d(hg, desc_2d)  # hg: (bs, d_g), desc_2d: (bs, dim_2d_desc)
-        hg2, attn3d = self.attn_3d(hg, desc_3d) # hg: (bs, d_g), desc_3d: (bs, dim_3d_desc)
+        hg2, attn3d = self.attn_3d(hg, desc_3d)  # hg: (bs, d_g), desc_2d: (bs, dim_2d_desc)
 
-        # Tensor Fusion
-        ones = torch.ones(batch_size, 1, device=hg.device, dtype=hg.dtype)
-
-        hg = torch.cat((hg, ones), dim = 1)
-        hg1 = torch.cat((hg1, ones), dim = 1)
-        hg2 = torch.cat((hg2, ones), dim = 1)
-
-        # tensor fusion
-        fusion_tensor = torch.einsum('bi, bj, bk -> bijk', hg, hg1, hg2) # (bs, 21, 21, 21)
-        fusion_tensor = fusion_tensor.view(batch_size, -1)
+        # fusion
+        # fusion = torch.cat([hg,hg1,hg2], dim =1)
+        fusion = hg1 + hg2
 
         # MLP
-        out = F.relu(self.bn1(self.fc1(fusion_tensor)))
-        out = self.dropout(out)
+        out = F.relu(self.bn1(self.fc1(fusion)))
+        # out = self.dropout(out)
         out = F.relu(self.bn2(self.fc2(out)))
         out = self.fc3(out)
 
-        if return_attn:
-            return out, {"attn_2d": attn2d, "attn_3d": attn3d, "hg": hg, "hg1": hg1, "hg2": hg2}
+        # # MLP
+        # out = F.relu(self.bn1(self.fc1(hg1)))
+        # out = self.dropout(out)
+        # out = F.relu(self.bn2(self.fc2(out)))
+        # out = self.fc3(out)
+
+
+        # # MLP
+        # out = F.relu(self.fc1(hg))
+        # out = self.fc3(out)
+
         return out

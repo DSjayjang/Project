@@ -213,7 +213,7 @@ def read_dataset_esol(file_name):
             mol_graph.SMR_VSA2 = dsc.SMR_VSA2(mol)
             mol_graph.fr_lactone = dsc.fr_lactone(mol)
 
-            samples.append((mol_graph, target[i]))
+            samples.append((mol_graph, target[i], smiles[i]))
             mol_graphs.append(mol_graph)
 
     for feat in ['MolLogP', 'MaxAbsPartialCharge', 'MaxEStateIndex', 'SMR_VSA10', 'Kappa2', 
@@ -276,7 +276,7 @@ def read_dataset_lipo(file_name):
             mol_graph.MinEStateIndex = dsc.MinEStateIndex(mol)
             mol_graph.fr_Ar_N = dsc.fr_Ar_N(mol)
 
-            samples.append((mol_graph, target[i]))
+            samples.append((mol_graph, target[i], smiles[i]))
             mol_graphs.append(mol_graph)
 
     for feat in ['MolLogP', 'fr_COO', 'Ipc', 'fr_sulfonamd', 'PEOE_VSA7',
@@ -392,7 +392,7 @@ def read_dataset_solubility(file_name):
             mol_graph.NHOHCount = dsc.NHOHCount(mol)
             mol_graph.SlogP_VSA6 = dsc.SlogP_VSA6(mol)
 
-            samples.append((mol_graph, target[i]))
+            samples.append((mol_graph, target[i], smiles[i]))
             mol_graphs.append(mol_graph)
 
     for feat in ['Chi1v', 'Chi1', 'SlogP_VSA2', 'HallKierAlpha', 'PEOE_VSA6',

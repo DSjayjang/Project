@@ -9,6 +9,21 @@ from utils.mol_props import props
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+# # self loop 확인용
+# def debug_self_loops(g, name="g"):
+#     src, dst = g.edges()
+#     src = src.cpu()
+#     dst = dst.cpu()
+#     n = g.num_nodes()
+
+#     num_self = (src == dst).sum().item()
+#     # self-loop는 노드당 최대 1개여야 "정상적인 add_self_loop 결과"
+#     print(f"[{name}] nodes={n}, edges={g.num_edges()}, self_loops={num_self}")
+
+#     # 노드별 self-loop 개수 확인
+#     counts = torch.bincount(src[src==dst], minlength=n)
+#     print(f"  self-loop per node: min={counts.min().item()}, max={counts.max().item()}, mean={counts.float().mean().item():.3f}")
+
 class molDGLGraph(dgl.DGLGraph):
     def __init__(self, smiles, adj_mat, feat_mat, mol):
         super(molDGLGraph, self).__init__()
@@ -31,6 +46,10 @@ def construct_mol_graph(smiles, mol, adj_mat, feat_mat):
 
     molGraph.add_nodes(adj_mat.shape[0])
     molGraph.add_edges(src, dst)
+    
+    # debug_self_loops(molGraph, "before add_self_loop") # self loop 확인용
+    molGraph = dgl.add_self_loop(molGraph) # self loop
+    # debug_self_loops(molGraph, "after add_self_loop") # self loop 확인용
     molGraph.ndata['feat'] = torch.tensor(feat_mat, dtype=torch.float32).to(device)
 
     return molGraph

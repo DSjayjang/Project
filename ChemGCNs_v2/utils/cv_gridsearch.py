@@ -1,0 +1,181 @@
+import os
+import copy
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+from torch.utils.data import DataLoader, Subset
+from sklearn.model_selection import KFold
+from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
+
+from model import CrossAttn_TFN
+
+def train(model, criterion, optimizer, train_loader, val_loader, max_epochs):
+    train_losses = []
+    val_losses = []
+
+    for epoch in range(0, max_epochs):
+        train_loss_sum = 0.0
+        val_loss_sum = 0.0
+        train_n = 0
+        val_n = 0
+
+        # ------------------ Train ------------------ #
+        model.train()
+        for bg, feat_2d, feat_3d, target in train_loader:
+            pred = model(bg, feat_2d, feat_3d)
+
+            loss = criterion(pred, target)
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            bs = target.size(0)
+            train_loss_sum += loss.detach().item() * bs
+            train_n += bs
+        train_loss = train_loss_sum / train_n
+
+        # ------------------ Val ------------------ #
+        model.eval()
+        with torch.no_grad():
+            for bg, feat_2d, feat_3d, target in val_loader:
+                pred = model(bg, feat_2d, feat_3d)
+
+                loss = criterion(pred, target)
+
+                bs = target.size(0)
+                val_loss_sum += loss.detach().item() * bs
+                val_n += bs
+
+        val_loss = val_loss_sum / max(val_n, 1)
+
+        train_losses.append(train_loss)
+        val_losses.append(val_loss)
+
+        print(f"Epoch {epoch + 1} | train loss {train_loss:.4f} | val loss {val_loss:.4f}")
+
+    return train_losses, val_losses
+
+
+def grid_search_kfold(dataset, dim_in, dim_2d_desc, dim_3d_desc,
+                      param_list, criterion, num_folds, batch_size, max_epochs, collate_fn, model_name):
+
+    device="cuda"
+
+    lr = 1e-3
+    weight_decay = 1e-4
+
+    num_data = len(dataset)
+    idx = np.arange(num_data)
+
+    kf = KFold(n_splits=num_folds, shuffle=True, random_state=SEED)
+    results = []
+
+    for cfg_id, cfg in enumerate(param_list):
+        fold_scores = []
+        fold_val_losses = []
+        fold_train_losses = []
+
+        print(f"\n================ CFG {cfg_id+1}/{len(param_list)} ================")
+        print("cfg:", cfg)
+
+        for fold, (train_idx, val_idx) in enumerate(kf.split(idx)):
+            print(f"--------------- Fold {fold+1}/{num_folds} ---------------")
+
+            train_loader = DataLoader(
+                Subset(dataset, train_idx),
+                batch_size=batch_size, shuffle=True,
+                collate_fn=collate_fn, drop_last=False)
+            
+            val_loader = DataLoader(
+                Subset(dataset, val_idx),
+                batch_size=batch_size, shuffle=False,
+                collate_fn=collate_fn, drop_last=False)
+
+            model = CrossAttn_TFN.Net_2d_grid(
+                dim_in=dim_in,
+                dim_2d_desc=dim_2d_desc,
+                dim_3d_desc=dim_3d_desc,
+                d_t=cfg["d_t"],
+                d_k=cfg["d_k"],
+                dim_out_fc1=cfg["fc1"],
+                dim_out_fc2=cfg["fc2"],
+                drop_out=cfg["dropout"],
+            ).to(device)
+
+            optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
+
+            train_losses, val_losses = train(
+                model=model,
+                criterion=criterion,
+                optimizer=optimizer,
+                train_loader=train_loader,
+                val_loader=val_loader,
+                max_epochs=max_epochs)
+
+            fold_train_losses.append(train_losses)
+            fold_val_losses.append(val_losses)
+
+            fold_score = float(np.mean(val_losses)) # mean not min
+            fold_scores.append(fold_score)
+
+            print(f"[Fold {fold+1}] mean val loss: {fold_score:.4f}")
+
+        mean_loss = float(np.mean(fold_scores))
+
+        results.append({
+            "cfg": cfg,
+            "mean_loss": mean_loss,
+            "fold_scores": fold_scores,
+            "fold_train_losses": fold_train_losses,
+            "fold_val_losses": fold_val_losses,})
+
+        print(f"\n[CFG {cfg_id+1}] CV(min val loss) = {mean_loss:.4f}")
+        print("==========================================================")
+
+        # ----------------------- save loss plot and csv file -----------------------#
+        # loss plot
+        save_path = f'./results/loss/{DATASET_NAME}_{model_name}_{max_epochs}_{num_folds}_{SEED}_{criterion}_{cfg["d_t"]}_{cfg["d_k"]}_{cfg["fc1"]}_{cfg["fc2"]}.png'
+        fig, axes = plt.subplots(1, num_folds, figsize=(5 * num_folds, 5), sharey=True)
+        for k in range(num_folds):
+            epochs = list(range(1, max_epochs + 1))
+            axes[k].plot(epochs, fold_train_losses[k], label="Train Loss")
+            axes[k].plot(epochs, fold_val_losses[k], label="Val Loss")
+            axes[k].set_xlabel("Epoch")
+            axes[k].set_ylabel("Loss")
+            axes[k].legend()
+            axes[k].set_title(f"Fold {k+1}")
+        plt.suptitle("Train and Val Losses Across Folds")
+        plt.tight_layout(rect=[0, 0, 1, 0.95])
+        plt.savefig(save_path, dpi=300, bbox_inches="tight")
+        plt.close(fig)
+
+        # csv file
+        df_row = pd.DataFrame([{
+            'dataset': DATASET_NAME,
+            'model_name': model_name,
+            'epochs': max_epochs,
+            'num-folds': num_folds,
+            'SEED': SEED,
+            'criterion': criterion,
+            'fold_val_means': fold_scores}])
+        csv_path = f'./results/se/{DATASET_NAME}_{model_name}_{max_epochs}_{num_folds}_{SEED}_{criterion}_{cfg["d_t"]}_{cfg["d_k"]}_{cfg["fc1"]}_{cfg["fc2"]}.csv'
+        if not os.path.exists(csv_path): df_row.to_csv(csv_path, index=False)
+        else: df_row.to_csv(csv_path, mode='a', header=False, index=False)
+        # ----------------------------------------------------------------------------- #
+
+    results.sort(key=lambda x: x["mean_loss"])
+    best = results[0]
+
+    print("\n================ BEST params ================")
+    print("Best cfg:", best["cfg"])
+    print(f"CV score (mean of folds): {best['mean_loss']:.4f}")
+    print("Fold means:", [f"{x:.6f}" for x in best["fold_scores"]])
+    print("===============================================\n")
+
+    return results

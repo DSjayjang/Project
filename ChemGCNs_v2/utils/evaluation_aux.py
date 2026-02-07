@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 from sklearn.metrics import r2_score
 import torch.optim as optim
 
+lambda_desc = 0.001
 
 def train(model, criterion, optimizer, train_loader, max_epochs):
     for epoch in range(max_epochs):
@@ -13,16 +14,18 @@ def train(model, criterion, optimizer, train_loader, max_epochs):
 
         model.train()
         for bg, feat_2d, feat_3d, target in train_loader:
-            pred = model(bg, feat_2d, feat_3d)
+            pred, aux = model(bg, feat_2d, feat_3d, return_aux=True)
 
-            loss = criterion(pred, target)
+            y_loss = criterion(pred, target)
+            desc_loss = aux["nll_2d"].mean()  # batch 평균
+            loss = y_loss + lambda_desc * desc_loss
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
             bs = target.size(0)
-            train_loss_sum += loss.detach().item() * bs
+            train_loss_sum += y_loss.detach().item() * bs
             train_n += bs
         train_loss = train_loss_sum / train_n
 
@@ -33,18 +36,28 @@ def test(model, criterion, test_loader, model_name):
     model.eval()
     loss_sum = 0.0
     test_n = 0
+    desc_sum = 0.0    # optional: log only
 
     preds, targets = [], []
 
     with torch.no_grad():
         for bg, feat_2d, feat_3d, target in test_loader:
-            pred = model(bg, feat_2d, feat_3d)
+            pred, aux = model(bg, feat_2d, feat_3d, return_aux = True)
 
-            loss = criterion(pred, target)
+            y_loss = criterion(pred, target)
 
             bs = target.size(0)
-            loss_sum += loss.detach().item() * bs
+            loss_sum +=y_loss.detach().item() * bs
             test_n += bs
+
+            # aux loss
+            if aux is not None and 'nll_2d' in aux:
+                dloss = aux['nll_2d'].mean().item()
+                # print('nll_2d', aux['nll_2d'])
+            else:
+                dloss = 0.0
+                # print('not nll_2d', aux['nll_2d'])
+            desc_sum += dloss * bs
 
             preds.append(pred.detach().cpu())
             targets.append(target.detach().cpu())

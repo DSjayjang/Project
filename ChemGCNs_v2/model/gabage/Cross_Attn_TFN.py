@@ -3,36 +3,28 @@ import torch.nn as nn
 import torch.nn.functional as F
 import dgl
 import dgl.function as fn
+class GCNConv(nn.Module):
+    def __init__(self, dim_in, dim_out, bias=False):
+        super(GCNConv, self).__init__()
 
-class NodeApplyModule(nn.Module):
-    def __init__(self, dim_in, dim_out):
-        super(NodeApplyModule, self).__init__()
-        self.linear = nn.Linear(dim_in, dim_out)
+        self.weight = nn.Parameter(torch.empty(dim_in, dim_out))
+        self.bias = nn.Parameter(torch.zeros(dim_out)) if bias else None
+        self.eps = 1e-12
+        nn.init.xavier_uniform_(self.weight)
 
-    def forward(self, node):
-        h = self.linear(node.data['h'])
+    def forward(self, g, feat: torch.Tensor):
+        A_tilde = g.adj().to_dense()
+        deg = A_tilde.sum(dim=1)
+        D_tilde = torch.pow(deg.clamp_min(self.eps), -0.5)
 
-        return {'h': h}
+        X1 = feat * D_tilde.unsqueeze(-1)
+        X2 = A_tilde @ X1
+        X3 = X2 * D_tilde.unsqueeze(-1)
 
-class GCNLayer(nn.Module):
-    def __init__(self, dim_in, dim_out):
-        super(GCNLayer, self).__init__()
-        self.msg = fn.copy_u('h', 'm')
-        self.apply_mod = NodeApplyModule(dim_in, dim_out)
+        out = X3 @ self.weight
 
-    def reduce(self, nodes):
-        mbox = nodes.mailbox['m']
-        accum = torch.mean(mbox, dim = 1)
+        return out        
 
-        return {'h': accum}     
-
-    def forward(self, g, feature):
-        g.ndata['h'] = feature
-        g.update_all(self.msg, self.reduce)
-        g.apply_nodes(func = self.apply_mod)
-
-        return g.ndata.pop('h')
-    
 class Descriptor_Tokenizer(nn.Module):
     def __init__(self, d_t: int):
         super().__init__()
@@ -126,16 +118,18 @@ class Net(nn.Module):
     hg1 = LN(hg + Attn_2d(hg))
     hg2 = LN(hg + Attn_3d(hg))
     """
-    def __init__(self, dim_in, dim_out, dim_2d_desc, dim_3d_desc):
+    def __init__(self, dim_in, dim_2d_desc, dim_3d_desc):
         super(Net, self).__init__()
+
+        dim_out = 1
 
         self.dim_2d_desc = dim_2d_desc
         self.dim_3d_desc = dim_3d_desc
 
         # Graph encoder
         self.d_g = 20
-        self.gc1 = GCNLayer(dim_in, 100)
-        self.gc2 = GCNLayer(100, self.d_g)
+        self.gc1 = GCNConv(dim_in, 100)
+        self.gc2 = GCNConv(100, self.d_g)
 
         # cross-attention blocks
         self.attn_2d = CrossAttn_GraphQuery(d_g=self.d_g, d_desc=dim_2d_desc)

@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 
 import os
 import pandas as pd
+
 from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
 
 def train_gcn(model, criterion, optimizer, train_data_loader, max_epochs):

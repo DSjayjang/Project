@@ -7,7 +7,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 # Freesolv
-def descriptor_selection_freesolv(samples, feat3d_map, feat3d_dim, feat3d_missing='zero'):
+def collate_fusion_freesolv(samples, feat3d_map, feat3d_dim, feat3d_missing='zero'):
     graphs, labels, smiles_list = map(list, zip(*samples))
     batched_graph = dgl.batch(graphs)
 
@@ -96,7 +96,11 @@ def descriptor_selection_freesolv(samples, feat3d_map, feat3d_dim, feat3d_missin
             torch.tensor(labels, dtype=torch.float32).to(device))
 
 # ESOL
-def descriptor_selection_esol(samples):
+def collate_fusion_esol(samples, feat3d_map, feat3d_dim, feat3d_missing='zero'):
+    graphs, labels, smiles_list = map(list, zip(*samples))
+    batched_graph = dgl.batch(graphs)
+
+    # 2D descriptors
     self_feats = np.empty((len(samples), 63), dtype=np.float32)
 
     for i in range(0, len(samples)):
@@ -179,13 +183,30 @@ def descriptor_selection_esol(samples):
         self_feats[i, 61] = mol_graph.SMR_VSA2
         self_feats[i, 62] = mol_graph.fr_lactone
 
-    graphs, labels = map(list, zip(*samples))
+    # 3D descriptors
+    x3d = np.empty((len(samples), feat3d_dim), dtype=np.float32)
+    for i, smi in enumerate(smiles_list):
+        v = feat3d_map.get(smi, None)
+        if v is None:
+            if feat3d_missing == 'zero':
+                x3d[i] = 0.0
+            else:
+                x3d[i] = np.nan
+        else:
+            x3d[i] = v
+
+    return (batched_graph, 
+            torch.tensor(self_feats).to(device), 
+            torch.tensor(x3d).to(device),
+            torch.tensor(labels, dtype=torch.float32).to(device))
+
+# Lipo
+def collate_fusion_lipo(samples, feat3d_map, feat3d_dim, feat3d_missing='zero'):
+    graphs, labels, smiles_list = map(list, zip(*samples))
     batched_graph = dgl.batch(graphs)
+    labels = np.asarray(labels, dtype=np.float32)
 
-    return batched_graph, torch.tensor(self_feats).to(device), torch.tensor(labels, dtype=torch.float32).to(device)
-
-# ESOL
-def descriptor_selection_lipo(samples):
+    # 2D descriptors
     self_feats = np.empty((len(samples), 25), dtype=np.float32)
 
     for i in range(0, len(samples)):
@@ -222,10 +243,22 @@ def descriptor_selection_lipo(samples):
         self_feats[i, 23] = mol_graph.MinEStateIndex
         self_feats[i, 24] = mol_graph.fr_Ar_N
 
-    graphs, labels = map(list, zip(*samples))
-    batched_graph = dgl.batch(graphs)
+    # 3D descriptors
+    x3d = np.empty((len(samples), feat3d_dim), dtype=np.float32)
+    for i, smi in enumerate(smiles_list):
+        v = feat3d_map.get(smi, None)
+        if v is None:
+            if feat3d_missing == 'zero':
+                x3d[i] = 0.0
+            else:
+                x3d[i] = np.nan
+        else:
+            x3d[i] = v
 
-    return batched_graph, torch.tensor(self_feats).to(device), torch.tensor(labels, dtype=torch.float32).to(device)
+    return (batched_graph, 
+            torch.tensor(self_feats).to(device), 
+            torch.tensor(x3d).to(device),
+            torch.tensor(labels).to(device))
 
 # Self-Curated Gas
 def collate_fusion_scgas(samples, feat3d_map, feat3d_dim, feat3d_missing='zero'):
@@ -286,7 +319,12 @@ def collate_fusion_scgas(samples, feat3d_map, feat3d_dim, feat3d_missing='zero')
             torch.tensor(labels).to(device))
 
 # Solubility
-def descriptor_selection_solubility(samples):
+def collate_fusion_solubility(samples, feat3d_map, feat3d_dim, feat3d_missing='zero'):
+    graphs, labels, smiles_list = map(list, zip(*samples))
+    batched_graph = dgl.batch(graphs)
+    labels = np.asarray(labels, dtype=np.float32)
+
+    # 2D descriptors
     self_feats = np.empty((len(samples), 30), dtype=np.float32)
 
     for i in range(0, len(samples)):
@@ -329,7 +367,19 @@ def descriptor_selection_solubility(samples):
         self_feats[i, 28] = mol_graph.NHOHCount
         self_feats[i, 29] = mol_graph.SlogP_VSA6
 
-    graphs, labels = map(list, zip(*samples))
-    batched_graph = dgl.batch(graphs)
+    # 3D descriptors
+    x3d = np.empty((len(samples), feat3d_dim), dtype=np.float32)
+    for i, smi in enumerate(smiles_list):
+        v = feat3d_map.get(smi, None)
+        if v is None:
+            if feat3d_missing == 'zero':
+                x3d[i] = 0.0
+            else:
+                x3d[i] = np.nan
+        else:
+            x3d[i] = v
 
-    return batched_graph, torch.tensor(self_feats).to(device), torch.tensor(labels, dtype=torch.float32).to(device)
+    return (batched_graph, 
+            torch.tensor(self_feats).to(device), 
+            torch.tensor(x3d).to(device),
+            torch.tensor(labels).to(device))

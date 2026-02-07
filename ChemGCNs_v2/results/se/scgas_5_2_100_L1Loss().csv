@@ -1,3 +1,0 @@
-dataset,epochs,num-folds,SEED,criterion,test_losses
-scgas,5,2,100,L1Loss(),"[2.1194041910116526, 1.7391179907711403]"
-scgas,5,2,100,L1Loss(),"[2.1194041910116526, 1.7391179907711403]"

@@ -1,13 +1,14 @@
 import random
 import pandas as pd
 from functools import partial
+from sklearn.model_selection import train_test_split
 
 import torch
 import torch.nn as nn
 
 import utils.mol_conv as mc
 import utils.mol_conv_new as mc_new
-from utils import cv, trainer, trainer_3d, trainer_3d_split_aux
+from utils import cv
 from utils import mol_collate, mol_collate_new
 from utils.mol_props import dim_atomic_feat
 from utils.feat_map import build_feat_map
@@ -24,16 +25,27 @@ def main():
     if DATASET_NAME == 'freesolv':
         print('DATASET_NAME: ', DATASET_NAME)
         from utils.ablation import mol_collate_freesolv as mcol
-        dataset = mc.read_dataset_freesolv(DATASET_PATH + '.csv')
+        # dataset = mc.read_dataset_freesolv(DATASET_PATH + '.csv')
+        dataset_new = mc_new.read_dataset_freesolv(DATASET_PATH + '.csv')
         num_descriptors_2d = 50
-        descriptors = mol_collate.descriptor_selection_freesolv
+
+        # 임시 (scgas용 3d descriptor)
+        feat3d_map, feat3d_cols = build_feat_map(DATASET_NAME)
+        num_descriptors_3d = len(feat3d_cols)
+        collate_fn = partial(mol_collate_new.collate_fusion_freesolv, feat3d_map=feat3d_map, feat3d_dim=num_descriptors_3d)
 
     elif DATASET_NAME == 'esol':
         print('DATASET_NAME: ', DATASET_NAME)
         from utils.ablation import mol_collate_esol as mcol
-        dataset = mc.read_dataset_esol(DATASET_PATH + '.csv')
-        num_descriptors = 63
-        descriptors = mol_collate.descriptor_selection_esol
+        # dataset = mc.read_dataset_esol(DATASET_PATH + '.csv')
+        dataset_new = mc_new.read_dataset_esol(DATASET_PATH + '.csv')
+        num_descriptors_2d = 63
+        # descriptors = mol_collate.descriptor_selection_esol
+
+        # 임시 (scgas용 3d descriptor)
+        feat3d_map, feat3d_cols = build_feat_map(DATASET_NAME)
+        num_descriptors_3d = len(feat3d_cols)
+        collate_fn = partial(mol_collate_new.collate_fusion_esol, feat3d_map=feat3d_map, feat3d_dim=num_descriptors_3d)
 
     elif DATASET_NAME == 'lipo':
         print('DATASET_NAME: ', DATASET_NAME)
@@ -59,49 +71,57 @@ def main():
         print('DATASET_NAME: ', DATASET_NAME)
         BATCH_SIZE = 256
         from utils.ablation import mol_collate_solubility as mcol
-        dataset = mc.read_dataset_solubility(DATASET_PATH + '.csv')
+        # dataset = mc.read_dataset_solubility(DATASET_PATH + '.csv')
+        dataset_new = mc_new.read_dataset_solubility(DATASET_PATH + '.csv')
         num_descriptors_2d = 30
-        descriptors = mol_collate.descriptor_selection_solubility
+        # descriptors = mol_collate.descriptor_selection_solubility
+
+        # 임시 (scgas용 3d descriptor)
+        feat3d_map, feat3d_cols = build_feat_map(DATASET_NAME)
+        num_descriptors_3d = len(feat3d_cols)
+        collate_fn = partial(mol_collate_new.collate_fusion_solubility, feat3d_map=feat3d_map, feat3d_dim=num_descriptors_3d)
 
     # random.shuffle(dataset)
-    random.shuffle(dataset_new)
+    # random.shuffle(dataset_new)
+    train_dataset, test_dataset = train_test_split(dataset_new, test_size = 0.2, random_state = SEED)
 
     if BACKBONE == 'GCN':
-        from model import KROVEX_baseline, egcn_Bilinear_Attn, Bilinear_Form, KROVEX_GCNs
+        from model import KROVEX_baseline, KROVEX_GCNs
         KROVEX = KROVEX_baseline.Net(dim_atomic_feat, num_descriptors_2d).to(device)
         KROVEX_GCNs = KROVEX_GCNs.Net(dim_atomic_feat, num_descriptors_2d).to(device)
 
-        from model import PPF_LRBF_0131
-        PPF_LRBF_0131 = PPF_LRBF_0131.Net_PPF_LRBF(dim_atomic_feat, num_descriptors_2d).to(device)
+        from model import CrossAttn_TFN
+        md_CrossAttn_TFN = CrossAttn_TFN.Net_2d(dim_atomic_feat, num_descriptors_2d, num_descriptors_3d).to(device)
+
 
     # loss function
     criterion = nn.MSELoss()
     # criterion = nn.L1Loss()
 
-    test_losses = dict()
+    val_losses = dict()
 
     print(f'{BACKBONE}, {DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
 
     # -------------------------- Baseline ------------------------------ #
     # # KROVEX
-    # test_losses['KROVEX'] = trainer_3d_split.cross_validation(dataset_new, KROVEX, criterion, K, BATCH_SIZE, MAX_EPOCHS, collate_fn, model_name = 'KROVEX')
-    # print('test loss (KROVEX): ' + str(test_losses['KROVEX']))
+    # val_losses['KROVEX'] = cv.cross_validation(train_dataset, KROVEX, criterion, K, BATCH_SIZE, MAX_EPOCHS, collate_fn, model_name='KROVEX')
+    # print('CV loss (KROVEX): ' + str(val_losses['KROVEX']))
 
-    # KROVEX GCN 직접 구현
-    test_losses['KROVEX_GCNs'], test_losses['KROVEX_GCNs_r2'] = cv.cross_validation(dataset_new, KROVEX_GCNs, criterion, K, BATCH_SIZE, MAX_EPOCHS, collate_fn, model_name = 'KROVEX_GCNs')
-    print('test loss (KROVEX_GCNs): ' + str(test_losses['KROVEX_GCNs']) + 'r2: ' + str(test_losses['KROVEX_GCNs_r2']))
+    # # KROVEX GCN 직접 구현
+    # val_losses['KROVEX_GCNs'] = cv.cross_validation(train_dataset, KROVEX_GCNs, criterion, K, BATCH_SIZE, MAX_EPOCHS, collate_fn, model_name = 'KROVEX_GCNs')
+    # print('CV loss (KROVEX_GCNs): ' + str(val_losses['KROVEX_GCNs']))
     # ------------------------------------------------------------------ #
 
 
-    # -------------------------- PPF + LRBF ------------------------------ #
-    # 01 / 31
-    test_losses['PPF_LRBF_0131'], test_losses['PPF_LRBF_0131_r2'] = trainer_3d_split_aux.cross_validation(dataset_new, PPF_LRBF_0131, criterion, K, BATCH_SIZE, MAX_EPOCHS, collate_fn, model_name = 'PPF_LRBF_0131')
-    print('test loss (PPF_LRBF_0131): ' + str(test_losses['PPF_LRBF_0131']) + 'r2: ' + str(test_losses['PPF_LRBF_0131_r2']))
+    # -------------------------- Cross Attention + TFN ------------------------------ #
+    val_losses['md_CrossAttn_TFN'] = cv.cross_validation(train_dataset, md_CrossAttn_TFN, criterion, K, BATCH_SIZE, MAX_EPOCHS, collate_fn, model_name = 'md_CrossAttn_TFN')
+    print(f'Final test | loss: ' + str(val_losses['md_CrossAttn_TFN']))
 
     # ------------------------------------------------------------------ #
-
-    print('test_losse:', test_losses)
+    
+    print('val_losses:', val_losses)
     print(f'{BACKBONE}, {DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
+
 
 if __name__ == '__main__':
     main()
