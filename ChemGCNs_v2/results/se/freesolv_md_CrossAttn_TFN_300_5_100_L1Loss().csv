@@ -1,0 +1,2 @@
+dataset,model_name,epochs,num-folds,SEED,criterion,fold_val_means
+freesolv,md_CrossAttn_TFN,300,5,100,L1Loss(),"[0.7789663037310526, 0.9460558584921693, 1.0766900609462868, 0.8654382976129944, 0.9788254772448071]"

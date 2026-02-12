@@ -93,7 +93,7 @@ def main():
         KROVEX_GCNs = KROVEX_GCNs.Net(dim_atomic_feat, num_descriptors_2d).to(device)
 
         from model import CrossAttn_TFN
-        md_CrossAttn_TFN = CrossAttn_TFN.Net_2d(dim_atomic_feat, num_descriptors_2d, num_descriptors_3d).to(device)
+        # md_CrossAttn_TFN = CrossAttn_TFN.Net_2d(dim_atomic_feat, num_descriptors_2d, num_descriptors_3d).to(device)
 
 
     # loss function
@@ -104,11 +104,18 @@ def main():
 
     # -------------------------- TEST GRID SEARCH ------------------------------ #
     grid = {
+        # "d_t": [32],
+        # "d_k": [32],
+        # "fc1": [128],
+        # "fc2": [32],
+        # "dropout": [0.1],
+        # "num_heads": [4]
         "d_t": [32, 64],
-        "d_k": [16, 32, 64],
+        "d_k": [32, 64, 128],
         "fc1": [128, 256],
         "fc2": [32, 64],
-        "dropout": [0.1, 0.3],
+        "dropout": [0.1],
+        # "num_heads": [4, 8]
     }
 
     param_list = [

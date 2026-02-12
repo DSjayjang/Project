@@ -88,13 +88,18 @@ def main():
         KROVEX = KROVEX_baseline.Net(dim_atomic_feat, num_descriptors_2d).to(device)
         KROVEX_GCNs = KROVEX_GCNs.Net(dim_atomic_feat, num_descriptors_2d).to(device)
 
-        from model import CrossAttn_TFN
-        md_CrossAttn_TFN = CrossAttn_TFN.Net_2d(dim_atomic_feat, num_descriptors_2d, num_descriptors_3d).to(device)
+        from model import CrossAttn_TFN, CrossAttn_TFN_0209, CrossAttn_TFN_0211
+        # md_CrossAttn_TFN = CrossAttn_TFN.Net_2d(dim_atomic_feat, num_descriptors_2d, num_descriptors_3d).to(device)
+        
+        # freesolv 0.901, 0.857, esol 0.909, -0.001
+        # md_CrossAttn_TFN = CrossAttn_TFN_0209.Net_2d(dim_atomic_feat, num_descriptors_2d, num_descriptors_3d).to(device)
+        md_CrossAttn_TFN = CrossAttn_TFN_0211.Net_2d(dim_atomic_feat, num_descriptors_2d, num_descriptors_3d).to(device)
 
 
     # loss function
     criterion = nn.MSELoss()
     # criterion = nn.L1Loss()
+    # criterion = nn.SmoothL1Loss()
 
     val_losses = dict()
     test_losses = dict()

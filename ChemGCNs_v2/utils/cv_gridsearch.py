@@ -23,7 +23,6 @@ def train(model, criterion, optimizer, train_loader, val_loader, max_epochs):
         val_loss_sum = 0.0
         train_n = 0
         val_n = 0
-
         # ------------------ Train ------------------ #
         model.train()
         for bg, feat_2d, feat_3d, target in train_loader:
@@ -52,7 +51,7 @@ def train(model, criterion, optimizer, train_loader, val_loader, max_epochs):
                 val_loss_sum += loss.detach().item() * bs
                 val_n += bs
 
-        val_loss = val_loss_sum / max(val_n, 1)
+        val_loss = val_loss_sum / val_n
 
         train_losses.append(train_loss)
         val_losses.append(val_loss)
@@ -68,7 +67,7 @@ def grid_search_kfold(dataset, dim_in, dim_2d_desc, dim_3d_desc,
     device="cuda"
 
     lr = 1e-3
-    weight_decay = 1e-4
+    weight_decay = 0.01
 
     num_data = len(dataset)
     idx = np.arange(num_data)
@@ -106,6 +105,7 @@ def grid_search_kfold(dataset, dim_in, dim_2d_desc, dim_3d_desc,
                 dim_out_fc1=cfg["fc1"],
                 dim_out_fc2=cfg["fc2"],
                 drop_out=cfg["dropout"],
+                # num_heads=cfg["num_heads"],
             ).to(device)
 
             optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
@@ -140,7 +140,7 @@ def grid_search_kfold(dataset, dim_in, dim_2d_desc, dim_3d_desc,
 
         # ----------------------- save loss plot and csv file -----------------------#
         # loss plot
-        save_path = f'./results/loss/{DATASET_NAME}_{model_name}_{max_epochs}_{num_folds}_{SEED}_{criterion}_{cfg["d_t"]}_{cfg["d_k"]}_{cfg["fc1"]}_{cfg["fc2"]}.png'
+        save_path = f'./results/loss/{DATASET_NAME}_{model_name}_{max_epochs}_{num_folds}_{SEED}_{criterion}_{cfg["d_t"]}_{cfg["d_k"]}_{cfg["fc1"]}_{cfg["fc2"]}_{cfg["dropout"]}.png'
         fig, axes = plt.subplots(1, num_folds, figsize=(5 * num_folds, 5), sharey=True)
         for k in range(num_folds):
             epochs = list(range(1, max_epochs + 1))
