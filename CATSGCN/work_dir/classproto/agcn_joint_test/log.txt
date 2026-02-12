@@ -1,0 +1,2 @@
+[ Wed Feb 11 19:13:05 2026 ] Load weights from ./runs/ki_agcn_joint-19-1960.pt.
+[ Wed Feb 11 19:13:06 2026 ] using warm up, epoch: 0
