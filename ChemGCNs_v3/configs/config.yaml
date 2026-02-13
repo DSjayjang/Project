@@ -1,0 +1,13 @@
+seed: 100 # [100, 200, 300]
+
+backbone: 'GCN' # ['GCN', 'GAT', 'GIN']
+# SPLIT: 'random' # ['random', 'scaffold']
+
+dataset: 'freesolv' # ['freesolv', 'esol', 'lipo', 'scgas', 'solubility']
+
+batch_size: 32 # [scgas: 128, others: 32, esol: 33 when scaffold splits with concat and kronecker]
+epochs: 1
+k: 2
+
+
+r_home: 'C:/Programming/R/R-4.4.2'
