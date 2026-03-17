@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import annotations
 import torch
 import torch.nn as nn
@@ -16,7 +17,7 @@ class CATSUnifiedLoss(nn.Module):
         num_joints: int = 18,
         num_frames: int = 300,
         lambda_cp: float = 1.0,
-        lambda_s: float = 1.0,
+        lambda_s: float = 0.5,
         lambda_d: float = 0.1,
         use_ema_prototypes: bool = True,
         ema_momentum: float = 0.99,
@@ -29,6 +30,7 @@ class CATSUnifiedLoss(nn.Module):
         self.lambda_cp = float(lambda_cp)
         self.lambda_s = float(lambda_s)
         self.lambda_d = float(lambda_d)
+        print(f"[CATSUnifiedLoss] λ_CP={self.lambda_cp}, λ_S={self.lambda_s}, λ_D={self.lambda_d}")
 
         # Cross-entropy
         self.ce = nn.CrossEntropyLoss()

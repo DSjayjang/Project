@@ -16,6 +16,7 @@ class AttentionModule(nn.Module):
         self.M = num_person
         self.eps = eps
 
+        # 1x1 conv: (B*M, C, T, V) -> (B*M, H, T, V)
         self.score = nn.Conv2d(in_channels, num_heads, kernel_size=1)
 
     def forward(self, h: torch.Tensor, B: Optional[int] = None) -> torch.Tensor:
@@ -28,9 +29,10 @@ class AttentionModule(nn.Module):
                 raise ValueError(f"Cannot infer B: BM({BM}) not divisible by M({self.M}).")
             B = BM // self.M
 
+        # (B*M, H, T, V)
         s = self.score(h)
         s = s.view(B, self.M, self.H, T, V).mean(dim=1)
         a = F.softplus(s) + self.eps
         A = a.permute(0, 1, 3, 2).contiguous()
-        
+
         return A

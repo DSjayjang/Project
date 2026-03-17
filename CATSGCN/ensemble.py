@@ -5,7 +5,7 @@ import numpy as np
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--datasets', default='kinetics', choices={'kinetics', 'ntu/xsub', 'ntu/xview'},
+parser.add_argument('--datasets', default='kinetics', choices={'fire', 'kinetics', 'ntu/xsub', 'ntu/xview'},
                     help='the work folder for storing results')
 parser.add_argument('--alpha', default=1, help='weighted summation')
 arg = parser.parse_args()

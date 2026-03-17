@@ -29,6 +29,7 @@ class ClassPrototypePriorLoss(nn.Module):
         self.use_ema = use_ema_prototypes
         self.m = float(ema_momentum)
         self.eps = eps
+
         self.proj_N = nn.Linear(self.d, self.N, bias=True)
         self.proj_T = nn.Linear(self.d, self.T, bias=True)
 
@@ -44,7 +45,7 @@ class ClassPrototypePriorLoss(nn.Module):
         if not self.use_ema:
             return
         
-        f = F.normalize(feats, dim=1) # (B, d)
+        f = F.normalize(feats, dim=1)  # (B, d)
         for c in targets.unique():
             c = c.item()
             mask = (targets == c)
@@ -69,21 +70,21 @@ class ClassPrototypePriorLoss(nn.Module):
         return A
 
     def _pick_rival(self, feats: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
-        P = F.normalize(self.prototypes, dim=1) # (C, d)
-        f = F.normalize(feats, dim=1) # (B, d)
+        P = F.normalize(self.prototypes, dim=1)  # (C, d)
+        f = F.normalize(feats, dim=1)  # (B, d)
 
-        sim = torch.matmul(f, P.t()) # (B, C)
+        sim = torch.matmul(f, P.t())  # (B, C)
         sim.scatter_(1, targets.view(-1, 1), float("-inf"))
-        rival_idx = torch.argmax(sim, dim=1) # (B,)
-        return P[rival_idx] # (B, d)
+        rival_idx = torch.argmax(sim, dim=1)  # (B,)
+        return P[rival_idx]  # (B, d)
 
     def _project_to_attention_space(self, vecs: torch.Tensor, N: int, T: int) -> torch.Tensor:
 
         B = vecs.size(0)
-        rN = self.proj_N(vecs)[:, :N] # (B, N)
-        rT = self.proj_T(vecs)[:, :T] # (B, T)
-        rel = torch.einsum("bn,bt->bnt", rN, rT).reshape(B, N * T)
+        rN = self.proj_N(vecs)[:, :N] # (B,N)
+        rT = self.proj_T(vecs)[:, :T] # (B,T)
 
+        rel = torch.einsum("bn,bt->bnt", rN, rT).reshape(B, N * T)
         rel = F.normalize(rel, dim=1, eps=self.eps)
         return rel
 
@@ -97,7 +98,6 @@ class ClassPrototypePriorLoss(nn.Module):
 
         _, N_in, T_in = A.shape
         A_flat = A.reshape(B, N_in * T_in)
-
         A_flat = F.normalize(A_flat, dim=1, eps=self.eps)
 
         P = self.prototypes # (C, d)

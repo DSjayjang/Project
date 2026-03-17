@@ -9,7 +9,7 @@ import shutil
 import time
 from collections import OrderedDict
 
-from utils.attnmodule import AttentionModule
+from utils.AttnModule import AttentionModule
 from utils.unified_loss import CATSUnifiedLoss
 
 import numpy as np
@@ -199,23 +199,36 @@ class Cats(nn.Module):
         self.H = H
         self.N = N
         self.T = T
-        self.attn_module = AttentionModule(in_channels=d, num_heads=H,)
+
+        self.attn_module = AttentionModule(
+            in_channels=d,
+            num_heads=H,)
 
     def forward(self, x):
         logits, feats, prep = self.backbone(x, return_aux=True)
         attn = self.attn_module(prep) 
-
+        # attn = self.attn_module(prep.detach())
         return {'logits': logits, 'attn':attn, 'feats':feats}
 
 class Processor():
     """ 
         Processor for Skeleton-based Action Recgnition
     """
+
     def __init__(self, arg):
         self.arg = arg
         self.save_arg()
         if arg.phase == 'train':
             if not arg.train_feeder_args['debug']:
+                # if os.path.isdir(arg.model_saved_name):
+                #     print('log_dir: ', arg.model_saved_name, 'already exist')
+                #     answer = input('delete it? y/n:')
+                #     if answer == 'y':
+                #         shutil.rmtree(arg.model_saved_name)
+                #         print('Dir removed: ', arg.model_saved_name)
+                #         input('Refresh the website of tensorboard by pressing any keys')
+                #     else:
+                #         print('Dir not removed: ', arg.model_saved_name)
                 self.train_writer = SummaryWriter(os.path.join(arg.model_saved_name, 'train'), 'train')
                 self.val_writer = SummaryWriter(os.path.join(arg.model_saved_name, 'val'), 'val')
             else:
@@ -251,7 +264,9 @@ class Processor():
         self.output_device = output_device
         Model = import_class(self.arg.model)
         shutil.copy2(inspect.getfile(Model), self.arg.work_dir)
+        # print(Model)
         self.model = Model(**self.arg.model_args).cuda(output_device)
+        # print(self.model)
 
         if self.arg.loss == 'cats':
             print('CATS-GCN...')
@@ -467,7 +482,7 @@ class Processor():
             timer['statistics'] += self.split_time()
 
         print(f"Current Epoch: {epoch}")
-        print(f"Current Loss: CE: {logs['loss/ce']}, L_prior: {logs['loss/prior']}, L_sparse: {logs['loss/sparse']}, L_div: {logs['loss/div']}, prior_cos/pos: {logs['prior/cos_pos']}, prior_cos_riv: {logs['prior/cos_riv']}")
+        # print(f"Current Loss: CE: {logs['loss/ce']}, L_prior: {logs['loss/prior']}, L_sparse: {logs['loss/sparse']}, L_div: {logs['loss/div']}, prior_cos/pos: {logs['prior/cos_pos']}, prior_cos_riv: {logs['prior/cos_riv']}")
 
         # statistics of time consumption and loss
         proportion = {
