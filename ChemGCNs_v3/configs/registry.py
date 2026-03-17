@@ -6,7 +6,7 @@ from typing import Callable, Optional
 
 from utils.feat_map import build_feat_map
 from utils import mol_collate
-import utils.mol_conv as mc
+import utils.mol_conv_LapPE as mc
 
 @dataclass(frozen=True)
 class DatasetSpec:
@@ -30,6 +30,13 @@ DATASET_REGISTRY = {
         collate_name = "collate_fusion_esol",
         collate_module = "mol_collate_esol",
         default_batch_size = None,
+    ),
+    "lipo": DatasetSpec(
+        reader = mc.read_dataset_lipo,
+        num_desc_2d = 25,
+        collate_name = "collate_fusion_lipo",
+        collate_module = "mol_collate_lipo",
+        default_batch_size = 128,
     ),
     "scgas": DatasetSpec(
         reader = mc.read_dataset_scgas,

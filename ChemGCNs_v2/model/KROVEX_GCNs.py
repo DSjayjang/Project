@@ -28,22 +28,22 @@ class GCNConv(nn.Module):
 
 # KROVEX
 class Net(nn.Module):
-    def __init__(self, dim_in, dim_self_feat):
+    def __init__(self, dim_in, dim_feat_2d):
         super(Net, self).__init__()
 
         self.gc1 = GCNConv(dim_in, 100)
         self.gc2 = GCNConv(100, 20)
 
-        self.fc1 = nn.Linear(20 * dim_self_feat, 128)
+        self.fc1 = nn.Linear(20 * dim_feat_2d, 128)
         self.fc2 = nn.Linear(128, 32)
         self.fc3 = nn.Linear(32, 1)
 
         self.bn1 = nn.BatchNorm1d(128)
         self.bn2 = nn.BatchNorm1d(32)
-        self.bn3 = nn.BatchNorm1d(8)
+
         self.dropout = nn.Dropout(0.3)
 
-    def forward(self, g, self_feat, feat_3d):
+    def forward(self, g, feat_2d):
         h = F.relu(self.gc1(g, g.ndata['feat']))
         h = F.relu(self.gc2(g, h))
 
@@ -52,8 +52,8 @@ class Net(nn.Module):
         hg = dgl.mean_nodes(g, 'h')
 
         hg = hg.unsqueeze(2)
-        self_feat = self_feat.unsqueeze(1)
-        hg = torch.bmm(hg, self_feat)
+        feat_2d = feat_2d.unsqueeze(1)
+        hg = torch.bmm(hg, feat_2d)
         hg = hg.view(hg.size(0), -1)
 
         # fully connected networks
@@ -63,4 +63,4 @@ class Net(nn.Module):
 
         out = self.fc3(out)
 
-        return out
+        return out, None

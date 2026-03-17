@@ -153,7 +153,9 @@ def select_loss(name: str):
 
     if name == 'mse':
         return nn.MSELoss()
-    elif name =='mae':
+    elif name == 'mae':
         return nn.L1Loss()
+    elif name == 'smooth':
+        return nn.SmoothL1Loss()
     else:
         raise ValueError(f'Unknown loss: {name}')

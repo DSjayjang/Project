@@ -1,99 +1,220 @@
-import copy
-import random
-from sklearn.model_selection import train_test_split
+import yaml
+import argparse
 
+from sklearn.model_selection import train_test_split
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import DataLoader
 
-import utils.mol_conv as mc
-from utils import mol_collate, evaluation
-from utils.utils import weight_reset
+from utils.utils import SET_SEED, select_loss
+from configs.registry import get_dataset_spec, build_collate_fn, bs
 from utils.mol_props import dim_atomic_feat
+from utils import evaluation, evaluation_scaffold_robust, evaluation_scaffold_robust2, evaluation_scaffold_robust3, evaluation_scaffold_robust4_0307
+from configs.args import get_parser
 
-from model import KROVEX
-from configs import config
-from configs.config import SET_SEED, DATASET_NAME, DATASET_PATH, BATCH_SIZE, MAX_EPOCHS, K, SEED
+from utils.scaffold import scaffold_split, scaffold_info
+import numpy as np
 
+
+def parse_args():
+    parser = get_parser()
+    p, _ = parser.parse_known_args()
+
+    if getattr(p, 'config', None):
+        with open(p.config, 'r') as f:
+            default_arg = yaml.safe_load(f)
+        
+        valid_keys = set(vars(p).keys())
+        
+        for k in default_arg.keys():
+            if k not in valid_keys:
+                raise ValueError(f'WRONG ARG in YAML: {k} (not defined in parser)')
+
+        parser.set_defaults(**default_arg)
+    
+    return parser.parse_args()
+    
 def main():
-    SET_SEED()
-    global BATCH_SIZE
+    args = parse_args()
+    SET_SEED(args)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(device)
 
-    if DATASET_NAME == 'freesolv':
-        print('DATASET_NAME: ', DATASET_NAME)
-        dataset = mc.read_dataset_freesolv(DATASET_PATH + '.csv')
-        num_descriptors = 50
-        descriptors = mol_collate.descriptor_selection_freesolv
+    # DATA LOAD
+    spec = get_dataset_spec(args.dataset)
+    ckpt_path = spec.ckpt_path # saved model
+    
+    dataset, desc_list, smiles_list = spec.reader(args.dataset_path + args.dataset + '.csv')
 
-    elif DATASET_NAME == 'esol':
-        print('DATASET_NAME: ', DATASET_NAME)
-        dataset = mc.read_dataset_esol(DATASET_PATH + '.csv')
-        num_descriptors = 63
-        descriptors = mol_collate.descriptor_selection_esol
+    if args.split == 'random':
+        train_dataset, test_dataset = train_test_split(dataset, test_size = 0.2, random_state = args.seed)
+        print('len(train_dataset)', len(train_dataset))
+        print('len(test_dataset)', len(test_dataset))
+        num_scaffolds=None
 
-    elif DATASET_NAME == 'lipo':
-        print('DATASET_NAME: ', DATASET_NAME)
-        dataset = mc.read_dataset_lipo(DATASET_PATH + '.csv')
-        num_descriptors = 25
-        descriptors = mol_collate.descriptor_selection_lipo
+    elif args.split == 'scaffold':
+        train_idx, test_idx = scaffold_split(smiles_list)
+ 
+        train_dataset = [dataset[i] for i in train_idx]
+        test_dataset  = [dataset[i] for i in test_idx]
+        print('len(train_dataset)', len(train_dataset))
+        print('len(test_dataset)', len(test_dataset))
+        _, scaffold_ids, num_scaffolds, scaffold_to_id = scaffold_info(smiles_list)
+        print("scaffold_ids:", scaffold_ids)
+        print("num_scaffolds:", num_scaffolds)
+        print("scaffold_to_id:", scaffold_to_id)
 
-    elif DATASET_NAME == 'scgas':
-        print('DATASET_NAME: ', DATASET_NAME)
-        BATCH_SIZE = 128
-        dataset = mc.read_dataset_scgas(DATASET_PATH + '.csv')
-        num_descriptors = 23
-        descriptors = mol_collate.descriptor_selection_scgas
 
-    elif DATASET_NAME == 'solubility':
-        print('DATASET_NAME: ', DATASET_NAME)
-        BATCH_SIZE = 256
-        dataset = mc.read_dataset_solubility(DATASET_PATH + '.csv')
-        num_descriptors = 30
-        descriptors = mol_collate.descriptor_selection_solubility
 
-    random.shuffle(dataset)
-    train_dataset, test_dataset = train_test_split(dataset, test_size = 0.2, random_state = config.SEED)
+    if not bs("--batch-size"):
+        if spec.default_batch_size is not None:
+            args.batch_size = spec.default_batch_size
 
-    # kronecker-product + descriptor selection
-    model_KROVEX = KROVEX.Net(dim_atomic_feat, 1, num_descriptors).to(device)
+    num_desc = spec.num_desc
+    collate_fn = build_collate_fn(args.dataset)
 
-    # loss function
-    # criterion = nn.L1Loss(reduction='sum')
-    criterion = nn.MSELoss(reduction='sum')
+    # DEFINE THE MODEL
+    from model import KROVEX, KROVEX_GCNs, GCN, GAT, GIN, GraphSAGE
+    # KROVEX = KROVEX.Net(dim_atomic_feat, num_desc).to(device)
+    KROVEX_GCNs = KROVEX_GCNs.Net(dim_atomic_feat, num_desc).to(device)
+    gcn = GCN.Net(dim_atomic_feat).to(device)
+    gat = GAT.Net(dim_atomic_feat).to(device)
+    gin = GIN.Net(dim_atomic_feat).to(device)
+    gsg = GraphSAGE.Net(dim_atomic_feat).to(device)
 
-    val_losses = dict()
+    from model import BAN, BAN_robust,BAN_robust2, BAN_robust3, BAN_robust4_0307
+    ban = BAN.Net(dim_atomic_feat, num_desc).to(device)
+    # ban_robust = BAN_robust.Net(dim_atomic_feat, num_desc, num_scaffolds).to(device)
+    # ban_robust2 = BAN_robust2.Net(dim_atomic_feat, num_desc, num_scaffolds).to(device)
+    ban_robust3 = BAN_robust3.Net(dim_atomic_feat, num_desc, num_scaffolds).to(device)
+    ban_robust4 = BAN_robust4_0307.Net(dim_atomic_feat, num_desc, num_scaffolds).to(device)
 
-    print(f'{DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
 
-    # evaluation
-    print('kronecker-product fusion with descriptor selection')
-    val_losses['KROVEX'], best_model, best_k = evaluation.cross_validation(train_dataset, model_KROVEX, criterion, K, BATCH_SIZE, MAX_EPOCHS, evaluation.train_model, evaluation.val_model, descriptors)
-    print('Val loss (KROVEX): ' + str(val_losses['KROVEX']))
+    # LOSS FUNC
+    criterion = select_loss(args.loss)
 
-    final_model = copy.deepcopy(best_model)
-    final_model.apply(weight_reset) # initializing weights
+    test_losses = dict()
+    print(f'{args.backbone}, {args.dataset}, {criterion}, BATCH_SIZE:{args.batch_size}, SEED:{args.seed}')
 
-    optimizer = optim.Adam(final_model.parameters(), weight_decay=0.01)
+    # # -------------------------- Baseline ------------------------------ #
+    # # KROVEX GCN 직접 구현
+    # test_losses['KROVEX_GCNs'], test_losses['KROVEX_GCNs_R2'] = evaluation.evaluation(train_dataset, test_dataset, KROVEX_GCNs, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='KROVEX_GCNs')
+    # print(f'Final test | loss: ' + str(test_losses['KROVEX_GCNs']) + '| R2: ' + str(test_losses['KROVEX_GCNs_R2']))
+ 
+    # total_params = sum(p.numel() for p in KROVEX_GCNs.parameters() if p.requires_grad)
+    # param_mem = sum(p.numel() for p in KROVEX_GCNs.parameters()) * 4 / 1024**2
+    # print(f"KROVEX 총 학습 가능한 파라미터 수: {total_params:,}")
+    # print(f"Model parameter memory: {param_mem:.2f} MB")
 
-    # 전체 트레이닝용 dataset
-    train_data_loader = DataLoader(train_dataset, batch_size = BATCH_SIZE, shuffle = True, collate_fn = descriptors)
-    final_train_loss = evaluation.train_model(final_model, criterion, optimizer, train_data_loader, MAX_EPOCHS)
+    # # -------------------------- GCN ------------------------------ #
+    # # Graph Convolutional Networks
+    # test_losses['GCN'], test_losses['GCN_R2'] = evaluation.evaluation(train_dataset, test_dataset, gcn, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='GCN')
+    # print(f'Final test | loss: ' + str(test_losses['GCN']) + '| R2: ' + str(test_losses['GCN_R2']))
+ 
+    # total_params = sum(p.numel() for p in gcn.parameters() if p.requires_grad)
+    # param_mem = sum(p.numel() for p in gcn.parameters()) * 4 / 1024**2
+    # print(f"GCN 총 학습 가능한 파라미터 수: {total_params:,}")
+    # print(f"Model parameter memory: {param_mem:.2f} MB")
 
-    # 트레이닝 평가용
-    evaluation.collect_train_preds(final_model, criterion, train_data_loader)
+    # # -------------------------- GAT ------------------------------ #
+    # # Graph Attention Networks
+    # test_losses['GAT'], test_losses['GAT_R2'] = evaluation.evaluation(train_dataset, test_dataset, gat, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='GAT')
+    # print(f'Final test | loss: ' + str(test_losses['GAT']) + '| R2: ' + str(test_losses['GAT_R2']))
+ 
+    # total_params = sum(p.numel() for p in gat.parameters() if p.requires_grad)
+    # param_mem = sum(p.numel() for p in gat.parameters()) * 4 / 1024**2
+    # print(f"GAT 총 학습 가능한 파라미터 수: {total_params:,}")
+    # print(f"Model parameter memory: {param_mem:.2f} MB")
 
-    # final test
-    test_data_loader = DataLoader(test_dataset, batch_size = BATCH_SIZE, shuffle = False, collate_fn = descriptors)
-    test_loss, final_preds = evaluation.test_model(final_model, criterion, test_data_loader)
+    # # -------------------------- GIN ------------------------------ #
+    # # Graph Isomorphism Networks
+    # test_losses['GIN'], test_losses['GIN_R2'] = evaluation.evaluation(train_dataset, test_dataset, gin, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='GIN')
+    # print(f'Final test | loss: ' + str(test_losses['GIN']) + '| R2: ' + str(test_losses['GIN_R2']))
+ 
+    # total_params = sum(p.numel() for p in gin.parameters() if p.requires_grad)
+    # param_mem = sum(p.numel() for p in gin.parameters()) * 4 / 1024**2
+    # print(f"GIN 총 학습 가능한 파라미터 수: {total_params:,}")
+    # print(f"Model parameter memory: {param_mem:.2f} MB")
 
-    print('best_k-fold:', best_k)
-    print('after k-fold, averaging of val_losses:', val_losses)
-    print('test_losse:', test_loss)
-    print(f'{DATASET_NAME}, {criterion}, BATCH_SIZE:{BATCH_SIZE}, SEED:{SEED}')
+    # # -------------------------- GraphSAGE ------------------------------ #
+    # # GraphSAGE
+    # test_losses['GraphSAGE'], test_losses['GraphSAGE_R2'] = evaluation.evaluation(train_dataset, test_dataset, gsg, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='GraphSAGE')
+    # print(f'Final test | loss: ' + str(test_losses['GraphSAGE']) + '| R2: ' + str(test_losses['GraphSAGE_R2']))
+ 
+    # total_params = sum(p.numel() for p in gsg.parameters() if p.requires_grad)
+    # param_mem = sum(p.numel() for p in gsg.parameters()) * 4 / 1024**2
+    # print(f"GraphSAGE 총 학습 가능한 파라미터 수: {total_params:,}")
+    # print(f"Model parameter memory: {param_mem:.2f} MB")
+
+    # ----------------------------BAN ----------------------------- #
+    # Bilinear Attention Networks
+    test_losses['ban'], test_losses['ban_R2'] = evaluation.evaluation(train_dataset, test_dataset, ban, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='ban')
+    print(f'Final test | loss: ' + str(test_losses['ban']) + '| R2: ' + str(test_losses['ban_R2']))
+
+    total_params = sum(p.numel() for p in ban.parameters() if p.requires_grad)
+    param_mem = sum(p.numel() for p in ban.parameters()) * 4 / 1024**2
+    print(f"BAN 총 학습 가능한 파라미터 수: {total_params:,}")
+    print(f"Model parameter memory: {param_mem:.2f} MB")
+
+
+
+
+
+
+
+
+
+    #
+    # SCAFFOLD ROBUST
+    #
+
+
+
+    # # ----------------------------BAN + scaffold robust ----------------------------- #
+    # # Bilinear Attention Networks + scaffold robust
+    # test_losses['BAN_robust'], test_losses['BAN_robust_R2'] = evaluation_scaffold_robust.evaluation(train_dataset, test_dataset, ban_robust, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='ban_robust')
+    # print(f'Final test | loss: ' + str(test_losses['BAN_robust']) + '| R2: ' + str(test_losses['BAN_robust_R2']))
+
+    # total_params = sum(p.numel() for p in ban_robust.parameters() if p.requires_grad)
+    # param_mem = sum(p.numel() for p in ban_robust.parameters()) * 4 / 1024**2
+    # print(f"BAN_robust 총 학습 가능한 파라미터 수: {total_params:,}")
+    # print(f"Model parameter memory: {param_mem:.2f} MB")
+
+    # # ----------------------------BAN + scaffold robust2 ----------------------------- #
+    # # Bilinear Attention Networks + scaffold robust
+    # test_losses['BAN_robust2'], test_losses['BAN_robust2_R2'] = evaluation_scaffold_robust2.evaluation(train_dataset, test_dataset, ban_robust2, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='ban_robust2')
+    # print(f'Final test | loss: ' + str(test_losses['BAN_robust2']) + '| R2: ' + str(test_losses['BAN_robust2_R2']))
+
+    # total_params = sum(p.numel() for p in ban_robust2.parameters() if p.requires_grad)
+    # param_mem = sum(p.numel() for p in ban_robust2.parameters()) * 4 / 1024**2
+    # print(f"BAN_robust 총 학습 가능한 파라미터 수: {total_params:,}")
+    # print(f"Model parameter memory: {param_mem:.2f} MB")
+
+    # # ----------------------------BAN + scaffold robust3 ----------------------------- #
+    # # Bilinear Attention Networks + scaffold robust
+    # test_losses['BAN_robust3'], test_losses['BAN_robust3_R2'] = evaluation_scaffold_robust3.evaluation(train_dataset, test_dataset, ban_robust3, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='ban_robust3')
+    # print(f'Final test | loss: ' + str(test_losses['BAN_robust3']) + '| R2: ' + str(test_losses['BAN_robust3_R2']))
+
+    # total_params = sum(p.numel() for p in ban_robust3.parameters() if p.requires_grad)
+    # param_mem = sum(p.numel() for p in ban_robust3.parameters()) * 4 / 1024**2
+    # print(f"BAN_robust3 총 학습 가능한 파라미터 수: {total_params:,}")
+    # print(f"Model parameter memory: {param_mem:.2f} MB")
+
+    # # ----------------------------BAN + scaffold robust4 ----------------------------- #
+    # # Bilinear Attention Networks + scaffold robust
+    # test_losses['BAN_robust4'], test_losses['BAN_robust4_R2'] = evaluation_scaffold_robust4_0307.evaluation(train_dataset, test_dataset, ban_robust4, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='ban_robust4')
+    # print(f'Final test | loss: ' + str(test_losses['BAN_robust4']) + '| R2: ' + str(test_losses['BAN_robust4_R2']))
+
+    # total_params = sum(p.numel() for p in ban_robust4.parameters() if p.requires_grad)
+    # param_mem = sum(p.numel() for p in ban_robust4.parameters()) * 4 / 1024**2
+    # print(f"BAN_robust4 총 학습 가능한 파라미터 수: {total_params:,}")
+    # print(f"Model parameter memory: {param_mem:.2f} MB")
+
+
+
+    print('test_losses:', test_losses)
+    print(f'{args.backbone}, {args.dataset}, {criterion}, BATCH_SIZE:{args.batch_size}, SEED:{args.seed}')
+
 
 if __name__ == '__main__':
     main()

@@ -4,41 +4,35 @@ import torch.nn.functional as F
 import dgl
 import dgl.function as fn
 
-class NodeApplyModule(nn.Module):
-    def __init__(self, dim_in, dim_out):
-        super(NodeApplyModule, self).__init__()
-        self.linear = nn.Linear(dim_in, dim_out)
+class GCNConv(nn.Module):
+    def __init__(self, dim_in, dim_out, bias=False):
+        super(GCNConv, self).__init__()
 
-    def forward(self, node):
-        h = self.linear(node.data['h'])
+        self.weight = nn.Parameter(torch.empty(dim_in, dim_out))
+        self.bias = nn.Parameter(torch.zeros(dim_out)) if bias else None
+        self.eps = 1e-12
+        nn.init.xavier_uniform_(self.weight)
 
-        return {'h': h}
+    def forward(self, g, feat: torch.Tensor):
+        A_tilde = g.adj().to_dense()
+        deg = A_tilde.sum(dim=1)
+        D_tilde = torch.pow(deg.clamp_min(self.eps), -0.5)
 
-class GCNLayer(nn.Module):
-    def __init__(self, dim_in, dim_out):
-        super(GCNLayer, self).__init__()
-        self.msg = fn.copy_u('h', 'm')
-        self.apply_mod = NodeApplyModule(dim_in, dim_out)
+        X1 = feat * D_tilde.unsqueeze(-1)
+        X2 = A_tilde @ X1
+        X3 = X2 * D_tilde.unsqueeze(-1)
 
-    def reduce(self, nodes):
-        mbox = nodes.mailbox['m']
-        accum = torch.mean(mbox, dim = 1)
+        out = X3 @ self.weight
 
-        return {'h': accum}     
-
-    def forward(self, g, feature):
-        g.ndata['h'] = feature
-        g.update_all(self.msg, self.reduce)
-        g.apply_nodes(func = self.apply_mod)
-
-        return g.ndata.pop('h')
+        return out        
 
 class Net(nn.Module):
     def __init__(self, dim_in, dim_out):
         super(Net, self).__init__()
 
-        self.gc1 = GCNLayer(dim_in, 100)
-        self.gc2 = GCNLayer(100, 20)
+        self.gc1 = GCNConv(dim_in, 100)
+        self.gc2 = GCNConv(100, 20)
+
         self.fc1 = nn.Linear(20, 10)
         self.fc2 = nn.Linear(10, dim_out)
 

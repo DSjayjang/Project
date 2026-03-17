@@ -7,7 +7,7 @@ def selected_descriptors_scgas():
     # seed 30
     # desc_list = ['smiles', 'use_MORSE_065', 'use_MORSE_129', 'use_GETAWAY_133', 'use_GETAWAY_045', 'use_MORSE_161', 'use_GETAWAY_263', 'use_GETAWAY_025', 'use_GETAWAY_105', 'use_GETAWAY_007', 'use_GETAWAY_107', 'use_GETAWAY_002', 'use_USRCAT_048', 'use_GETAWAY_086', 'use_MORSE_194', 'use_MORSE_222', 'use_GETAWAY_000', 'use_MORSE_193', 'use_USRCAT_055', 'use_GETAWAY_047', 'use_GETAWAY_155', 'use_GETAWAY_125', 'use_MORSE_164', 'use_USRCAT_058', 'use_USRCAT_034', 'use_USRCAT_031']
 
-    # # seed 50
+    # seed 50
     # desc_list = ['smiles', 'use_MORSE_129', 'use_MORSE_161', 'use_GETAWAY_105', 'use_GETAWAY_133', 'use_GETAWAY_025', 'use_RadiusOfGyration', 'use_MORSE_007', 'use_GETAWAY_085', 'use_GETAWAY_263', 'use_GETAWAY_086', 'use_MORSE_194', 'use_GETAWAY_045', 'use_MORSE_065', 'use_MORSE_193', 'use_MORSE_094', 'use_USRCAT_057', 'use_USRCAT_000', 'use_GETAWAY_005', 'use_GETAWAY_093', 'use_GETAWAY_007', 'use_USRCAT_007', 'use_GETAWAY_002', 'use_GETAWAY_257', 'use_USR_006', 'use_USRCAT_054', 'use_GETAWAY_113', 'use_MORSE_068', 'use_MORSE_097', 'use_MORSE_033', 'use_GETAWAY_067', 'use_GETAWAY_107', 'use_GETAWAY_047', 'use_USRCAT_058', 'use_MORSE_222', 'use_USRCAT_055', 'use_MORSE_167', 'use_USRCAT_043', 'use_GETAWAY_046', 'use_GETAWAY_000', 'use_USRCAT_052', 'use_MORSE_135', 'use_GETAWAY_066', 'use_USRCAT_051', 'use_GETAWAY_084']
     
     # seed 100
@@ -27,6 +27,9 @@ def build_feat_map(dataset):
         df3d = df3d[selected_descriptors_scgas()]
     elif dataset == 'esol':
         # 임시 scgas용
+        df3d = pd.read_csv(r'.\datasets\features_all1_drop_zeros.csv')
+        df3d = df3d[selected_descriptors_scgas()]
+    elif dataset == 'lipo':
         df3d = pd.read_csv(r'.\datasets\features_all1_drop_zeros.csv')
         df3d = df3d[selected_descriptors_scgas()]
     elif dataset == 'scgas':
