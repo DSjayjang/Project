@@ -24,7 +24,7 @@ def train(model, criterion, optimizer, train_loader, max_epochs, dataset_name, s
         model.train()
         start_time = time.time() # 시작
         for bg, feat_2d, target, _ in train_loader:
-            pred, _  = model(bg, feat_2d) # 
+            pred = model(bg, feat_2d) 
             loss = criterion(pred, target)
 
             optimizer.zero_grad()
@@ -68,8 +68,7 @@ def test(model, criterion, test_loader, dataset_name, desc_list, mode=False):
     
     with torch.no_grad():
         for bg, feat_2d, target, smiles in test_loader:
-            pred, attn_list = model(bg, feat_2d)
-
+            pred = model(bg, feat_2d)
             # mean_attn = torch.stack(attn_list).mean(dim=0) # (bs, M)
             # all_attns.append(mean_attn.cpu())
             
@@ -125,7 +124,7 @@ def evaluation(train_dataset, test_dataset, model, criterion, desc_list, batch_s
 
         print(f"\n epoch 평균 시간: {avg_epoch_time:.4f} 초\n")
 
-        test_loss, test_r2 = test(m, criterion, test_loader, dataset_name, desc_list, mode=False)
+        test_loss, test_r2 = test(m, criterion, test_loader, dataset_name, desc_list, mode=True)
 
         return test_loss, test_r2
     

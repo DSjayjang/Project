@@ -1,0 +1,2 @@
+dataset,model_name,epochs,num-folds,SEED,criterion,fold_val_means
+lipo_full,fag,300,5,100,MSELoss(),"[0.20735112005803322, 0.20540504046162916, 0.20720729038190272, 0.2092123808041215, 0.20637309757785666]"

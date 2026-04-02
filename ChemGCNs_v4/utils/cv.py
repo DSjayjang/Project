@@ -10,24 +10,6 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def _lap_pe_sign_flip_inplace(bg):
-    """
-    In-place sign flip for Laplacian PE (eigenvector sign ambiguity).
-    bg.ndata['lap_pos_enc']: (N_total, k)
-    """
-    if 'lap_pos_enc' not in bg.ndata:
-        return
-
-    lap = bg.ndata['lap_pos_enc']
-    # lap: (N_total, k)
-    k = lap.size(1)
-
-    # sign per eigen-dimension (k,), shared across all nodes in the batch graph
-    sign_flip = torch.rand(k, device=lap.device)
-    sign_flip = torch.where(sign_flip >= 0.5, 1.0, -1.0).to(lap.dtype)
-
-    bg.ndata['lap_pos_enc'] = lap * sign_flip.unsqueeze(0)  # (N_total,k) * (1,k)
-
 def train(model, criterion, optimizer, train_loader, val_loader, max_epochs):
     train_losses = []
     val_losses = []
@@ -39,9 +21,8 @@ def train(model, criterion, optimizer, train_loader, val_loader, max_epochs):
         val_n = 0
 
         model.train()
-        for bg, feat_2d, feat_3d, target in train_loader:
-            _lap_pe_sign_flip_inplace(bg)
-            pred = model(bg, feat_2d, feat_3d)
+        for bg, feat_2d, target, _ in train_loader:
+            pred = model(bg, feat_2d)
 
             loss = criterion(pred, target)
 
@@ -56,8 +37,8 @@ def train(model, criterion, optimizer, train_loader, val_loader, max_epochs):
 
         model.eval()
         with torch.no_grad():
-            for bg, feat_2d, feat_3d, target in val_loader:
-                pred = model(bg, feat_2d, feat_3d)
+            for bg, feat_2d, target, _ in train_loader:
+                pred = model(bg, feat_2d)
 
                 loss = criterion(pred, target)
 
@@ -77,12 +58,12 @@ def train(model, criterion, optimizer, train_loader, val_loader, max_epochs):
 
 def cross_validation(dataset, model, criterion, num_folds, batch_size, max_epochs, seed, dataset_name, collate, model_name, lr=1e-3, weight_decay = 0.01):
     num_data = len(dataset)
+
     fold_train_losses = []
     fold_val_losses = []
     fold_val_scores = []
 
     idx = np.arange(num_data)
-
     # K-Fold CV
     kf = KFold(n_splits=num_folds, shuffle=True, random_state=seed)
 

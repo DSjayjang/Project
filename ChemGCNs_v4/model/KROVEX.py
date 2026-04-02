@@ -50,7 +50,7 @@ class Net(nn.Module):
         self.bn3 = nn.BatchNorm1d(8)
         self.dropout = nn.Dropout(0.3)
 
-    def forward(self, g, self_feat, feat_3d):
+    def forward(self, g, self_feat):
         h = F.relu(self.gc1(g, g.ndata['feat']))
         h = F.relu(self.gc2(g, h))
         g.ndata['h'] = h

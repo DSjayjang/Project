@@ -78,6 +78,14 @@ DATASET_REGISTRY = {
         default_batch_size = None,
         ckpt_path='./checkpoints/solubility/model_solubility_300.pt' # 수정필요
     ),
+    "lipo_full": DatasetSpec(
+        reader = mc.read_dataset_full,
+        dataset_path='./datasets/lipo',
+        num_desc = 196,
+        collate_name = "full_descriptors",
+        default_batch_size = None,
+        ckpt_path='./checkpoints/solubility/model_solubility_300.pt' # 수정필요
+    ),
     "vp_full": DatasetSpec(
         reader = mc.read_dataset_full,
         dataset_path='./datasets/vp',

@@ -63,4 +63,4 @@ class Net(nn.Module):
 
         out = self.fc3(out)
 
-        return out, None
+        return out

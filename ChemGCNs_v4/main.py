@@ -8,7 +8,7 @@ import torch.nn as nn
 from utils.utils import SET_SEED, select_loss
 from configs.registry import get_dataset_spec, build_collate_fn, bs
 from utils.mol_props import dim_atomic_feat
-from utils import evaluation
+from utils import evaluation, evaluation_viz
 from configs.args import get_parser
 
 from utils.scaffold import scaffold_split, scaffold_info
@@ -73,8 +73,8 @@ def main():
 
     # DEFINE THE MODEL
     from model import KROVEX, KROVEX_GCNs, GCN, GAT, GIN, GraphSAGE
-    # KROVEX = KROVEX.Net(dim_atomic_feat, num_desc).to(device)
-    KROVEX_GCNs = KROVEX_GCNs.Net(dim_atomic_feat, num_desc).to(device)
+    KROVEX = KROVEX.Net(dim_atomic_feat, num_desc).to(device)
+    # KROVEX_GCNs = KROVEX_GCNs.Net(dim_atomic_feat, num_desc).to(device)
 
     from model import FABIG
     fag = FABIG.Net(dim_atomic_feat, num_desc).to(device)
@@ -85,7 +85,16 @@ def main():
     test_losses = dict()
     print(f'{args.backbone}, {args.dataset}, {criterion}, BATCH_SIZE:{args.batch_size}, SEED:{args.seed}')
 
-    # # -------------------------- Baseline ------------------------------ #
+    # -------------------------- Baseline ------------------------------ #
+    # # KROVEX
+    # test_losses['KROVEX'], test_losses['KROVEX_R2'] = evaluation.evaluation(train_dataset, test_dataset, KROVEX, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='KROVEX')
+    # print(f'Final test | loss: ' + str(test_losses['KROVEX']) + '| R2: ' + str(test_losses['KROVEX_R2']))
+ 
+    # total_params = sum(p.numel() for p in KROVEX.parameters() if p.requires_grad)
+    # param_mem = sum(p.numel() for p in KROVEX.parameters()) * 4 / 1024**2
+    # print(f"KROVEX 총 학습 가능한 파라미터 수: {total_params:,}")
+    # print(f"Model parameter memory: {param_mem:.2f} MB")
+
     # # KROVEX GCN 직접 구현
     # test_losses['KROVEX_GCNs'], test_losses['KROVEX_GCNs_R2'] = evaluation.evaluation(train_dataset, test_dataset, KROVEX_GCNs, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='KROVEX_GCNs')
     # print(f'Final test | loss: ' + str(test_losses['KROVEX_GCNs']) + '| R2: ' + str(test_losses['KROVEX_GCNs_R2']))
@@ -96,7 +105,7 @@ def main():
     # print(f"Model parameter memory: {param_mem:.2f} MB")
 
     # ----------------------------FaBiG ----------------------------- #
-    test_losses['fag'], test_losses['fag_R2'] = evaluation.evaluation(train_dataset, test_dataset, fag, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='fag')
+    test_losses['fag'], test_losses['fag_R2'], attention_records = evaluation_viz.evaluation(train_dataset, test_dataset, fag, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='fag')
     print(f'Final test | loss: ' + str(test_losses['fag']) + '| R2: ' + str(test_losses['fag_R2']))
 
     total_params = sum(p.numel() for p in fag.parameters() if p.requires_grad)
@@ -106,6 +115,60 @@ def main():
 
     print('test_losses:', test_losses)
     print(f'{args.backbone}, {args.dataset}, {criterion}, BATCH_SIZE:{args.batch_size}, SEED:{args.seed}')
+
+
+
+
+
+
+
+
+
+
+
+    sample = attention_records[50]
+
+    smiles = sample["smiles"]
+    alpha_dict = sample["attn_dict"]
+    beta_dict = sample["beta_dict"]
+    print('alpha_dict', alpha_dict)
+    # print("SMILES:", sample["smiles"])
+    # print("beta_dict:", sample["beta_dict"])
+
+    # for fam, alpha in sample["attn_dict"].items():
+    #     print(f"\n[{fam}]")
+    #     print("len:", len(alpha))
+    #     print("sum:", sum(alpha))
+    #     print("min:", min(alpha))
+    #     print("max:", max(alpha))
+    #     print("alpha:", alpha)
+    from utils.rdkit_attention_viz_bundle import draw_all_family_heatmaps_and_beta
+
+    draw_all_family_heatmaps_and_beta(
+        smiles=smiles,
+        alpha_dict=alpha_dict,
+        beta_dict=beta_dict,
+        out_dir="./viz",
+        prefix="sample0"
+    )
+
+    # draw_all_family_heatmaps_and_beta(
+    #     smiles=smiles,
+    #     alpha_dict=alpha_dict,
+    #     beta_dict=beta_dict,
+    #     out_dir="./viz",
+    #     prefix="sample0",
+    #     weight_mode="residual_contrast",
+    #     gamma=0.35,
+    #     contour_lines=0,
+    #     draw_alpha_barplots=True,
+    #     draw_global_heatmap=True,
+    # )
+
+
+
+
+
 
 
 if __name__ == '__main__':

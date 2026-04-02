@@ -31,7 +31,7 @@ def construct_mol_graph(smiles, mol, adj_mat, feat_mat):
 
     molGraph.add_nodes(adj_mat.shape[0])
     molGraph.add_edges(src, dst)
-    molGraph = dgl.add_self_loop(molGraph) # self loop
+    # molGraph = dgl.add_self_loop(molGraph) # self loop
     molGraph.ndata['feat'] = torch.tensor(feat_mat, dtype=torch.float32).to(device)
 
     return molGraph

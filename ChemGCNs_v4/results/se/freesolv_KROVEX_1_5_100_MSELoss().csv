@@ -1,0 +1,2 @@
+dataset,model_name,epochs,num-folds,SEED,criterion,fold_val_means
+freesolv,KROVEX,1,5,100,MSELoss(),"[26.425518080679637, 25.375035131047618, 26.783541856679896, 25.912904302667965, 27.3496915102005]"

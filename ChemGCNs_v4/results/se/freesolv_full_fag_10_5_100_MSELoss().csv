@@ -1,0 +1,2 @@
+dataset,model_name,epochs,num-folds,SEED,criterion,fold_val_means
+freesolv_full,fag,10,5,100,MSELoss(),"[5.898676498925382, 5.84686393464848, 6.240199865298728, 5.81054009154818, 6.445995542407036]"
