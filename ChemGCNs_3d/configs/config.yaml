@@ -1,0 +1,9 @@
+seed: 100
+
+backbone: 'GCN'
+dataset: 'freesolv'
+
+batch_size: 32
+epochs: 1
+
+r_home: 'C:/Programming/R/R-4.4.2' # Specify your path of 'R'

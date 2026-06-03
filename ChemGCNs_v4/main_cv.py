@@ -144,9 +144,9 @@ def main():
     print(f'{args.backbone}, {args.dataset}, {criterion}, BATCH_SIZE:{args.batch_size}, SEED:{args.seed}')
 
     # -------------------------- Baseline ------------------------------ #
-    # KROVEX
-    val_losses['KROVEX'] = cv.cross_validation(dataset, krovex, criterion, args.k, args.batch_size, args.epochs, args.seed, args.dataset, collate_fn, model_name='KROVEX')
-    print(f'Final test | loss: ' + str(val_losses['KROVEX']))
+    # # KROVEX
+    # val_losses['KROVEX'] = cv.cross_validation(dataset, krovex, criterion, args.k, args.batch_size, args.epochs, args.seed, args.dataset, collate_fn, model_name='KROVEX')
+    # print(f'Final test | loss: ' + str(val_losses['KROVEX']))
 
     # # KROVEX GCN 직접 구현
     # test_losses['KROVEX_GCNs'], test_losses['KROVEX_GCNs_R2'] = evaluation.full_train_and_test(train_dataset, test_dataset, KROVEX_GCNs, criterion, args.batch_size, args.epochs, collate_fn, model_name='KROVEX_GCNs')
@@ -155,10 +155,12 @@ def main():
 
 
     # ------------------------------------------------------------------ #
-    # # # LapPE
-    # val_losses['fag'] = cv.cross_validation(dataset, fag, criterion, args.k, args.batch_size, args.epochs, args.seed, args.dataset, collate_fn, model_name='fag')
-    # print(f'Final test | loss: ' + str(val_losses['fag']))
+    # fag
+    val_losses['fag'] = cv.cross_validation(dataset, fag, criterion, args.k, args.batch_size, args.epochs, args.seed, args.dataset, collate_fn, model_name='fag')
+    print(f'Final test | loss: ' + str(val_losses['fag']))
     
+
+
     print('val_losses:', val_losses)
     print(f'{args.backbone}, {args.dataset}, {criterion}, BATCH_SIZE:{args.batch_size}, SEED:{args.seed}')
 

@@ -76,8 +76,9 @@ def main():
     KROVEX = KROVEX.Net(dim_atomic_feat, num_desc).to(device)
     # KROVEX_GCNs = KROVEX_GCNs.Net(dim_atomic_feat, num_desc).to(device)
 
-    from model import FABIG
+    from model import FABIG, FABIG_gin
     fag = FABIG.Net(dim_atomic_feat, num_desc).to(device)
+    fag_gin = FABIG_gin.Net(dim_atomic_feat, num_desc).to(device)
 
     # LOSS FUNC
     criterion = select_loss(args.loss)
@@ -86,14 +87,14 @@ def main():
     print(f'{args.backbone}, {args.dataset}, {criterion}, BATCH_SIZE:{args.batch_size}, SEED:{args.seed}')
 
     # -------------------------- Baseline ------------------------------ #
-    # # KROVEX
-    # test_losses['KROVEX'], test_losses['KROVEX_R2'] = evaluation.evaluation(train_dataset, test_dataset, KROVEX, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='KROVEX')
-    # print(f'Final test | loss: ' + str(test_losses['KROVEX']) + '| R2: ' + str(test_losses['KROVEX_R2']))
+    # KROVEX
+    test_losses['KROVEX'], test_losses['KROVEX_R2'] = evaluation.evaluation(train_dataset, test_dataset, KROVEX, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='KROVEX')
+    print(f'Final test | loss: ' + str(test_losses['KROVEX']) + '| R2: ' + str(test_losses['KROVEX_R2']))
  
-    # total_params = sum(p.numel() for p in KROVEX.parameters() if p.requires_grad)
-    # param_mem = sum(p.numel() for p in KROVEX.parameters()) * 4 / 1024**2
-    # print(f"KROVEX 총 학습 가능한 파라미터 수: {total_params:,}")
-    # print(f"Model parameter memory: {param_mem:.2f} MB")
+    total_params = sum(p.numel() for p in KROVEX.parameters() if p.requires_grad)
+    param_mem = sum(p.numel() for p in KROVEX.parameters()) * 4 / 1024**2
+    print(f"KROVEX 총 학습 가능한 파라미터 수: {total_params:,}")
+    print(f"Model parameter memory: {param_mem:.2f} MB")
 
     # # KROVEX GCN 직접 구현
     # test_losses['KROVEX_GCNs'], test_losses['KROVEX_GCNs_R2'] = evaluation.evaluation(train_dataset, test_dataset, KROVEX_GCNs, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='KROVEX_GCNs')
@@ -104,68 +105,30 @@ def main():
     # print(f"KROVEX 총 학습 가능한 파라미터 수: {total_params:,}")
     # print(f"Model parameter memory: {param_mem:.2f} MB")
 
-    # ----------------------------FaBiG ----------------------------- #
-    test_losses['fag'], test_losses['fag_R2'], attention_records = evaluation_viz.evaluation(train_dataset, test_dataset, fag, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='fag')
-    print(f'Final test | loss: ' + str(test_losses['fag']) + '| R2: ' + str(test_losses['fag_R2']))
+    # # ----------------------------FaBiG ----------------------------- #
+    # test_losses['fag'], test_losses['fag_R2'] = evaluation.evaluation(train_dataset, test_dataset, fag, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='fag')
+    # print(f'Final test | loss: ' + str(test_losses['fag']) + '| R2: ' + str(test_losses['fag_R2']))
 
-    total_params = sum(p.numel() for p in fag.parameters() if p.requires_grad)
-    param_mem = sum(p.numel() for p in fag.parameters()) * 4 / 1024**2
-    print(f"fag 총 학습 가능한 파라미터 수: {total_params:,}")
-    print(f"Model parameter memory: {param_mem:.2f} MB")
+    # total_params = sum(p.numel() for p in fag.parameters() if p.requires_grad)
+    # param_mem = sum(p.numel() for p in fag.parameters()) * 4 / 1024**2
+    # print(f"fag 총 학습 가능한 파라미터 수: {total_params:,}")
+    # print(f"Model parameter memory: {param_mem:.2f} MB")
+
+
+    # # ----------------------------FaBiG_gin ----------------------------- #
+    # test_losses['fag_gin'], test_losses['fag_gin_R2'] = evaluation.evaluation(train_dataset, test_dataset, fag_gin, criterion, desc_list, args.batch_size, args.epochs, collate_fn, args.dataset, args.phase, args.save_model, ckpt_path, model_name='fag_gin')
+    # print(f'Final test | loss: ' + str(test_losses['fag_gin']) + '| R2: ' + str(test_losses['fag_gin_R2']))
+
+    # total_params = sum(p.numel() for p in fag_gin.parameters() if p.requires_grad)
+    # param_mem = sum(p.numel() for p in fag_gin.parameters()) * 4 / 1024**2
+    # print(f"fag_gin 총 학습 가능한 파라미터 수: {total_params:,}")
+    # print(f"Model parameter memory: {param_mem:.2f} MB")
+
+
+
 
     print('test_losses:', test_losses)
     print(f'{args.backbone}, {args.dataset}, {criterion}, BATCH_SIZE:{args.batch_size}, SEED:{args.seed}')
-
-
-
-
-
-
-
-
-
-
-
-    sample = attention_records[50]
-
-    smiles = sample["smiles"]
-    alpha_dict = sample["attn_dict"]
-    beta_dict = sample["beta_dict"]
-    print('alpha_dict', alpha_dict)
-    # print("SMILES:", sample["smiles"])
-    # print("beta_dict:", sample["beta_dict"])
-
-    # for fam, alpha in sample["attn_dict"].items():
-    #     print(f"\n[{fam}]")
-    #     print("len:", len(alpha))
-    #     print("sum:", sum(alpha))
-    #     print("min:", min(alpha))
-    #     print("max:", max(alpha))
-    #     print("alpha:", alpha)
-    from utils.rdkit_attention_viz_bundle import draw_all_family_heatmaps_and_beta
-
-    draw_all_family_heatmaps_and_beta(
-        smiles=smiles,
-        alpha_dict=alpha_dict,
-        beta_dict=beta_dict,
-        out_dir="./viz",
-        prefix="sample0"
-    )
-
-    # draw_all_family_heatmaps_and_beta(
-    #     smiles=smiles,
-    #     alpha_dict=alpha_dict,
-    #     beta_dict=beta_dict,
-    #     out_dir="./viz",
-    #     prefix="sample0",
-    #     weight_mode="residual_contrast",
-    #     gamma=0.35,
-    #     contour_lines=0,
-    #     draw_alpha_barplots=True,
-    #     draw_global_heatmap=True,
-    # )
-
-
 
 
 

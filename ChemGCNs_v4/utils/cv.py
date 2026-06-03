@@ -37,7 +37,7 @@ def train(model, criterion, optimizer, train_loader, val_loader, max_epochs):
 
         model.eval()
         with torch.no_grad():
-            for bg, feat_2d, target, _ in train_loader:
+            for bg, feat_2d, target, _ in val_loader:
                 pred = model(bg, feat_2d)
 
                 loss = criterion(pred, target)

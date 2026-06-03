@@ -1,0 +1,2 @@
+dataset,epochs,num-folds,SEED,criterion,test_losses
+lipo,1,2,100,L1Loss(),"[2.234714871361142, 2.3307598658970425]"

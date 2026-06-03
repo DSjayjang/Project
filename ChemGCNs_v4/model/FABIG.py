@@ -71,7 +71,7 @@ class FamilyTokenizer(nn.Module):
     """
     def __init__(self, family_len: dict, dim_desc_hidden: int, dropout: float):
         super().__init__()
-
+        # dropout=0.1
         self.encoders = nn.ModuleDict({
             fam: nn.Sequential(
                 nn.Linear(num_desc, dim_desc_hidden),
@@ -175,15 +175,15 @@ class FamilyBilinearAttention(nn.Module):
 
         ctx_k = torch.einsum("bn,bnd->bd", alpha, v) # [bs, dim_desc_hidden]
 
-        # 분자별 노드 임베딩 분산
-        node_var = H_pad.std(dim=1)          # [bs, dim_graph]
-        print("node embedding std mean:", node_var.mean().item())
+        # # 분자별 노드 임베딩 분산
+        # node_var = H_pad.std(dim=1)          # [bs, dim_graph]
+        # print("node embedding std mean:", node_var.mean().item())
 
-        # attention score 분산
-        print("scores std per graph:", scores[mask].std().item())
-        print("H_pad[0] std across nodes:", H_pad[0, mask[0]].std(dim=0).mean())
-        print("k[0] std across nodes:", k[0, mask[0]].std(dim=0).mean())
-        print("scores[0]:", scores[0, mask[0]])
+        # # attention score 분산
+        # print("scores std per graph:", scores[mask].std().item())
+        # print("H_pad[0] std across nodes:", H_pad[0, mask[0]].std(dim=0).mean())
+        # print("k[0] std across nodes:", k[0, mask[0]].std(dim=0).mean())
+        # print("scores[0]:", scores[0, mask[0]])
 
         # print("q:", q[0])
         # print("k:", k[0])
@@ -247,7 +247,7 @@ class FamilyAggregator(nn.Module):
         h_fam = self.dropout(h_fam)
 
         return beta, h_fam
-    
+
 
 class Net(nn.Module):
     def __init__(self, dim_in: int, dim_feat_2d: int):
@@ -259,7 +259,7 @@ class Net(nn.Module):
         self.dim_out          = 1
         self.drop_out         = 0.2
         self.dim_desc_hidden  = 32
-        self.rank             = 16
+        self.rank             = 32
  
         self.family_indices = family_indices
         self.family_order   = list(family_indices.keys()) # ['constitutional', 'topological', 'physicochemical', 'electronic', 'fragment']
@@ -321,8 +321,8 @@ class Net(nn.Module):
         """
         # ── GCN ──────────────────────────────────────────
         h = F.relu(self.gc1(g, g.ndata['feat'])) 
-        # h = F.relu(self.gc2(g, h))                # [N_total, dim_graph] (N_total: 각 배치당 총 노드 개수)
-        h = self.gc2(g, h)                # [N_total, dim_graph] (N_total: 각 배치당 총 노드 개수)
+        h = F.relu(self.gc2(g, h))                # [N_total, dim_graph] (N_total: 각 배치당 총 노드 개수)
+        # h = self.gc2(g, h)                # [N_total, dim_graph] (N_total: 각 배치당 총 노드 개수)
         g.ndata['h'] = h
 
         hg = dgl.mean_nodes(g, 'h')               # [bs, dim_graph]
@@ -380,104 +380,11 @@ class Net(nn.Module):
         h_final = torch.cat([hg, h_fam], dim=-1)  # [B, dim_graph + d_desc]
         out     = self.head(h_final)               # [B, 1]
  
-        return out, attn_dict, beta
+        return out
+        # return out, attn_dict, beta
 
 
 
 
 
 
-
-
- 
-# class Net(nn.Module):
-#     def __init__(self, dim_in, dim_feat_2d):
-#         super(Net, self).__init__()
-#         self.dim_graph = 20
-#         self.dim_graph_hidden = 100
-#         self.dim_fc1 = 128
-#         self.dim_fc2 = 32
-#         self.dim_out = 1
-#         self.drop_out = 0.2
-#         self.d_desc = 32
-#         self.rank = 16
-
-#         self.family_indices = family_indices
-
-#         self.gc1 = GCNConv(dim_in, self.dim_graph_hidden)
-#         self.gc2 = GCNConv(self.dim_graph_hidden, self.dim_graph)
-
-#         family_dims = {fam: len(idxs) for fam, idxs in family_indices.items()}
-
-#         self.family_tokenizer = FamilyTokenizer(
-#             family_dims=family_dims,
-#             d_desc=self.d_desc,
-#             dropout=self.drop_out
-#         )
-
-#         self.family_attn = nn.ModuleDict({
-#             fam: FamilyBilinearAttention(self.dim_graph, self.d_desc, rank=self.rank)
-#             for fam in self.family_indices.keys()
-#         })
-
-#         self.family_fusion = nn.ModuleDict({
-#             fam: FamilyFusion(self.dim_graph, self.d_desc, dropout=self.drop_out)
-#             for fam in self.family_indices.keys()
-#         })
-
-#         self.family_aggregator = FamilyAggregator(
-#             dim_graph=self.dim_graph,
-#             d_desc=self.d_desc,
-#             dropout=self.drop_out
-#         )
-
-#         self.head = nn.Sequential(
-#             nn.Linear(self.dim_graph + self.d_desc, self.dim_fc1),
-#             nn.ReLU(),
-#             nn.Dropout(self.drop_out),
-#             nn.Linear(self.dim_fc1, self.dim_fc2),
-#             nn.ReLU(),
-#             nn.Dropout(self.drop_out),
-#             nn.Linear(self.dim_fc2, self.dim_out)
-#         )
-
-#     def forward(self, g, feat_2d):
-#         h = F.relu(self.gc1(g, g.ndata['feat']))
-#         h = F.relu(self.gc2(g, h))
-
-#         g.ndata['h'] = h
-#         hg = dgl.mean_nodes(g, 'h')
-
-#         family_inputs = {
-#             fam: feat_2d[:, idxs]
-#             for fam, idxs in self.family_indices.items()
-#         }
-
-#         z_dict = self.family_tokenizer(family_inputs)
-
-#         H_pad, mask = split_pad_node_embeddings(g, h)
-
-#         context_dict = {}
-#         attn_dict = {}
-
-#         for fam, z_k in z_dict.items():
-#             alpha_k, c_k = self.family_attn[fam](z_k, H_pad, mask)
-#             attn_dict[fam] = alpha_k
-#             context_dict[fam] = c_k
-
-#         family_order = ["constitutional", "topological", "physicochemical", "electronic", "fragment"]
-#         family_reps = []
-
-#         for fam in family_order:
-#             f_k = self.family_fusion[fam](context_dict[fam], z_dict[fam])
-#             family_reps.append(f_k)
-
-#         family_reps = torch.stack(family_reps, dim=1)
-
-#         beta, h_fam = self.family_aggregator(family_reps, hg)
-
-#         h_final = torch.cat([hg, h_fam], dim=-1)
-#         out = self.head(h_final)
-
-#         return out
-    

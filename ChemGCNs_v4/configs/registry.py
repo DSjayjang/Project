@@ -41,7 +41,7 @@ DATASET_REGISTRY = {
         num_desc = 25, # 25
         collate_name = "descriptor_selection_lipo",
         # collate_module = "mol_collate_esol",
-        default_batch_size = 128,
+        default_batch_size = 256,
         ckpt_path='./checkpoints/esol/model_esol_300.pt'
     ),
     "vp": DatasetSpec(
@@ -68,7 +68,7 @@ DATASET_REGISTRY = {
         num_desc = 196,
         collate_name = "full_descriptors",
         default_batch_size = None,
-        ckpt_path='./checkpoints/solubility/model_solubility_300.pt' # 수정필요
+        ckpt_path='./checkpoints/freesolv_full/model_freesolv_full_fag_fold3.pt' # 수정필요
     ),
     "esol_full": DatasetSpec(
         reader = mc.read_dataset_full,
@@ -83,7 +83,7 @@ DATASET_REGISTRY = {
         dataset_path='./datasets/lipo',
         num_desc = 196,
         collate_name = "full_descriptors",
-        default_batch_size = None,
+        default_batch_size = 256,
         ckpt_path='./checkpoints/solubility/model_solubility_300.pt' # 수정필요
     ),
     "vp_full": DatasetSpec(
